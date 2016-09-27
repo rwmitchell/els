@@ -47,6 +47,21 @@
 #include "sysdep.h"
 #include "phLib.h"
 
+extern Boole rwm_filtering, 
+             rwm_ifreg,      /* Regular */
+             rwm_ifexe,      /* Executable */
+             rwm_ifwrt,      /* Writable   */
+             rwm_ifred,      /* Readable   */
+             rwm_ifdir,      /* Directory */
+             rwm_ifchr,      /* Char Special */
+             rwm_ifblk,      /* Block Special */
+             rwm_ififo,      /* Fifo */
+             rwm_iflnk,      /* Symbolic Link */
+             rwm_ifsock,     /* Socket */
+             rwm_ifunk,      /* unkown */
+             rwm_docomma,
+             rwm_dospace;    /* similiar to find -print0 */
+
 /********** Globals Defined **********/
 
 int fexpr_ORcount;
@@ -386,6 +401,43 @@ void filter_file(Dir_Item *file, char *path)
 					       list_topdir)));
 
   file->searchable = file_is_searchable;
+
+ if ( file->listable && rwm_filtering ) {
+    int ftype;
+    register struct stat *info = &file->info;
+
+    ftype = (info->st_mode & S_IFMT);
+
+    switch (ftype) {
+      case S_IFREG: 
+        if ( !rwm_ifreg ) file->listable = FALSE; /* Regular */
+        if ( !(info->st_mode & (S_IXUSR|S_IXGRP|S_IXOTH)) && rwm_ifexe) file->listable = FALSE;
+        if ( !(info->st_mode & (S_IWUSR|S_IWGRP|S_IWOTH)) && rwm_ifwrt) file->listable = FALSE;
+        if ( !(info->st_mode & (S_IRUSR|S_IRGRP|S_IROTH)) && rwm_ifred) file->listable = FALSE;
+	break;
+      case S_IFDIR:  if ( !rwm_ifdir ) file->listable = FALSE; break; /* Directory */
+      case S_IFCHR:  if ( !rwm_ifchr ) file->listable = FALSE; break; /* Char Special */
+      case S_IFBLK:  if ( !rwm_ifblk ) file->listable = FALSE; break; /* Block Special */
+#ifdef S_IFIFO
+      case S_IFIFO:  if ( !rwm_ififo ) file->listable = FALSE; break; /* Fifo */
+#endif
+#ifdef S_IFLNK
+      case S_IFLNK:  if ( !rwm_iflnk ) file->listable = FALSE; break; /* Symbolic Link */
+#endif
+#ifdef S_IFSOCK
+      case S_IFSOCK: if ( !rwm_ifsock) file->listable = FALSE; break; /* Socket */
+#endif
+      default:       if ( !rwm_ifunk ) file->listable = FALSE; break; /* unkown */
+    }
+  }
+
+/*#define SHOW_FILTERING*/
+#ifdef SHOW_FILTERING
+      printf("sl, d, dd, h: %d, %d, %d, %d -- l, s: %d, %d -- %s\n",
+	     file->symlink, file->dir,
+	     file->dotdir, file->hidden,
+	     file->listable, file->searchable, file->fname);
+#endif
 
   return;
 }

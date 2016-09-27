@@ -45,6 +45,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <math.h>     // rwm
 #ifdef HAVE_LOCALE
 #include <locale.h>
 #endif
@@ -349,6 +350,21 @@ Local char separator = ' ';
 Local char *NON_NEGATABLE = "Non-negatable option";
 Local char *MISSING_FILTER = "Missing filter";
 Local char *TOO_MANY_FILTERS = "Too many filters specified";
+
+Boole rwm_filtering = FALSE,
+      rwm_ifreg     = FALSE, /* Regular */
+      rwm_ifexe     = FALSE, /* Executable */
+      rwm_ifwrt     = FALSE, /* Writable   */
+      rwm_ifred     = FALSE, /* Readable   */
+      rwm_ifdir     = FALSE, /* Directory */
+      rwm_ifchr     = FALSE, /* Char Special */
+      rwm_ifblk     = FALSE, /* Block Special */
+      rwm_ififo     = FALSE, /* Fifo */
+      rwm_iflnk     = FALSE, /* Symbolic Link */
+      rwm_ifsock    = FALSE, /* Socket */
+      rwm_ifunk     = FALSE, /* unkown */
+      rwm_docomma   = TRUE,
+      rwm_dospace   = FALSE; /* similiar to find -print0 */
 
 Local ELS_st_blocks dir_block_total;
 Local int dir_file_count;
@@ -879,8 +895,31 @@ void do_options_minus(char *options)
       /* Currently the default */
       break;
       
-    case 'C': /* List multi column */
+    case 'C': /* List multi column */  /* hijacked -rwm 1999-01-11 */
       /* Unimplemented */
+      rwm_docomma = FALSE;
+      break;
+      
+    case '0':	/* rwm: space in filename handling */
+      rwm_dospace = TRUE;
+      break;
+
+    case 'f':	/* rwm: filter files */
+      rwm_filtering = TRUE;
+      switch ( *options++ ) {
+        case 'd': rwm_ifdir = TRUE; break;
+        case 'x': rwm_ifexe = TRUE; rwm_ifreg = TRUE; break;
+        case 'w': rwm_ifwrt = TRUE; rwm_ifreg = TRUE; break;
+        case 'r': rwm_ifred = TRUE; rwm_ifreg = TRUE; break;
+        case 'R': rwm_ifreg = TRUE; break;
+        case 'c': rwm_ifchr = TRUE; break;  /* Char Special */
+        case 'b': rwm_ifblk = TRUE; break;  /* Block Special */
+        case 'f': rwm_ififo = TRUE; break;  /* Fifo */
+        case 'l': rwm_iflnk = TRUE; break;  /* Symbolic Link */
+        case 's': rwm_ifsock= TRUE; break;  /* Socket */
+        case 'u': rwm_ifunk = TRUE; break;  /* unkown */
+        default: break;
+      }
       break;
       
     default: /* Give error message and usage, then exit: */
@@ -3629,7 +3668,7 @@ Boole list_item(Dir_Item *file,
     else
     {
       char *bp = G_print(output_buff, G_format, dname, file);
-      strcat(bp, "\n");
+      if ( !rwm_dospace ) strcat(bp, "\n");
     }
   }
 
@@ -3683,6 +3722,7 @@ Boole list_item(Dir_Item *file,
       }
       else
 	fputs(output_buff, stdout);
+	if ( rwm_dospace ) fprintf(stdout, "%c", '\0');
       item_listed = TRUE;
       output_nlines++;
     }
@@ -4277,8 +4317,34 @@ char *G_print(char *buff,
 	    sprintf(bp, "%*s",width, scaleSizeToHuman(info->st_size, 2));
 	  else if (icase == Gf_SIZE_HUMAN_10)
 	    sprintf(bp, "%*s",width, scaleSizeToHuman(info->st_size, 10));
-	  else
+	  else {
+			if ( !rwm_docomma )
 	    sprintf(bp, F_st_size(zero_pad,width, info->st_size));
+//      sprintf(bp, F_st_size(zero_pad,width), info->st_size);
+      else {
+        char str[32];
+        int i, sz, firstblock = 1;
+        unsigned long long x, tmp1, tmp2;
+
+        width += 7;
+        tmp1 = info->st_size;
+        sz = (tmp1 != 0) ? (int) log10( (double) info->st_size) : 0;
+        i= 3 * (int) (sz/3);
+        str[0] = '\0';
+        for (; i>=0; i -= 3) {
+          x = (int) pow( (double)(10), (double)(i));
+          tmp2 = (x != 0) ?  tmp1/ x : 0;
+          if (firstblock) {
+            Void sprintf(str, "%s%*llu%s",  str, 3, tmp2, i==0 ? "" : "," );
+            firstblock=0;
+          } else
+            Void sprintf(str, "%s%0*llu%s", str, 3, tmp2, i==0 ? "" : "," );
+          tmp1 -= (tmp2 * x);
+        }
+        Void sprintf(bp, "%*s", width, str);
+
+      }
+    }
 	  break;
 
 	case Gf_SIZE_IN_BLOCKS:
