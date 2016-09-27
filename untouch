@@ -1,0 +1,77 @@
+#!/bin/sh
+#
+# 'untouch' shell script created 
+# on Mon May  2 19:34:34 MDT 2016
+#
+# ENVIRONMENT:
+#   setenv TZ US/Mountain
+#
+# COMMANDS:
+#   cd /home/markb/src/els/release/1.54a1/els-1.54a1
+#   els +v=1.53 +UR
+#
+# NB: Just because you are able to 'touch' a file doesn't necessarily mean
+# that you can 'untouch' it.  The ability to untouch a file may require
+# that you be the direct owner of the file or have super-user privileges.
+#
+# Save the following output into a script file so that it can then be run
+# at a later time in order to recover file dates following a 'touch':
+#
+
+untouch()
+{
+   CKSUM=$1; SIZE=$2; DATE=$3; FILE="$4"
+   [ -f "$FILE" ] && \
+     [ `els +G%m +TI "$FILE"` != $DATE ] && \
+       [ `els +G%s "$FILE"` = $SIZE ] && \
+	 [ `els +C=posix +G%C "$FILE"` = $CKSUM ] && \
+	   chdate -m $DATE "$FILE"
+}
+
+TZ=US/Mountain; export TZ
+
+#          Checksum Size           Date       File
+#        ---------- ----     ---------------  ----
+untouch   391981905 41582    20160502.193249  CHANGE_LOG
+untouch  2362941735 1448     20120719.202431  INSTALL
+untouch  2927268551 8311     20160429.013059  Makefile
+untouch   838643347 5719     20090107.220647  NEWS
+untouch  2644980290 251      20061101.004133  README
+untouch  3895474899 6677     20150902.190845  TECH_NOTES
+untouch  2278013102 51086    20151013.234346  USER_GUIDE
+untouch  4119243147 26670    20151124.195749  auxil.c
+untouch  2033075718 2698     20160429.012216  auxil.h
+untouch  1965883156 8624     20151013.233355  chdate.1
+untouch  3322731839 22264    20160119.213541  chdate.c
+untouch   132526948 16409    20160502.191448  cksum.c
+untouch   387342252 1549     20160429.012051  cksum.h
+untouch  4172551595 16092    20160310.185456  config.c
+untouch  1300157174 10599    20160308.223924  defs.h
+untouch   234897840 11372    20151013.233330  edate.1
+untouch  3918458654 40011    20160119.213614  edate.c
+untouch   135948617 25904    20151013.234458  els.1
+untouch  2796112004 163937   20160429.033849  els.c
+untouch   413289806 6406     20160429.013520  els.h
+untouch  1990739830 49675    20151013.234042  elsFilter.c
+untouch  1256696665 2968     20160429.012141  elsFilter.h
+untouch  1037447381 16541    20160309.190242  elsMisc.c
+untouch   686762188 1689     20160308.005642  elsMisc.h
+untouch  3024966646 4314     20160429.022427  elsVars.h
+untouch   601172562 2187     20150910.191523  format.c
+untouch   976368190 6768     20150910.192755  format.h
+untouch  3967374756 35556    20151001.002354  getdate32.c
+untouch  2315992810 1455     20001018.200051  getdate32.h
+untouch  2719621272 2835     20030130.164600  phLib.c
+untouch   203566356 1494     20150903.001801  phLib.h
+untouch  4028347545 9947     20160309.190532  quotal.c
+untouch  2324232619 1145     20121105.192924  quotal.h
+untouch  4078121779 3716     20160106.181853  sysInfo.c
+untouch   828593629 1130     20041027.181357  sysInfo.h
+untouch  1988483681 9214     20131127.212253  sysdefs.h
+untouch  2238407687 5680     20080811.221049  sysdep.c
+untouch  3468710274 1262     20080811.221112  sysdep.h
+untouch  1295281883 13447    20150909.212417  time32.c
+untouch  1322778907 2032     19970827.141331  time32.h
+untouch  3467899892 975      20160502.193434  untouch
+untouch    65320153 226      20160502.192838  version.h
+# EOF.

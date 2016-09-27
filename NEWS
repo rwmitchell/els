@@ -1,0 +1,150 @@
+January 9, 2009:
+
+
+EXCITING NEWS: ELS is now on the WEB after years of PROCRASTINATION!
+
+Please visit "els-software.org" for all your ELS needs and late-breaking
+news.
+
+
+MAILING LIST:
+
+Please send email to "requestXXX@els-software.org (remove XXX)" requesting
+to be placed on the "ELS ANNOUNCEMENT" mailing list if you'd like to receive
+announcements regarding major releases and/or significant changes to ELS.
+This mailing list will be very low bandwidth and you should receive no more
+than 2 or 3 emails per millennium.
+
+
+SIGNIFICANT CHANGES AS OF VERSION 1.50:
+
+5) Added locale awareness to "els" (regular listings only) and "edate"
+
+4) ACL support added for Linux2.6+
+
+3) Makefile now uses output from "uname -s" as the OS target as well
+   as significant restructuring and cleanup.
+
+2) Added config program for automatically determining formats and sizes
+   of time_t, st_ino, st_size, st_nlink, st_blocks at compile time.
+
+1) Fixed checksums of files larger than 2^31 by using open64().
+
+
+SIGNIFICANT CHANGES AS OF VERSION 1.49:
+
+4) Quotaling (+Q option) now supports 32-bit UID and GIDs as of
+   release 1.49h1!
+
+3) Replaced sorting algorithms with quick-sort (extremely large
+   directories now list up to 30 times faster!).
+
+2) 1.49a2 fixes "-b" bug for characters >= 0x80
+
+1) New option +c for displaying environment as part of the listing
+
+
+SIGNIFICANT CHANGES AS OF VERSION 1.48:
+
+7) Checksum algorithm option added as of 1.48f1.  E.g.:
+	els +C=bsd +z +GCSN -RA		# similar to /usr/ucb/sum
+	els +C=sysv +5l +z +GCSN -RA	# similar to /usr/bin/sum
+	els +C=posix +z +GCsN -RA	# similar to /usr/bin/cksum
+	els +C=crc32 +z +GCsN -RA	# crc32 algorithm
+
+6) Cygwin is supported as of 1.48e1 (tested using cygwin 1.3.22 and 1.5.20)
+
+5) Added floating point recognition and 'KkMmGgTt' (i.e. Kilo/Mega/Giga/
+   Tera) modifiers to F'Q{...}' expressions.  For example, to list
+   all files greater than 1.1M that were modified over half a year ago:
+	els +F'Q{s>1.1M & m>.5Y}' -laR
+
+4) New option +Q: Display Quotals (quota+total) for indicated hierarchy or
+   files.  The quotal option will list the total size and number of files
+   owned by each user/UID and group/GID.
+
+3) New option +o: Specify file for output, e.g.:  els -laR +o=output.dat
+
+2) The syntax of +t has evolved.  '+t=M' means to traverse mount-points,
+   '+t=L' means to traverse expanded symbolic-links, '+t=LM' means to
+   traverse both mount-points and expanded symbolic-links.  Note that
+   '+t=L' is  effective only if '-L' is also specified, as '-L' is what
+   enables expansion of symbolic-links.
+
+1) ELS now returns a non-zero value if *any* errors occur during listing.
+
+
+SIGNIFICANT CHANGES AS OF VERSION 1.47:
+
+8) A Watch function (+W) has been added added as of release 1.47k1 allowing
+   you to watch ELS's progress when processing large hierarchies containing
+   numerous files (this option works best in conjunction with +F filtering
+   when output is sparse and processing time is lengthy or when redirecting
+   stdout to a file).  +W also interactively intercepts SIGQUIT (i.e. ^\)
+   and will display the directory name currently being processed.
+
+7) Version 1.47e1+ fixes a +F filtering problem under Linux.
+   Version 1.47k1+ fixes a Segmentation fault problem under OSF1.
+
+6) The -F flag was added to chdate and is now required if changing multiple
+   files as of 1.47h1; if changing a single file then the -F flag is
+   optional.  Moreover, chdate no longer requires quoting date arguments
+   since the -F flag now helps distinguish between dates and files.  E.g.,
+   the following are now equivalent:
+	chdate Apr 1 12:34 file1
+	chdate "Apr 1 12:34" file1
+   Here the -F flag must be specified since multiple files are given:
+	chdate -a Apr 1 2000 12:34 -F file1 file2 file3
+
+5) The unusual filter function for ELS now supports specifying sparse
+   files (i.e. files partially populated with data) as of 1.47g1.  For
+   example, to list all sparse files under the mounted file systems /,
+   /usr, and /var:
+	els +F'U{s}' -laR / /usr /var
+
+4) The option +Z=zonename was added as of release 1.47c2 allowing the TZ
+   (i.e. timezone) setting to be changed during execution of els, chdate,
+   and edate.
+
+3) +Td (dos-style) and +Tw (windows-style) date formats added as
+   of release 1.47b.
+
+2) The meaning of +t has changed as of release 1.47b.  Specifying +t now
+   causes file-systems to be traversed whereas before it inhibited traversal.
+   Unless you want to potentially list multiple file-systems on your local
+   host or across your network, you probably don't want to use the +t option.
+   Changing the meaning of +t was an agonizing decision but was necessary as
+   future releases will allow +t=<type> specifying the types of directories
+   and/or file-systems to traverse.
+
+1) The listing of large files (i.e. filesize > 2**31) under SunOS5.6+ and
+   HPUX10+ is now supported as of release 1.47b.
+
+
+UNIX NOW MORE THAN 10^9 SECONDS OLD:
+
+Unix is now more than one-billion seconds old!  Execute the following
+"edate" command to discover when this milestone was reached:
+	edate -C 1000000000 +Z=GMT0
+
+
+FTP/HTTP ACCESS:
+
+There are several alternate sites that are hosting copies of ELS, but
+keep in mind that their copies will probably not be as current as my
+copy.  To download my most recent version please reference:
+
+Most current version:
+	http://els-software.org
+
+Mirrored versions:
+	http://www.sfr-fresh.com/els
+
+Additionally, the HPUX users group carrires a pre-packaged version of ELS
+specifically tailored for HPUX (but which is out-of-date):
+
+	http://hpux.ee.ualberta.ca/hppd/hpux/Users/els-1.48a/
+	(NB: this pre-packaged version is specific to HPUX and may
+	present difficulties if used on non-HPUX systems)
+
+Markb.

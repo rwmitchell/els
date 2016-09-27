@@ -1,0 +1,135 @@
+File: els/TECH_NOTES
+Last updated: September 1, 2015
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+This file contains ELS-related technical notes, etc.  This file is
+provided for curious minds that need to know such things.
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+TN#1: HOW SUNOS/SOLARIS DECIDES AT RUNTIME WHETHER TO USE stat() OR stat64():
+
+Prior to SunOS5.6/Solaris2.6, SunOS only supported file sizes of 2^31 or
+smaller.  Since I work in a mixed environment of SunOS5.4/Solaris2.4
+through SunOS5.10/Solaris10 (as well as some SunOS4.1.3/Solaris1.1
+systems), I like having one executable decide at runtime whether to use
+stat() or stat64(), i.e. small or large filesystems respectively.
+
+To accomplish this I build TWO different executables, one for
+SunOS5.5/Solaris2.5 and one for SunOS5.7/Solaris7.  The SunOS5.5 executable
+works for both 5.4 and 5.5, while the 5.7 executable works for all OS
+versions from 5.6 up to 5.10 (and probably beyond).
+
+I rename the SunOS5.5 compiled executable to /usr/local/bin/els-32bit
+I rename the SunOS5.7 compiled executable to /usr/local/bin/els
+Since SunOS only links to shared objects at run-time before any calls
+are made to stat64(), the SunOS5.7 compiled version will call uname()
+and decide if the version is less than SunOS5.6.  If so then it will exec
+the SunOS5.5 compiled version, thus allowing all OSes to be served by a
+single front-end executable and only if necessary will it exec the
+els-32bit version.
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+TN#2: HOW TO UNINTENTIONALLY CREATE 32-BIT NEGATIVE UIDs/GIDs:
+
+The NFS3 restricts UIDs/GIDs to 32-bit signed positive (i.e. range is 0
+through 0x7fffffff).  However, the following describes two situations where
+IDs outside this range might be unintentionally created:
+
+1) For some peculiar reason HP-UX version9 defined the "nobody" NFS2 user
+as "-2" instead of "65534" ("-2" == "65534" using 16-bit UIDs/GIDs).  A
+NetworkAppliance NAS device was misconfigured using HP-UX's screwy
+convention; thus, whenever a "nobody" file was created on the NetApp it was
+then assigned to be "4294967294" (since "-2" == (Ulong)4294967294).
+
+2) Using a Linux host running kernel 2.4 or 2.6 (and possibly others),
+login as root and then NFS mount a SunOS 5.7, 5.8, or 5.9 file system that
+is not exported with root access.  In a directory with 777 permissions
+write a file from Linux as root.  Under Linux it will display as
+"4294967294".  Under SunOS5 it will display either as "65534" (i.e.
+SunOS4/NFS2 nobody user) or "60001" (i.e. SunOS5/NFS3 nobody user).  This
+behavior appears to have been corrected as of SunOS 5.10.
+
+ELS allows such bogus UIDs/GIDs to be first masked with 0x0000ffff so that
+they are interpreted properly if the environment variable ELS_MASK_ID is
+first defined.
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+TN#3: HOW IN THE NAME OF UNIX CAN stat()'s "mtime" BE GREATER THAN "ctime"!?
+
+It is seemingly improbable but completely possible that mtime be greater
+than ctime!  This condition is now detected by the +F'U{m}' and +F'U{c}'
+unusual filters as of version 1.50c1, release May 13, 2010.  To locate
+any such peculiar files use the command "els +F'U{c}' -RA".
+
+Cases where this can occur are:
+
+1) Time-warp due to setting system clock into the future, copying files
+while preserving modification times, and then returning system clock
+back to the present.
+
+2) els's "chdate" program used to set "mtime" into the future:
+    touch  /tmp/Jan1,2038  /tmp/Jan1,2099
+    chdate -m 20380101.000000  /tmp/Jan1,2038
+    chdate -m 20990101.000000  /tmp/Jan1,2099  # "els" supports year 2099!
+    els +GmcN +TI /tmp/Jan1,2038 /tmp/Jan1,2099
+Display mtime and ctime using "els +GmcN +TI" and observe that mtime is
+greater than ctime.
+
+3) Shared memory files.  For example, ClearCase VOBs under SunOS5.10
+contain the file "db/almd" which is used by the lock manager for shared
+memory.  This file never gets backed-up by incremental dump/ufsdump
+programs since its mtime is normally greater than its ctime which is a
+normal by-product of shared memory files (only during FULL dump/ufsdump
+will such files get backed up since FULL backups ignore ctime).  But
+this is acceptable behavior because whenever Clearcase restarts it
+recreates this file from scratch.  Nonetheless, it is interesting that
+this anomaly can occur.
+
+SPECIAL NOTE: On Jan 19 03:14:08 GMT 2038 when the UNIX clock exceeds
+2^31 seconds, any file having an mtime prior to this date will fail to
+be backed up incrementally by current-day versions of dump/ufsdump
+because such files will be subject to the "mtime > ctime" problem.  Any
+such files won't be backed up until the next FULL backup.  However, ELS
+does not consider such files as unusual, since ELS uses an unsigned
+32-bit time with extensions to correctly interpret negative UNIX times
+occurring on or after Jan 19 03:14:08 GMT 2038.
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+TN#4: Linux x86_64 "long long time" support
+
+As of version 1.51e1, els/edate/chdate programs support 64-bit time
+for those OSes providing support.  However, given the peculiar way
+that Linux x86_64 implements this, the following has been observed:
+
+1) Since the year is a signed 32-bit integer, only years between -2^31
+and 2^31-1 are representable.  I.e. the following are the minimum and
+maximum UNIX clocks that are valid across all time zones (i.e. GMT +/-12
+and with consideration for possible DST -1):
+
+    # Minimum time supported by x86_64 Linux allowing for GMT+12:
+    edate -C 0xff0f3d537c55b0c0 +Z=GMT   (or -67768040609697600)
+    Thu Jan  1 12:00:00 GMT -2147481748
+
+    # Maximum time supported by x86_64 Linux allowing for GMT-12, DST-1:
+    edate -C 0x00f0c29d868b46af +Z=GMT   (or  67767976233485999)
+    Tue Dec 31 10:59:59 GMT 2147483647
+
+    # Maximum time example using a GMT+12 timezone with DST in effect:
+    edate -C 0x00f0c29d868b46af +Z=Pacific/Fiji
+    Tue Dec 31 23:59:59 FJST 2147483647
+
+Clock values smaller or larger than these two values will generate
+funny math and might cause Linux's strftime() routine to throw a
+segmentation fault (i.e. SIGSEGV).
+
+2) Early versions of Linux's /usr/share/zoneinfo files released before
+2012 (e.g. those used by RHEL5.x/CentOS 5.x) don't implement DST for
+futuristic dates, e.g.:
+
+    edate +Z=US/Eastern -C 0x90000000
+    Sun Jul 22 19:38:24 EST 2046  (Should be "EDT")
+
+This has been corrected in more recent Linux releases.
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+EOF.

@@ -1,0 +1,44 @@
+1) Customize any of the following Makefile compiler macros to suit
+   your preferences (if using GNU then no changes should be necessary):
+
+	CC = gcc
+	CPPFLAGS =
+	CFLAGS = -O -Wall
+	LD = $(CC)
+	LDFLAGS =
+
+2) Customize any of the following Makefile installation macros to suit
+   your preferences:
+
+	BINDIR = /usr/local/bin
+	MANEXT = 1
+	MANDIR = /usr/local/share/man/man$(MANEXT)
+
+3) To build ELS using GNU cc, execute "make" without any arguments.  
+   Other targets are also available for for certain OSes using vendor's
+   unbundled (i.e. non-GNU) compilers:
+
+	# MAKE DEFAULT TARGET:
+	make clean	# Clean-out any residue from previous builds
+	make		# Build for most OSes using GNU cc (i.e. gcc)
+
+	# OTHER POSSIBLE TARGETS:
+	make SunOS5-cc	# Build for SunOS5/Solaris2 using WorkShop/SunStudio cc
+	make HPUX-cc	# Build for HPUX using vendor's unbundled cc
+	make OSF1-cc	# Build for OSF1/DecUNIX using vendor's unbundled cc
+	make ISC	# Build for ISC
+
+   Executing "make" without any arguments will build ELS for:
+
+	SunOS/Solaris, Linux, CYGWIN, FreeBSD, Darwin/MacOS-X,
+	HPUX, OSF1/DigitalUnix, AIX, IRIX, SCO, ULTRIX, DYNIX/ptx
+
+   NOTE: Executables compiled under SunOS5.5 will still run under SunOS5.4,
+   as the ACL functions are handled at runtime.  In other words, if you use
+   both SunOS5.4 and SunOS5.5, it is better to compile using SunOS5.5.
+
+4) Once the build is complete you can install ELS under $(BINDIR) using:
+
+	make install
+
+# EOF.

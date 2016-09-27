@@ -1,0 +1,368 @@
+.de EX		\"Begin example
+.ne 5
+.if n .sp 1
+.if t .sp .5
+.nf
+.in +5n
+..
+.de EE		\"End example
+.fi
+.in -5n
+.if n .sp 1
+.if t .sp .5
+..
+.TH EDATE 1 "October 13, 2015"
+
+.SH NAME
+edate \- Enhanced date using ISO-8601, ls-style, ddmmyyyy-style,
+dos-style, windows-style, or Unix clock
+
+.SH SYNOPSIS
+Display current time:
+.br
+\fBedate\fR [-LGC] [+Z=zonename] [+f char] [+T format]
+
+.br
+Convert from one time format to another:
+.br
+\fBedate\fR [-LG] [+Z=zonename] \fIsupported_date\fR
+.in +4
+-o [-LGC] [+Z=zonename] [+f char] [+T format]
+.in -4
+.br
+\fBedate\fR -C \fIunix_clock\fR
+.in +4
+-o [-LGC] [+Z=zonename] [+f char] [+T format]
+.in -4
+
+.br
+Set system time (must be super-user):
+.br
+\fBedate\fR [-LG] [+Z=zonename] \fIsupported_date\fR -s
+.br
+\fBedate\fR -C \fIunix_clock\fR -s
+
+A \fIsupported_date\fR is any one of: \fIFloating-point style; LS style;
+DD-MON-YYYY, YYYY-MON-DD,\fR or \fIYYYY-MM-DD styles;
+DOS style\fR or \fIWindows style\fR as described below.
+
+If a \fIunix_clock\fR is given then it must be prefaced by -C and
+consist of an integer or hexadecimal value.
+
+.SH DESCRIPTION
+.I edate
+displays, converts, or sets dates using either ISO-8601 dates, ls-style
+dates, ddmmyyyy-style dates, dos-style dates, windows-style dates, or Unix
+clock values as its input and output.  Unless otherwise indicated, all times
+are assumed to be local and the necessary conversions to GMT will be made.
+
+.I edate
+will even correctly recognize dates beyond Jan 19 03:14:08 2038 GMT
+(assuming that the future standard will treat the 32-bits used by
+Unix's present-day file system as unsigned).
+
+.SH OPTIONS
+.TP
+.B \-L
+LOCAL time represented as either an ISO-8601 date, an ls-style date,
+a ddmmyyyy-style date, a dos-style date, or a windows-style date (default).
+
+.TP
+.B \-G
+GMT time represented as either an ISO-8601 date, an ls-style date,
+a ddmmyyyy-style date, a dos-style date, or a windows-style date.
+
+.TP
+.B \-C
+CLOCK time represented using number of seconds since Jan 1 00:00:00
+1970 GMT (NOTE: this unsigned 32-bit value can be greater than 0x7fffffff.)
+
+.TP
+.B \-o
+Convert and then output time (this avoids setting the system
+clock).
+
+.TP
+.B \-s
+Set the system clock (must be super-user).
+
+.TP
+.B \+H
+Give HELP piped through PAGER
+
+.TP
+.B \+Z
+Specify timezone to be used in place of current TZ setting.
+The timezone should be in the form of:
+.EX
+All OSes:         STDoffset[DST[offset][,rule]]
+.EE
+Additionally, if your host provides zoneinfo then you can also
+use names from the appropriate zoneinfo directory:
+.EX
+SunOS/Solaris:            /usr/share/lib/zoneinfo
+Linux2, Darwin, FreeBSD:  /usr/share/zoneinfo
+OSF1:                     /etc/zoneinfo
+.EE
+For example:
+.EX
+edate +Z=EST5EDT +TIZ  (Available on \fIall\fR OSes)
+edate +Z=US/Eastern    (Available on OSes with zoneinfo)
+.EE
+
+.TP
+.BI \+f char
+Field separator character, e.g.: edate +f# +Tv
+
+.TP
+.BI \+T options
+TIME format, e.g.: edate Jan 1 +T^rD (number of days since Jan 1)
+      ^a:  Modifier for absolute time since the epoch
+      ^d:  Modifier for delta time from now (i.e.
+           difference)
+      ^r:  Modifier for relative time from now (i.e.
+           age)
+      ^y:  Modifier for relative time since start of year
+      ^A:  Modifier for alpha dates instead of numeric
+      ^N:  Modifier for numeric dates instead of alpha
+      ^G:  Modifier for GMT dates instead of local
+      ^L:  Modifier for local dates instead of GMT
+      ^M:  Modifier for meridian instead of military
+           time
+       F:  Floating-point style (same as +T^N~YMD.hms~)
+       I:  Iso8601 style
+       e:  els style (default, same as +TM%_DYt)
+       l:  ls style (same as +TM%_DQ)
+       d:  dos style (same as +T^N%_M-D-y^M%_h:~mp~)
+       w:  windows style
+           (same as +T"^N%_M/D/y^M%_tP'M'")
+       v:  verbose style (same as +TWM%_DTZY)
+ Y,M,D,W:  year(Y), month(M), day(D), weekday(W)
+ h,m,s,c:  hour(h), minutes(m), seconds(s), clock(c)
+     t,T:  time as h:m(t), h:m:s(T)
+       Q:  time or year depending on age
+       p:  'a' or 'p' depending on meridian
+           (meaningful only with ^M modifier)
+       P:  'A' or 'P' depending on meridian
+           (meaningful only with ^M modifier)
+       y:  year modulo 100
+       Z:  zone name
+.TP
+.B \+T format controls
+       \\:  Output following character verbatim
+       ~:  Toggle spacing off/on
+      %%:  Output a single % character
+      %D:  Output directive 'D' using default width
+           and default padding
+     %_D:  Pad left side of output with blanks
+           using default width
+     %0D:  Pad left side of output with zeros
+           using default width
+     %-D:  Suppress all padding and use minimum width
+    %0nD:  Output a zero padded field 'n' characters
+           wide
+    %_nD:  Output a blank padded field 'n' characters
+           wide
+     %nD:  Output a right justified field 'n'
+           characters wide
+    %-nD:  Output a left justified field 'n'
+           characters wide
+    %+nD:  Output a field 'n' characters wide
+           regardless of ~ spacing
+
+If a string occurs within an inner set of quotes then the string
+is output verbatim (except for any directives within the inner
+quotes prefaced by a %).  Thus, the following are equivalent:
+.EX
++T"'DATE: '^N%M/D/Y"    # M/D/Y in outer quotes (% optional)
++T'"DATE: "^NM/%D/Y'    # M/D/Y in outer quotes (% optional)
++T'"DATE: ^N%M/%D/%Y"'  # M/D/Y in INNER quotes (% REQUIRED)
+.EE
+
+.SH DATE FORMATS
+
+A\fI Floating-point style\fR date is defined as:
+.EX
+YYYYMMDD[.hhmm[ss]]
+.EE
+The date must be all digits (except for the optional period
+preceding the hour hh).  The year YYYY must be not less than 1970
+and not more than 2106.  The month MM is specified as 01 through
+12, and the day DD is specified as 01 through 31.  The time, if
+given, is specified as either 0000 through 2359 or 000000 through
+235959.  Any unspecified hh, mm, ss parameters will default to 00.
+
+
+An\fI LS style\fR date is defined as:
+.EX
+MON DD [YYYY] [[hh:mm[:ss] [AM|PM]]
+.EE
+A\fI DD-MON-YYYY style\fR date is defined as either:
+.EX
+DD MON [YYYY] [[hh:mm[:ss] [AM|PM]]
+DD-MON[-YYYY] [[hh:mm[:ss] [AM|PM]]
+.EE
+MON is the three-letter Posix C locale abbreviation for the
+month.  The day DD is specified as 1 through 31.  The year YYYY,
+if given, must be not less than 1970 and not more than 2106.  If
+the year is omitted then the most recent year gone by will be
+assumed.  The time, if given, is specified as either 00:00
+through 23:59 or 00:00:00 through 23:59:59.  Any unspecified hh,
+mm, ss parameters will default to 0.  If AM/PM is unspecified
+then military time is assumed.
+
+If both the year and the time are specified, it doesn't matter
+which is first.  Thus, a date such as 'Jan 31 12:34 2001' is
+equivalent to 'Jan 31 2001 12:34'.  Furthermore, weekdays (e.g.
+Mon, Tue, Wed, etc.) and timezones (e.g. EST, CDT, MST, etc.)
+are ignored.  Thus, a date such as 'Wed Jan 31 12:34:56 EST 2001'
+is equivalent to 'Jan 31 2001 12:34:56'.
+
+
+A\fI YYYY-MON-DD style\fR date is defined as either:
+.EX
+YYYY MON DD [[hh:mm[:ss] [AM|PM]]
+YYYY-MON-DD [[hh:mm[:ss] [AM|PM]]
+.EE
+A\fI YYYY-MM-DD style\fR date is defined as either:
+.EX
+YYYY MM DD [[hh:mm[:ss] [AM|PM]]
+YYYY-MM-DD [[hh:mm[:ss] [AM|PM]]
+.EE
+The year YYYY must be not less than 1970 and not more than 2106.
+MON is the three-letter Posix C locale abbreviation for the month,
+or a numeric month MM can be specified as 01 through 12. The day
+DD is specified as 1 through 31.  The time, if given, is specified
+as either 00:00 through 23:59 or 00:00:00 through 23:59:59.
+Any unspecified hh, mm, ss parameters will default to 0.
+If AM/PM is unspecified then military time is assumed.
+
+
+A\fI DOS style\fR date and a\fI Windows style\fR date are
+respectively defined as:
+.EX
+MM-DD-[YY]YY [hh:mm[:ss][a|p]]
+MM/DD/[YY]YY [hh:mm[:ss] [AM|PM]]
+.EE
+MM, DD, and hh can be either one or two digits in length and
+the first digit can optionally be zero.  The year can either be
+two digits (YY) or four digits (YYYY).  If a two digit year YY is
+specified, then YY from 70 through 99 will be taken to mean 1900+YY,
+and YY from 00 through 68 will be taken to mean 2000+YY.  Years
+beyond 2068 must specify all four digits.  If any combination
+of 'a', 'p', 'am', 'P.m', 'A', 'P', 'AM', 'P.M.', etc. follows
+the time, then the time will be converted to either A.M. or P.M.
+If a/p or AM/PM is unspecified then military time is assumed.
+
+
+A\fI Unix clock\fR value is defined as an unsigned 32 bit decimal,
+octal, or hexadecimal value in the range 0 through 4294967294 or 0
+through 0xfffffffe (note that -1 is used to represent certain error
+conditions).  Unix clock values can be listed using 'els -l +T^as'
+
+.SH "SPECIAL FEATURES"
+.TP
+.B \--version
+Print els version and information (same as +v)
+.TP
+.B \--setenv:VARIABLE=VALUE
+Create and set named environment variable to given value
+.TP
+.B \--unsetenv:VARIABLE
+Unset and delete named environment variable
+
+.SH EXAMPLES
+Display the current time in Iso8601 format:
+.EX
+edate +TI
+.EE
+Display the current time in Japan:
+.EX
+edate +Z=Japan      (SunOS/Solaris, Linux, OSF1 only)
+edate +Z=Asia/Tokyo (FreeBSD only)
+edate +Z=JST-9      (All OSes)
+.EE
+Display the current time using specified locale:
+.EX
+edate +Tv --setenv:LC_TIME=fr_FR.ISO8859-1
+.EE
+Convert the date Feb 29, 1996 12:34:56 GMT to a Unix clock value:
+.EX
+edate -G 19960229.123456 -o -C
+.EE
+Convert the DOS date 2-29-00 1:00p from Japan time to Local time:
+.EX
+edate +Z=Japan 2-29-00 1:00p -o -L +Td
+edate +Z=JST-9 2-29-00 1:00p -o -L +Td
+.EE
+Convert the date Feb 29, 2096 12:34:56 from Japan time to US/Eastern:
+.EX
+edate +Z=Japan Feb 29, 2096 12:34:56 -o +Z=US/Eastern
+edate +Z=JST-9 Feb 29, 2096 12:34:56 -o +Z=EST5EDT
+.EE
+Convert the Unix clock value of 0x87654321 to Local time and specify
+the output format:
+.EX
+edate -C 0x87654321 +T'%M %D, %Y %h:%m:%s'
+.EE
+Set the system date to April 1, 2000 12:34 Local time:
+.EX
+edate -s 20000401.1234
+.EE
+Set the system date to April 1, 2000 12:34:56 Local time using
+ls-style dates:
+.EX
+edate -s Apr 1 2000 12:34:56
+.EE
+Set the system date to January 1, 2050 12:34:56 GMT:
+.EX
+edate -sG 20500101.123456
+.EE
+
+.SH IMPORTANT NOTE
+The program 'edate' can be used to correctly set and display
+dates beyond Jan 19, 2038 03:14:08 GMT.  The companion program 'els'
+can also be used to correctly list any files created beyond this
+date.  Please keep in mind that setting your clock beyond 2038 might
+cause unexpected results and/or undesirable consequences.  Simply
+converting and displaying dates beyond 2038, however, poses no risk.
+
+.SH ENVIRONMENT
+.TP
+.B PAGER
+Name of pager program for displaying help text
+
+.TP
+.B ELS_LC_TIME
+.B LC_ALL, LC_TIME
+The Posix LC_ALL environment variable supersedes LC_TIME
+(e.g. SunOS5/Solaris and Linux behavior).  But ELS_LC_TIME
+further supersedes this behavior as follows:
+
+Time locale determined as follows:
+   Use ELS_LC_TIME if defined, else use LC_ALL if defined,
+   else use LC_TIME if defined, else use 'C' locale.
+
+In other words, ELS_LC_TIME takes precedence if set.
+
+Examples:
+   # Use fr_CA.ISO8859-1 for time:
+   export LC_ALL=fr_CA.ISO8859-1
+   unset ELS_LC_COLLATE ELS_LC_TIME LC_TIME LC_COLLATE
+   edate
+
+   # Use en_US.ISO8859-1 for time regardless of LC_ALL:
+   export LC_ALL=C
+   export ELS_LC_TIME=en_US.ISO8859-1
+   edate
+
+.SH AUTHOR
+.nf
+Mark Baranowski
+.sp
+Email: requestXXX@els-software.org (remove XXX)
+.fi
+
+.SH "SEE ALSO"
+chdate(1),
+els(1)

@@ -1,0 +1,276 @@
+.de EX		\"Begin example
+.ne 5
+.if n .sp 1
+.if t .sp .5
+.nf
+.in +5n
+..
+.de EE		\"End example
+.fi
+.in -5n
+.if n .sp 1
+.if t .sp .5
+..
+.TH CHDATE 1 "October 13, 2015"
+
+.SH NAME
+chdate \- Change date using ISO-8601, ls-style, ddmmyyyy-style,
+dos-style, windows-style, or Unix clock
+
+.SH SYNOPSIS
+\fBchdate\fR [-LG] [-h|+h] [+Z=zonename]
+.in +4
+[[-m] \fIsupported_date\fR] [-a \fIsupported_date\fR] [-c] [-F] \fIfiles\fR
+.in -4
+.br
+\fBchdate\fR -C [-h|+h]
+.in +4
+[[-m] \fIunix_clock\fR] [-a \fIunix_clock\fR] [-c] [-F] \fIfiles\fR
+.in -4
+
+A \fIsupported_date\fR is any one of: \fIFloating-point style; LS style;
+DD-MON-YYYY, YYYY-MON-DD,\fR or \fIYYYY-MM-DD styles;
+DOS style\fR or \fIWindows style\fR as described below.
+
+If a \fIunix_clock\fR is given then it must be prefaced by -C and
+consist of an integer or hexadecimal value.
+If neither -m nor -a is used to preface a date, them -m is assumed.
+
+.SH DESCRIPTION
+.I chdate
+changes the access and modification dates of files using either
+ISO-8601 dates, ls-style dates, ddmmyyyy-style dates, dos-style dates,
+windows-style dates, or Unix clock values as its input.  Unless otherwise
+indicated, all times are assumed to be local and the necessary conversions
+to GMT will be made.
+
+.I chdate
+will even correctly change the dates of files created after Jan 19
+03:14:08 2038 GMT (assuming that the future standard will treat the 32-bits
+used by Unix's present-day file system as unsigned).
+
+.SH OPTIONS
+.TP
+.B \-L
+LOCAL time represented as either an ISO-8601 date, an ls-style date,
+a ddmmyyyy-style date, a dos-style date, or a windows-style date (default).
+
+.TP
+.B \-G
+GMT time represented as either an ISO-8601 date, an ls-style date,
+a ddmmyyyy-style, a dos-style date, or a windows-style date.
+
+.TP
+.B \-C
+CLOCK time represented using number of seconds since Jan 1 00:00:00
+1970 GMT (NOTE: this unsigned 32-bit value can be greater than 0x7fffffff.)
+
+.TP
+.B \-h
+If file is a symbolic link then silently ignore (default)
+
+.TP
+.B \+h
+If file is a symbolic link then change date of target
+(-h and +h are mutually exclusive)
+
+.TP
+.B \+H
+Give HELP piped through PAGER
+
+.TP
+.B \+Z
+Specify timezone to be used in place of current TZ setting.
+The timezone should be in the form of:
+.EX
+All OSes:         STDoffset[DST[offset][,rule]]
+.EE
+Additionally, if your host provides zoneinfo then you can also
+use names from the appropriate zoneinfo directory:
+.EX
+SunOS/Solaris:    /usr/share/lib/zoneinfo
+Linux2, FreeBSD:  /usr/share/zoneinfo
+OSF1:             /etc/zoneinfo
+.EE
+
+.TP
+.B \-m
+Change modification date of indicated files (default)
+
+.TP
+.B \-a
+Change access date of indicated files
+
+.TP
+.B \-c
+Update the change time of files
+
+.TP
+.B \-F
+Multiple files follow (NB: If -F is specified then it must be the
+last option and must precede all file arguments.  If -F is not
+specified then only the final argument will be treated as a file.)
+
+.SH DATE FORMATS
+
+A\fI Floating-point style\fR date is defined as:
+.EX
+YYYYMMDD[.hhmm[ss]]
+.EE
+The date must be all digits (except for the optional period
+preceding the hour hh).  The year YYYY must be not less than 1970
+and not more than 2106.  The month MM is specified as 01 through
+12, and the day DD is specified as 01 through 31.  The time, if
+given, is specified as either 0000 through 2359 or 000000 through
+235959.  Any unspecified hh, mm, ss parameters will default to 00.
+
+
+An\fI LS style\fR date is defined as:
+.EX
+MON DD [YYYY] [[hh:mm[:ss] [AM|PM]]
+.EE
+A\fI DD-MON-YYYY style\fR date is defined as either:
+.EX
+DD MON [YYYY] [[hh:mm[:ss] [AM|PM]]
+DD-MON[-YYYY] [[hh:mm[:ss] [AM|PM]]
+.EE
+MON is the three-letter Posix C locale abbreviation for the
+month.  The day DD is specified as 1 through 31.  The year YYYY,
+if given, must be not less than 1970 and not more than 2106.  If
+the year is omitted then the most recent year gone by will be
+assumed (you can avoid possible ambiguity by specifying both the
+year and the time, which is how file dates are listed if you use
+\'els -l' instead of 'ls -l').  The time, if given, is specified
+as either 00:00 through 23:59 or 00:00:00 through 23:59:59.  Any
+unspecified hh, mm, ss parameters will default to 0.  If AM/PM is
+unspecified then military time is assumed.
+
+If both the year and the time are specified, it doesn't matter
+which is first.  Thus, a date such as 'Jan 31 12:34 2001' is
+equivalent to 'Jan 31 2001 12:34'.  Furthermore, weekdays (e.g.
+Mon, Tue, Wed, etc.) and timezones (e.g. EST, CDT, MST, etc.)
+are ignored.  Thus, a date such as 'Wed Jan 31 12:34:56 EST 2001'
+is equivalent to 'Jan 31 2001 12:34:56'.
+
+
+A\fI YYYY-MON-DD style\fR date is defined as either:
+.EX
+YYYY MON DD [[hh:mm[:ss] [AM|PM]]
+YYYY-MON-DD [[hh:mm[:ss] [AM|PM]]
+.EE
+A\fI YYYY-MM-DD style\fR date is defined as either:
+.EX
+YYYY MM DD [[hh:mm[:ss] [AM|PM]]
+YYYY-MM-DD [[hh:mm[:ss] [AM|PM]]
+.EE
+The year YYYY must be not less than 1970 and not more than 2106.
+MON is the three-letter Posix C locale abbreviation for the month,
+or a numeric month MM can be specified as 01 through 12. The day
+DD is specified as 1 through 31.  The time, if given, is specified
+as either 00:00 through 23:59 or 00:00:00 through 23:59:59.
+Any unspecified hh, mm, ss parameters will default to 0.
+If AM/PM is unspecified then military time is assumed.
+
+
+A\fI DOS style\fR date and a\fI Windows style\fR date are
+respectively defined as:
+.EX
+MM-DD-[YY]YY [hh:mm[:ss][a|p]]
+MM/DD/[YY]YY [hh:mm[:ss] [AM|PM]]
+.EE
+MM, DD, and hh can be either one or two digits in length and
+the first digit can optionally be zero.  The year can either be
+two digits (YY) or four digits (YYYY).  If a two digit year YY is
+specified, then YY from 70 through 99 will be taken to mean 1900+YY,
+and YY from 00 through 68 will be taken to mean 2000+YY.  Years
+beyond 2068 must specify all four digits.  If any combination
+of 'a', 'p', 'am', 'P.m', 'A', 'P', 'AM', 'P.M.', etc. follows
+the time, then the time will be converted to either A.M. or P.M.
+If a/p or AM/PM is unspecified then military time is assumed.
+
+
+A\fI Unix clock\fR value is defined as an unsigned 32 bit decimal,
+octal, or hexadecimal value in the range 0 through 4294967294 or 0
+through 0xfffffffe (note that -1 is used to represent certain error
+conditions).  Unix clock values can be listed using 'els -l +T^as'
+
+.SH "SPECIAL FEATURES"
+.TP
+.B \--version
+Print els version and information (same as +v)
+.TP
+.B \--setenv:VARIABLE=VALUE
+Create and set named environment variable to given value
+.TP
+.B \--unsetenv:VARIABLE
+Unset and delete named environment variable
+
+.SH EXAMPLES
+Change the modification date to April 1, 1995 12:34 Local time:
+.EX
+chdate 19950401.1234 myfile
+.EE
+Change the modification date to April 1 12:34 Local time using
+ls-style dates (if no year is specified then the most recent year
+gone by is assumed):
+.EX
+chdate Apr  1 12:34 myfile
+.EE
+Change the modification date to August 5, 2056 1:00 P.M. Local time
+using dos-style dates:
+.EX
+chdate  8-5-56  1:00p myfile
+.EE
+Change both the access and modification dates to January 1, 2050
+12:34:56 Local time:
+.EX
+chdate -am 20500101.123456 -F file1 file2 file3
+.EE
+Change the modification date to Feb 29, 1996 12:34:56 GMT and
+change the access date to April 1, 1995 12:34:56 Local time:
+.EX
+chdate -Gm 19960229.123456 -La 19950401.123456 -F file1 file2 file3
+.EE
+Change the modification date to a clock value of 0x87654321 and
+change the access date to Feb 29, 1996 12:34:56 GMT:
+.EX
+chdate -Cm 0x87654321 -Ga 19960229.123456 -F file1 file2 file3
+.EE
+Change the modification time using specified timezone:
+.EX
+chdate --setenv:TZ=US/Mountain -m 24 July, 2012 myFile
+.EE
+
+.SH IMPORTANT NOTE
+You must use 'els' instead of 'ls' to correctly list the
+date of any file set beyond Jan 19, 2038 03:14:08 GMT.
+
+Unix does not allow setting the time of a symbolic link; rather, only
+the file pointed at by the symbolic link can have its date changed.
+To ensure that this restriction is fully understood, 'chdate' requires
+that the '+h' option be specified if and when the user truly intends to
+change the date of a symbolic link's target.
+
+On the other hand, if the '-h' option is specified then 'chdate' will
+silently ignore symbolic links (i.e. if the file is a symbolic link
+then nothing will be changed and no errors will be reported).
+
+If changing the date of multiple files then '-F' must be the last
+option specified and must precede all file arguments, otherwise only
+the final argument will be treated as a file.
+
+.SH ENVIRONMENT
+.TP
+.B PAGER
+Name of pager program for displaying help text
+
+.SH AUTHOR
+.nf
+Mark Baranowski
+.sp
+Email: requestXXX@els-software.org (remove XXX)
+.fi
+
+.SH "SEE ALSO"
+edate(1),
+els(1)

@@ -1,0 +1,1033 @@
+An asterisk "*" in column 1 denotes noteworthy and/or important changes.
+
+20160502:  1.54a1
+* 1)	cksum's O_NOATIME no longer fails if unable to preserve access-time.
+	If +V specified then only first access-time warning reported.
+	If +VV specified then all access-time warnings reported.
+
+* 2)	+q implied for Stamp +S formats as of VersionLevel >= 154
+	(specify +~q to disable if not desired).
+
+* 3)	+q implied for all Munge +M levels as of VersionLevel >= 154
+	(specify +~q to disable if not desired).
+
+* 4)	Stamp +S formats display 00000000.00000 for epoch dates (regardless
+	of +z) as of VersionLevel >= 154
+
+* 5)	+z no longer implied for Stamp +S formats as of VersionLevel >= 154
+	because of possible adverse consequences (+z must be explicitly
+	specified if so desired).  NOTE: +z only implied for VersionLevel ==
+	153 only, pervious and later versions do not share this implication.
+
+===============================================================================
+20160309:  1.53b2
+  1)	Fixed unintended uid/gid sign extension problems caused by -m64
+	regarding +F'Q{u=4294967294}', +GUGN, +Q, -la.
+
+20160218:  1.53b1
+* 1)	Checksum algorithms use O_NOATIME if available (e.g. Linux).
+* 2)	SunOS5.7/Solaris7 through SunOS5.11/Solaris11 and above now use
+	-m64 for gcc builds and -xarch=v9  for SunPro builds.  This allows
+	time_t to be 64-bits and enables HAVE_LONG_LONG_TIME for Solaris.
+* 3)	Fixed locale precedence from LANG (lowest), LC_COLLATE/LC_TIME,
+	LC_ALL, ELS_LC_COLLATE/ELS_LC_TIME (highest).
+	(Need to add LANG behavior to documentation)
+
+20151124:  1.53a2
+  1)	'^' now considered a quotatable +q filename character.
+  2)	SunOS5.8/NetApp "cd .snapshot/name; els +c" uses getenv("PWD")
+  3)	Fixed errnoMsg() to have more reliable errno reporting.
+
+20151013:  1.53a1
+* 1)	+z implied for Stamp +S formats as of VersionLevel >= 153
+	(specify +~z to disable if not desired).
+  2)	--version prints els version and information (same as +v)
+  3)	'c' clock output allowed in +T format, e.g. +Tc
+  4)	'c' clock values allowed in +FQ compares, e.g. +F'Q{m>1000000000c}'
+  5)	Floating point dates now allow either "." or "_" separator.
+  6)	File name length now calculated using strlen() rather than "d_reclen".
+
+===============================================================================
+20150910:  1.52a3
+  1)	Improved system config info using els +Vv and els +VVv
+
+  2)	Increased path and and file size constants just in case.
+
+  3)	Added (but didn't document) clock value 'c' for Q-filter mac
+	comparisons, e.g. els +F'Q{m<1000000000c}'
+
+  4)	+F expecting messages choices spaced for more readability.
+
+20150908:  1.52a2
+* 1)	+FQ and +FU filters fixed to deal with signed long long time
+
+* 2)	+M* display 00000000.00000 for epoch dates (regardless of +z)
+
+* 3)	+SC modified to ignore .git and .d files
+
+* 4)	+C=posix cksum errors return 0 for VersionLevel >= 152.
+
+20150902:  1.52a1
+* 1)	Restrict 64-bit clock time *year* values from being less than
+	-2147481748 years or more than 2147483647 years for all timezones.
+	See TECH_NOTES file, TN#4 regarding min/max clock time values.
+
+* 2)	Fixed sort by time (e.g. els -lt) to correctly sort signed
+	64-bit time values.
+
+  3)	Fixed 32-bit cksum routines to use Uint32 to avoid Ulong ambiguity.
+
+  4)	If envvar SHELL is */csh or */tcsh then +c emits csh syntax
+	instead of sh syntax for VersionLevel >= 152.
+
+===============================================================================
+20150831:  1.51e2
+* 1)	+GC cksum errors fixed to display (Ulong)0xffffffff instead of
+	(Ulong)-1 on OSes where sizeof(Ulong) == 8 (e.g. x86_64 Linux).
+
+20150722:  1.51e1
+* 1)	Floating-point date style allows up to 99991231 if HAVE_LONG_LONG_TIME
+	defined, otherwise it allows up to 21060206 (same as before).
+
+  2)	Added config.c test for HAVE_LONG_LONG_TIME (e.g. x86_64 Linux).
+
+  3)	Added +T^x modifier for hex output of UNIX clock
+
+  4)	Moved Makefile "default" target before .PHONY directive, in case
+	non-GNU make treats .PHONY as a target (e.g. SCO).
+
+  5)	Corrected ELS_LC_* and LC_* documentation in man pages and --help.
+
+20131028:  1.51d2
+  1)	Fixed "[ ! -d ... ] && mkdir -p ..." to always return 0 in Makefile
+
+20131009:  1.51d1
+* 1)	Added +TF as a future replacement for +TI behavior.  Documentation
+	changed/changing to refer to this as Floating-point date style (all
+	date documentation will hopefully be rewritten in a future release).
+
+  2)	Added chdate/edate recognition of "yyyy-mon-dd", "yyyy mon dd",
+	"yyyy-mm-dd", and "yyyy mm dd" date formats.
+
+  3)	If envvar SHELL is */csh or */tcsh then +c emits csh syntax
+	instead of sh syntax for VersionLevel >= 152.
+
+* 4)	--dirDepth=0 now means top level only, --dirDepth=1 means one level
+	down, etc., whereas 150e2 treated --dirDepth==0 as meaning unlimited
+	recursion, --dirDepth=1 as top level only, etc.
+
+  5)	Unsigned and hexadecimal bit-masks now allowed for undocumented
+	mask following +z (i.e. +z=<mask>
+
+* 6)	+d no longer implied for +MMM, as change times are meaningful
+	for directories (as well as for symlinks and other file types).
+
+* 7)	Create target MANDIR/BINDIR directories if non-existent during
+	"make install".  Changed Makefile default MANDIR setting from
+	/usr/local/share/man/man$(MANEXT) to /usr/local/man/man$(MANEXT).
+
+20121113:  1.51c2
+* 1)	Fixed "edate" link problem (problem affected SUNOS target only due
+	to missing object file during link, first occurred with 1.50d1).
+
+* 2)	Changed "chdate" to use "-h" by default so as to behave friendlier
+	towards "xargs" (specify -~h to disable new behavior).
+
+20121105:  1.51c1
+* 1)	Quotal precision increased beyond 2TBytes.
+
+  2)	Human scale options "-h" and "-hh" added to Quotals.
+
+* 3)	chdate "-a" access times ignored for directories.
+
+  4)	If command line --~IncludeSS specified then ENVVAR superceded,
+	(including "els -la --~IncludeSS --setenv:ELS_INCLUDE_SS=1" cases).
+
+20120906:  1.51b2
+* 1)	dirent64 added to SUNOS >= 50600 && LINUX >= 20400 to fix a
+	quirky bug that only exhibits itself on very specific OS/NAS
+	combinations.  dirent64 is REQUIRED on SunOS5.7+ and
+	Linux2.6.18+/x64 for 100% correct behavior.
+
+  2)	Both +H and --help now provide help, the difference being that
+	+H is piped through PAGER program whereas --help writes to stdout.
+
+20120816:  1.51b1
+* 1)	LC_ALL is considered first before LC_COLLATE/LC_TIME (in 1.50b1
+	through 1.51a2 LC_COLLATE/LC_TIME were considered before LC_ALL).
+	While this ordering seems wrong, it agrees with SunOS/Linux.
+
+* 2)	Envvar ELS_LC_COLLATE if unset is set to LC_ALL else LC_COLLATE.
+	Envvar ELS_LC_TIME if unset is set to LC_ALL else LC_TIME.
+	The two envvars ELS_LC_COLLATE and ELS_LC_TIME are then the only
+	two envvars needing to be recorded via +c, as they override all else.
+
+  3)	Added --setenv:envar=value and --unsetenv:envar	to els, chdate, edate
+
+  4)	Added chdate/edate recognition of "dd-mon[-yyyy]", "dd-mon[,][ yyyy]",
+	and "dd mon[,][ yyyy]" date formats.
+
+20120407:  1.51a2
+* 1)	Changed Linux's Makefile target to look for /usr/include/sys/acl.h
+	rather than /usr/lib/libacl.a for selecting -lacl.  Previously,
+	Makefile would only look for /usr/lib/libacl.a and if x86_64 libraries
+	installed without having i686 libraries the build would fail.
+	Makefile now works for all cases, although future problems may occur
+	if /usr/include/sys/acl.h ever stops requiring -lacl during linking.
+
+  2)	Added ELS_INCLUDE_SS environment variable option, where if defined
+	then --IncludeSS is implied (this is useful if for some strange
+	reason inclusion of .snapshot directories is always desired).
+
+20120323:  1.51a1
+* 1)	Added --IncludeSS (aka --IncludeSnapShot) option (NAS devices'
+	".snapshot" directories are no longer listed by default unless
+	--IncludeSS or --IncludeSnapShot specified).
+
+  2)	Moved forward to ELS 1.60 unveiling of "-A" being implied when
+	FILTERING or using +X/+U utilities unless "-~A" or "-~a" options
+	were explicitly set on the command line (I don't want to sort this
+	one out just yet).
+
+* 3)	No longer longer list dot dir (i.e. ".") when filtering.  This
+	practice was started as of 1.49a1 and was disabled starting with
+	1.51a1 as it is can be misleading.
+
+  4)	Fixed +V verboseness problem with "--" options.
+
+  5)	All OSes except SunOS4 now allow fifo marking "|" via -F option
+	(Note: "|" not added to "+FT{|}", however as it could be confused
+	with Boolean || operator -- use "+FT{p}" instead in this situation).
+
+* 6)	Added "+FA{e}" existence test to access filter option with the
+	understanding that additional access bits imply existence (e.g.
+	"+FA{ex}" implies "+FA{x}").
+
+* 7)	Add "f" as a synonym for "r" in "+FT{...}", filter as "f"ile or
+	"r"egular file are often confused.
+
+  8)	Removed confusing #define LARGEFILE_SOURCE/LARGEFILE64_SOURCE for
+	SunOS5 and changed to #define _LARGEFILE64_SOURCE which seems
+	agreeable for SunOS5.6 through 5.10, Linux2.2.9 through 2.6.18,
+	and HP-UX 10.20.
+
+  9)	Envvar ELS_LC_COLLATE if unset is set to LC_COLLATE (or LC_ALL)
+	Envvar ELS_LC_TIME if unset is set to LC_TIME (or LC_ALL)
+	The two envvars ELS_LC_COLLATE and ELS_LC_TIME are then the only
+	two envvars needing to be recorded via +c, as they override all else.
+
+===============================================================================
+20111122:  1.50e4
+* 1)	Added -h and -hh to command-line options:
+	-h lists size in human readable format scaled by powers of 1024
+	If a second -h (i.e. -hh), then scaled by powers of 1000
+	Powers of 1024 designated by one of "KMGTPEZY" (UPPER CASE)
+	Powers of 1000 designated by one of "kmgtpezy" (lower case)
+
+* 2)	Added +GH and +Gh to +G format:
+	+GH lists size scaled by powers of 1024 (similar to -h)
+	+Gh lists size scaled by powers of 1000 (similar to -hh)
+
+* 3)	Modified +F'Q{...}' Q filter to treat LOWER-CASE "KMGT" as
+	meaning powers of 1024 and upper-case "kmgt" as meaning powers
+	of 1000 (previously releases treated both "KMGT" and "kmgt"
+	as meaning powers of 1000).  Examples of new behavior:
+	els +F'Q{s>1.0M}'   # list files with size larger than 1048576
+	els +F'Q{s>1.0m}'   # list files with size larger than 1000000
+
+20111109:  1.50e3
+  1)	--FirstFound now exits immediately upon "first found" event.
+	This improves performance and avoids redundant trimmings.
+
+  2)	--FirstFound and --OncePerDir imply +NF unless +N explicitly
+	defined (previous 1.50e2 version needed some flavor of +NF
+	or +Nd to be defined).
+
+* 3)	Fixed internal filter problem introduced in 1.50e1 with the addition
+	of top-level parentheses (e.g., +F'U{S}' now works).
+
+20111004:  1.50e2
+* 1)	Added and documented double-dash command line option:
+	--FirstFound: List first occurrence found then exit (used to locate
+	hierarchies containing one or more files with desired properties)
+
+20110929:  1.50e1
+* 1)	Fixed double symlink problem (e.g. file -> link -> link) caused by
+	specifying +N format in cases such as the following:
+	  els -l +NfL, els +M +NFL, els +SO +NFL, etc.
+
+* 2)	Parentheses now allowed in top-level +F expressions, e.g.:
+	  els +F'(Q{u==fred} || Q{u==barney}) && Q{s>100M}'
+
+* 3)	Changed following ENV VARS to being double-dash command line options:
+	  export ELS_CCASE_MODE changed to --CCaseMode
+	  export ELS_CLEARCASE_MODE changed to --ClearCaseMode
+	  export ELS_GTAR_MODE changed to --GTarStyle
+	  export ELS_TAR5_MODE changed to --Tar5Style
+	Added documentation for 
+	    --CCaseMode, --ClearCaseMode, --GTarStyle, --Tar5Style
+
+* 4)	Added and documented double-dash command line options:
+	--OncePerDir: List once per directory (used to locate directories
+	  containing one or more files with desired properties)
+	--DirDepth=N: Limit the recursion depth of directories to N
+
+  5)	Added memShow() call upon exiting if ELS_DEBUG env var
+	has bit 0x20 set.
+
+20110519:  1.50d2
+  1)	Added owner (uid:gid) +G options where +Go == alpha, +GO == numeric
+  2)	Added ELS_GTAR_MODE and ELS_TAR5_MODE envvars which if set will cause
+	-l long listing to mimic GNU tar or SYS5 tar "tv" listings.
+  3)	Changed -p and -F symlink marking to behave like SunOS4.x/Linux 2.6.18
+	(old behavior followed SunOS5.x, Linux 2.2.x, Linux 2.4.x, Linux 2.6.9)
+  4)	Fixed Darwin 10.7 compiler warnings for printf(F_st_blocks, ...) and
+	printf(string_vars).
+  5)	UserGroup name truncation occurs only if ELS_TRUNCATE_NAME envvar set.
+  6)	config.h recommands "make clean" if OS TYPE or OS VERSION changes.
+
+20101130:  1.50d1
+* 1)	Fixed quirk where SunOS 5.8, 5.9, 5.10 "strftime(..., ..., "%a", tm)"
+	corrupts tzname[0] and tzname[1] for certain values of tm_year by
+	changing two references in edate.c and two in els.c from strftime()
+	to strftime32().
+  2)	Simplified checksum behavior so that only regular files are
+	checksummed (all non-regular files now ignored regardless of type).
+	For non-regular files, if +z is in effect then "cksum = 0" otherwise
+	"cksum = cksum_err".
+  3)	Added ELS_CLEARCASE_MODE env var as an alias of ELS_CCASE_MODE
+
+20100513:  1.50c1
+  1)	HAVE_LOCALE determination moved from sysdefs.h to config.c
+  2)	Added (but didn't document) +Ti option to "els" and "edate" allowing
+	short ISO8601 dates (+Ti == YYYYMMDD, +TI == YYYYMMDD.hhmmss)
+  3)	Dates such as "March 03, 2010 4:52 PM" now correctly interpreted
+	by chdate (am/AM/pm/PM must follow time, no "." allowed)
+  4)	UIDs/GIDs == 4294967294UL (i.e. sign extended -2) are now considered
+	unusual by +F'U{u}' and +F'U{g}' filters.
+  5)	Seemingly improbable but completely possible stat()'s mtime > ctime
+	is considered unusual by +F'U{m}' and +F'U{c}' filters (such files do
+	not get properly backed-up during incremental dump/ufsdump backups!).
+	Please see TECH_NOTES file, TN#3 for further discussion.
+
+20090113:  1.50b1
+  1)	Added (but didn't document) +w option to "chdate" and "edate" allowing
+	warning suppression.
+* 2)	Added locale awareness to "els" (regular listings only) and "edate"
+  3)	Added ELS_LC_COLLATE/TIME envvars which override LC_COLLATE/TIME if
+	present.
+  4)	Changed ELS_SORT_GNU to ELS_SORT_UTF8 to mimic "LC_COLLATE=xx.UTF-8"
+	behavior.  This weird behavior is evidenced by "xx.UTF-8" locales
+	under SunOS5.x where "xx" is one of de, en_US, es, fr, it, sv (but
+	not ja_JP nor ko!), and under Linux2.6 where "xx" is one of de_DE,
+	el_GR, en_US, fr_CA, pt_BR, th_TH, zh_CN, zh_TW (but not ja_JP nor
+	ko_KO!).
+  5)	Sort-by-time now uses file name as secondary key if times are equal.
+
+20080819:  1.50a3
+  1)	Fixed detection of Q filter relative time overflow using 32 bits.
+  2)	Fixed +o=filename output capability for Linux2.6.
+  3)	+q now implied for safety concerns if +G'...' or +G"..." format used.
+  4)	Changed chdate to only change mtime/atime if different from current
+	mtime/atime unless -c specified which forces change so as to update
+	ctime regardless
+  5)	Added (but didn't document) chdate +e option to echo events that occur
+	(if mtime/atime/ctime unchanged then no event occurs or is echoed).
+
+20080703:  1.50a2
+* 1)	Makefile now uses output from "uname -s" as the OS target as well
+	as significant restructuring and cleanup.
+  2)	"els5" make target no longer made unless asked for (i.e. make els5)
+  3)	Darwin6.x+ now defines HAVE_TIMELOCAL
+  4)	Don't use typeof() for DARWIN unless >= 8.x
+  5)	acl_free() now called for DARWIN (probably need this OSF1 also!?)
+* 6)	ACL support added for Linux2.6+
+  7)	HAVE_ACL determination moved from Makefile to config.c
+
+20080612:  1.50a1
+* 1)	Added config program for automatically determining formats and sizes
+	of time_t, st_ino, st_size, st_nlink, st_blocks at compile time.
+  2)	Added 'e' to +F'c{e}' clearCase filter (i.e. VOB element)
+* 3)	Fixed checksums of files larger than 2^31 by using open64()
+	(affects SunOS5.6+ Linux2.2+, HPUX10.x+, IRIX6.x+).
+  4)	Allow use of either {...} or (...) in filter expressions,
+	e.g. +F'Q{m>1D}' is now equivalent to +F'Q(m>1D)'
+  5)	Switched to using getemajor/geteminor for SunOS5.
+
+===============================================================================
+20080605:  1.49h2
+  1)	Pushed-back implied "-A" for inclusion filtering, executing, or
+	untouching until ELS version 1.51 (I'm not sure I like this feature).
+  2)	Disabled implied masking of sign-extended IDs as of ELS version 1.50
+	(environment variable ELS_NO_MASK_ID to be superseded by ELS_MASK_ID).
+  3)	Quotaling no longer masks sign-extended IDs unless environment variable
+	ELS_MASK_ID set (only Quotaling under version 1.49 is affected by
+	ELS_MASK_ID, under version 1.50 everything will be affected).
+  4)	Documented +c option (list ELS commands and environment as output)
+  5)	Fixed -b/-Q use of "ctype.h" macros sign-extension bug.
+
+20080521:  1.49h1
+* 1)	Quotaling (+Q option) now supports 32-bit UID and GIDs!
+  2)	Added run-time checking for SunOS5.9 for listing S instead of l for
+	directories having "g-x,g+s" permissions.
+  3)	chmod output (+GM option) now generates more universal commands for
+	setting	S on directories having "g-x,g+s" permissions.
+
+20080501:  1.49g1
+  1)	+z now zeros m-time, a-time, and checksums on FIFO (i.e. pipe) files.
+* 2)	Changed to requestXXX@els-software.org (remove XXX) email address
+  3)	Fixed Q-Filter relative time-bug causing future files to be
+	incorrectly listed, e.g. els +F'Q{m>0D}' no longer lists future files
+	whereas els +F'Q{m<0D}' does list future files.
+
+20071220:  1.49f2
+  1)	Added ^y modifier for relative time since the start of year.
+	Display number of Days & Weeks since Jan 1 of the current year:
+	    edate +T^yDW
+	List files by Year followed by number of Days offset from that Year:
+	    els -la +T^y~Y+D~
+  2)	If "chdate/edate" or getdate32() is given a negative integer
+	then assume it is a negative clock value that is really an unsigned
+	32-bit value greater than 2^31 that was mistreated as a signed
+	shell value (e.g. /bin/csh or /bin/tcsh come to mind).
+
+20071101:  1.49f1
+  1)	Created separate control list_topdir from avoid_trimmings for the
+	benifit of elsFilter routines.  Currently list_topdir has not changed
+	the behavior of elsFilter routines as of 1.40a (Sept 1997).
+	Under this broad interpretation, '+Gn -A' correctly does not list "."
+	but '+GN -A' does surprisingly list "." which seems to contradict the
+	definition of "-A" (although other reasons exist that justify this
+	behavior).
+  2)	Fixed minor memory leak due to failure to call closedir() when not
+	traversing mount points.
+  3)	Undocumented option +MMMM now implies +q
+  4)	Increased printArgs length from 128 to 512 (this improves +c/+S/+U
+	information, but can also make logging output from '*' messier).
+
+20070402:  1.49e3
+  1)	Added but didn't document +TE time-elapsed time format (e.g.
+	"edate +TE -C 100000" displays 100000 seconds in D+h:m:s format)
+
+20061213:  1.49e2
+  1)	Added disabling of environment vars using =0 or =FALSE
+  2)	Added ELS_SORT_CI and ELS_SORT_GNU environment variables
+  3)	Fixed time32.c to fold back no sooner than 2010 (instead of 2005).
+
+20061208:  1.49e1
+* 1)	Replaced sorting algorithms with quick-sort (extremely large
+	directories now list up to 30 times faster!).
+  2)	Prevention of +c mentioning ELS_32BIT environment variable.
+
+20061101:  1.49d1
+  1)	Added ACL support for DARWIN 8.0
+  2)	Presence of +N format now implies using full file names and no
+	trimmings in all cases.  This allows +N to process filenames
+	specified on the command having directory components.
+  3)	Added/documented +Fl{...} link filter "e"xistence, "t"raversal items
+  4)	Documented +Fc{...} clearcase filter "p"rivate file item
+  5)	Started TECH_NOTES file
+
+20060915:  1.49c1
+* 1)	http://els-software.org created
+  2)	Added undocumented ELS_QUIT_ON_ERROR environment variable
+  3)	Added implied "-A" for inclusion filtering, untouching, and
+	munging as soon as ELS version is set to 1.50
+  4)	Removed implied "-A" for stamping and quotaling if "-~A" or "-~a"
+  5)	Improved undocumented +z=... and +X=... syntax
+  6)	Fixed quotaling error if groupID > 65535
+
+20060222:  1.49b1
+  1)	Fixed zeroing of symbolic link checksums if +z specified without -L.
+  2)	Fixed checksuming so that -L causes target symbolic link to computed.
+	The following is now closer to how SunOS5/Solaris2's /usr/bin/cksum
+	behaves:	
+		els +C=posix +z +GCsN -L
+
+20060110:  1.49a3
+  1)	Added # EOF. terminator to all stamp,untouch,+c listings
+  2)	Fixed error messages used to print user provided arguments to not
+	overflow message buffer
+
+20051026:  1.49a2
+* 1)	"-b" bug fixed where characters >= 0x80 would get sign extended to
+	0xffffff80 and "sprintf(qstr, "\\%03o", *cp)" overflowed qstr.
+
+20050913:  1.49a1
+  1)	More practical display of environment/commands by showCommandEnv()
+  2)	Allow both &,| and &&,|| operators in filter expressions
+
+===============================================================================
+20050902:  1.48i2
+  1)	Define __STDC_EXT__ for HPUX only if not previously defined (this
+	is now a built-in define for HPUX gcc3.x compilers)
+  2)	Modified undocumented +c option to indent using "# "; updated untouch
+	function to use standardized showCommandEnv()
+
+20050728:  1.48i1
+* 1)	Added (but didn't document) +F'*...' (GLOBAL AND) and +F'+...'
+	(GLOBAL OR) capability.  If traditional +F syntax is used then
+	+F'+...' (GLOBAL OR) is the default behaviour.
+	The following expressions are now all equivalent:
+		els +F'T{~l}&Q{m=20050630}' +F'T{~l}&Q{m=20050630}'
+		els +F'T{~l}&Q{m=20050630} | T{~l}&Q{m=20050630}'
+		els +F'T{~l} & Q{m=20050630|m=20050630}'
+		els +F'*T{~l}' +F'Q{m=20050630}' +F'Q{m=20050630}'
+		els +F'Q{m=20050630 | m=20050630} & T{~l}'
+		els +F'Q{m=20050630}' +F'Q{m=20050630}' +F'*T{~l}'
+  2)	+e/+E/+i/+I now report error if NULL argument
+	(e.g.: "+edir" is correct syntax, while "+e dir" generates error)
+  3)	Documented +MMM
+
+20050621:  1.48h2
+  1)	Fixed *time_r defines for Darwin7.9
+  2)	Added SCO target
+  3)	Fixed sys/types.h, utime.h include problem for FreeBSD 4.4
+  4)	Fixed Linux2.6/GCC 3.4 compiler quibble in wildcard_match()
+* 5)	Fixed wildcard_match() to correctly interpret empty {}.
+	E.g.:  els +I'*{.c,}'  now works as expected
+
+20050412:  1.48h1
+  1)	Added execvp for SunOS5.0 through SunOS5.5
+  2)	Added mktime32() function and VXWORKS defines to time32.c
+  3)	Added HPUX < 110000 distinction to sysdefs.h
+
+20041019:  1.48g3
+  1)	Added (but didn't document) '+c' option to list command/env used
+  2)	-L no longer implied for +MMM and +MMMM
+	Undocumented +MMM now lists +GcnL instead of +GanL
+	Undocumented +MMMM no longer lists symlinks unless -L specified
+
+20031009:  1.48g2
+  1)	Fixed checksums for user-specified algorithms combined with +U
+	and +S options.  E.g., the following commands now work as expected:
+		els +C=sysv +U; els +C=crc32 +So; etc.
+
+  2)	Added logic to select "posix" as default checksum algorithm
+	for when ELS release reaches 1.49 or above (current default
+	for 1.48 and below has been and will remain "bsd").
+
+20031008:  1.48g1
+* 1)	Fixed cksum routines to not generate a read error if checksumming
+	a file whose st_size is between 0x7fffe000 and 0x7fffffff and is
+	stored on an NFSv2 and/or small filesystem.
+
+  2)	Fixed format.h and defs.h to use type "int" for blkcnt under OSF1.
+
+20031006:  1.48f4
+  1)	Added CRC32 algorithm.  The following checksum syntax is now
+	supported:
+		+C=[B|bsd|S|sysv|P|posix|C|crc32|U|unaccess]
+	Where verbose options need to be separated by commas, e.g.:
+		+C=PU is the same as +C=posix,unaccess
+
+  2)	Added code to allow checksumming of directories if from a UFS
+	file system (if a non-ufs file system then directory read errors
+	are ignored).
+
+  3)	If checksumming	using "bsd" or "sysv" algorithms then the block
+	count is now set to 0 for special files (in 1.48f2 and 1.48f3
+	it used the "size" for calculating blocks for all files; this was
+	wrong for device files!).
+
+20030930:  1.48f3
+* 1)	Fixed bug in Linux2.2 that affected listing inodes (e.g. els -lai).
+	Linux2.4 was not affected by this problem.
+
+  2)	+U and +UU untouch script generator rewritten to use Posix checksums
+	and to be more readable.
+
+  3)	The following checksum syntax is now supported:
+		+C=[B|bsd|S|sysv|P|posix|U|unaccess]
+	Where verbose options need to be separated by commas, e.g.:
+		+C=PU is the same as +C=posix,unaccess
+
+* 4)	Access times are now preserved during checksumming only if
+	requested via +C=U or +C=untouch.  Prior to 1.48f3 the access
+	times would be restored by default (but this caused the
+	'C'hange time to be updated).
+
+20030923:  1.48f2
+* 1)	sysv checksum algorithm option added in addition to bsd/posix.
+
+  2)	Block count does not include indirect blocks if checksumming
+	using "bsd" or "sysv" algorithms.
+
+20030922:  1.48f1
+* 1)	Checksum algorithm option added for selecting either bsd or posix.
+
+* 2)	+z changed to apply to directory block sizes (this corrects
+	an oversight from long ago).
+
+  3)	format.h was made less (more?) convoluted.
+
+20030821:  1.48e1
+* 1)	Cygwin supported as of 1.48e1 (tested using cygwin-1.3.22)
+
+  2)	Renamed aux.c and aux.h to auxil.c and auxil.h (CYGWIN has a
+	quirk which prevents the user from creating a file where the
+	first 4 characters start "aux.", e.g. "touch aux.c" fails!).
+
+20021004:  1.48d1
+* 1)	Added big-file support for Linux2.2+
+
+  2)	Added (but didn't document) C-Style format control characters
+	\n, \t, \r, \b, \f, \0 for use in +G, +T, +N formats.
+
+  3)	Included CLEARCASE_ROOT environment variable (if set)
+	in +S stamp listings.
+
+  4)	Added (but didn't document) +F'c{...}' filtering for ClearCase.
+	Currently only one option (i.e. "p" for view 'p'rivate) is
+	available.  For example, to recursively list all view-private
+	files in a ClearCase view:  els -laR +F'c{p}'
+
+  5)	Fixed quoting problems for csh/tcsh users when '#' occurs inside
+	a filename.
+
+20020523:  1.48c2
+  1)	Documentation fixes
+
+* 2)	Added big-file support for Darwin and FreeBSD
+
+  3)	Added HAVE_LONG_LONG_ST_SIZE and HAVE_LONG_LONG_ST_BLOCKS options.
+	(Some OSes such as DARWIN and FREEBSD don't have STAT64 but they do
+	have LONG_LONG_ST_SIZE, so these options now allow for these cases.)
+
+  4)	Added dummy functions in "format.c" to aid in the detection of
+	incorrect printf formats when compiling with "CFLAGS += -Wall"
+
+20020509:  1.48c1
+* 1)	Added floating point recognition and 'KkMmGgTt' (i.e. Kilo/Mega/Giga/
+	Tera) modifiers to F'Q{...}' expressions.  For example, to list
+	all files greater than 1.1M that were modified over half a year ago:
+		els +F'Q{s>1.1M & m>.5Y}' -laR
+
+  2)	Fixed fielding bug that was introduced in 1.48a1 caused by ID
+	truncation, e.g.:
+		els +f' ' -laR
+
+  3)	Moved all filtering code out of els.c into elsFilter.c
+
+20020503:  1.48b2
+* 1)	Fixed 'els +Q -AR' from crashing on HPUX when it encounters uid/gid
+	of -2 (i.e. the "nobody" user with its sign extended from 16 bits
+	to 32).  ELS now considers all UID/GIDs in the range 0xffff8000UL
+	to 0xffffffffUL to really be in the range 32768 to 65535 as any
+	such UID/GID in this range probably fell victim to sign extension
+	at some point earlier.
+
+20020502:  1.48b1
+  1)	Added documentation for +t, +o, +Q options
+
+20020501:  1.48a1
+  1)	Return non-zero status if any error occurred during listing
+	unless BSD semantics specified in which case 0 status is returned
+	(els 1.47 and below always return 0 status regardless of any errors).
+
+  2)	Added DARWIN target
+
+  3)	Fixed `els +G'"a: %m%N"' -t` problem where ELS would sort by access-
+	instead of modification-time because of the leading literal 'a'.
+
+  4)	Added (but didn't document) traversal of symbolic links: +t=L
+	New syntax for traversal of mount-points: +t=M
+
+  5)	Added (but didn't document) +g option to mimic GNU semantics
+	Updated/fixed semantics for +4/+5/+g/+l/+e:
+	    a) traversal of symbolic-links is implied for +4/+5/+g/+l
+	    b) directory trimmings improved for +4/+5/+g/+l
+	
+  6)	Added (but didn't document) +Q option for quotaling
+
+  7)	Added OS=$(VERSION) value to Makefile and CPP directives
+
+  8)	Added (but didn't document) +o option for specifying output file
+
+  9)	Added (but didn't document) the ability to truncate long user/group
+	names that are longer than the field width if environment variable
+	ELS_TRUNCATE_ID is set.
+
+===============================================================================
+20020306:  1.47k2
+  1)	Added IRIX target
+
+  2)	Documentation fixes/changes/clarifications
+
+  3)	Changed +W to use /dev/tty instead of stdin/stdout
+
+  4)	New +N options: symbolic link target (+Nl)
+			Symbolic link target prefaced by '->' (+NL)
+
+  5)	Allow user/group names to use up to MAX_USER_GROUP_NAME characters
+	(currently set at 32 characters)
+
+20010314:  1.47k1
+  1)	Fixed bug under SunOS5 where listing a symbolic link no longer
+	gets listed as having an ACL (i.e. '+') if it points at a file
+	having an ACL unless -L specified.
+
+* 2)	Fixed bug under OSF1 where listing a symbolic link pointing to
+	a non-existent file would generate a Segmentation fault
+
+  3)	Added +w option to suppress warnings about non-readable files, etc.
+
+* 4) 	Added +W option to watch the progress of how many files have been
+	examined.  This option is best used in conjunction with +F filtering
+	when output is sparse and there are numerous files being examined or
+	when stdout is being redirected to a file, e.g.:
+	    els +W +F'Q{s=0}' +NF -laR
+	    els +W -laR > /tmp/output
+	Additionally, +W will intercept SIGQUIT (i.e. ^\) while listing
+	and display the name of the directory currently being processed.
+
+20001020:  1.47j1
+  1)	Fixed conversions of TZs having non-zero minute offsets.  E.g.:
+	    Convert time from XST10:30XDT9:30 to GMT:
+		edate +Z=XST10:30XDT9:30 19990404.0400 -G
+	    Convert time from GMT to XST10:30XDT9:30:
+		edate -G 19990404.0400 +Z=XST10:30XDT9:30
+	    Convert time from GMT to Canada/Newfoundland:
+		edate -G Oct 31 1999 00:00 +Z=Canada/Newfoundland
+	    Convert time from Canada/Newfoundland to GMT:
+		edate +Z=Canada/Newfoundland Oct 31 1999 00:00 -G
+	    Change date of myfile using Canada/Newfoundland time:
+		chdate +Z=Canada/Newfoundland Oct 19 2000 12:00:00 myfile
+  2)	Corrected ctime32() and ctime32_r() botch that occurred during 1.47i2
+
+20001016:  1.47i2
+  1)	Fixed chdate to apply -L/-G/-C to all subsequent arguments until
+	overridden by a subsequent -L/-G/-C (this behavior agrees with the
+	documentation).
+  2)	Added 32-bit time support to time32.c for reentrant time functions:
+	localtime32_r(), gmtime32_r(), asctime32_r(), ctime32_r().
+
+20000927:  1.47i1
+  1)	Fixed "chdate -a ..." acting as "chdate -am ..." bug which was
+	mistakenly introduced into versions 1.47h1 and 1.47h2
+  2)	Renamed old README file to USER_GUIDE
+  3)	Added instructions to INSTALL and new README
+
+20000920:  1.47h2
+  1)	Embedded spaces are now allowed in +F expressions.  For example,
+	the following is now considered valid:
+	els -laR +F'T{r} & P{ u+s | g+s } & A{x} & Q{u < 10 | g < 10}' /usr/bin
+
+20000919:  1.47h1
+  1)	Added -F flag to chdate which is now required if changing multiple
+	files, e.g.:
+		chdate 19991231.235959 -F file1 file2 file3
+  2)	chdate no longer requires quoting date arguments, e.g.:
+		chdate Apr  1  2000 file1
+		chdate Apr  1 12:34 file1
+  3)	Documentation and man page fixes
+
+20000831:  1.47g2
+  1)	Improved SPARSE FILE detection for HPUX filesystems.
+
+20000826:  1.47g1
+* 1)	Added filtering for SPARSE FILE capability to the unusual filter,
+		e.g.: 	els +F'U{s}' -laR / /usr /var
+  2)	Documentation and man page fixes
+
+20000811:  1.47f2
+  1)	Documentation and man page fixes
+
+20000807:  1.47f1
+* 1)	Added {substring} capability for +I, +i, +E, +e options, e.g.:
+		els +MR +I'*.{c,h,cc,hh}'
+		els -laR +E'{aa,b{a,b},[0-9]}*{x[A-Z],yy}'
+	
+20000801:  1.47e2
+  1)	Documentation and man page fixes
+	
+20000728:  1.47e1
+* 1)	Critical fixes for Linux and OSF1 fixing +SO and width specifications.
+  2)	Removed complaint if SunOS5 uses an absolute path for zoneinfo file.
+  3)	Improved STDoffset[DST[offset][,...]] warning messages.
+
+20000720:  1.47d3
+  1)	Changed severity of +Z= problems from being errors to warnings.
+	
+20000717:  1.47d2
+  1)	Documentation and man page fixes
+  2)	Added checking for existence of zoneinfo file
+  3)	":" now prepended to OSF's TZ envvar if +Z= uses zoneinfo file
+
+20000630:  1.47c6
+* 1)	Added +Z= option to chdate and edate
+
+20000628:  1.47c5
+  1)	Documentation and man page fixes
+
+20000622:  1.47c4
+  1)	Documentation and man page fixes
+  2)	FreeBSD 3.4 format.h fixes
+  3)	Modified Makefile rules for different HPUX versions
+
+20000616:  1.47c3
+  1)	Added report of TZ setting to +S and +U options
+
+20000614:  1.47c2
+* 1)	Added +Z= option to els
+  2)	Added +T^d delta time modifier
+  3)	Fixed +T^r arithmetic when result > 2**31
+
+20000608:  1.47c1
+  1)	Fixed newline bug after file name during: els -F +Gnm
+  2)	Fixed separator bug after time during: els -la +T'N"%Y%M%D"'
+
+20000602:  1.47b10
+  1)	Began transition of old-style +T modifiers to new-style as follows:
+		A --> ^a  Absolute time since the epoch
+		(new) ^d  Delta time from now (i.e. difference)
+		R --> ^r  Relative time from now (i.e. age)
+		(new) ^A  Alpha dates instead of numeric
+		N --> ^N  Numeric dates instead of alpha
+		G --> ^G  GMT dates instead of local
+		L --> ^L  Local dates instead of GMT
+		(new) ^M  Meridian instead of military time
+	Support of old-style modifiers (NARGL) will continue for a long while.
+	
+
+20000602:  1.47b9
+  1)	RIDDLE added
+  2)	+f fielding option added to edate
+
+20000531:  1.47b8
+  1)	time-or-year-depending-on-age directive +Ti changed to +TQ
+  2)	block count totals fixed for LARGEFILES
+
+20000530:  1.47b7
+* 1)	Changed to always use a field width of 4 instead of 3 for the link
+	count (versions with ACL support were already close to doing this
+	as they used 3 for the link count and 1 for the '+' ACL).
+	A width of 3 is still obtainable if the flags +l4 are specified.
+
+20000530:  1.47b6
+  1)	Documentation and man page fixes
+  2)	Introduction of explicit set time (-s) option to edate
+
+20000525:  1.47b5
+  1)	Better zero-padding and width control added via format.h
+  2)	+f fielding fixes
+
+20000524:  1.47b4
+  1)	Documented new +T modifier usage
+
+20000524:  1.47b3
+* 1)	Support added for LARGEFILES > 2**31 under HPUX10+
+* 2)	Support added for LARGEFILES > 2**31 under SunOS5.6+/Solaris2.6+
+  3)	Meridian time modifier ^M added, e.g.: els -la +T'M%_D^M%_tp"m"'
+  4)	Dos-style date support added, e.g.:  els -la +Td
+  5)	Windows-style date support added, e.g.:  els -la +Tw
+  6)	chdate -h flag added (silently ignore symlinks)
+  7)	Improved quoting of special characters within file name
+  8)	Introduction of format controls %+nD and %_nD
+
+* 9)	The meaning of +t has changed to now cause file-systems to be
+	traversed whereas before it inhibited traversal.  Thus, the default
+	behavior of ELS is to now NOT traverse file-systems unless
+	+t specified.  Changing the meaning of +t was an agonizing decision
+	but was necessary as future releases will allow +t=<type> specifying
+	the types of directories and/or file-systems to traverse.
+
+ 10)	Deprecated +T modifiers N,A,R,G,L in favor of ^N,^A,^R,^G,^L
+	(^A and ^R later become ^a and ^r in 1.47b10)
+ 
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+Version 1.47b3 and above marks a major divide between newer and older versions.
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+XXXXXXXX:  1.46 and 1.47a1 through 1.47b2 never released
+
+20000203:  1.45f
+  1)	Filtering for a specific day implies 24 hour period, e.g.:
+	+F'Q{m=20000203}' same as +FQ{m>=20000203.000000&m<=20000203.235959}'
+
+20000110:  1.45e
+  1)	user@host information added to +S header
+
+19991222:  1.45d
+  1)	ELS version added to +S header parameters
+  2)	ISO-3307 references changed to ISO-8601
+  3)	Untarred release file now uses version number in els directory name
+
+19991123:  1.45c
+  1)	Added ACL support for OSF1
+  2)	+D option deprecated (use +d instead)
+  3)	+Fc deprecated workaround removed (+F == filtering, +f == fielding)
+
+19991118:  1.45b
+  1)	'!' added to quoted char list
+  2)	major,minor device number listing fixed for SunOS5
+  3)	Improved device checking for +t inhibit traversal
+
+19991005:  1.45a
+  1)	Implemented parse-hash library (phLib)
+  2)	+Q option deprecated (use +q instead)
+
+19990810:  1.44b
+  1)	chdate now recognizes dos-style dates
+  2)	Updated chdate documentation
+
+19990528:  1.44a
+  1)	Version number of edate/chdate made to agree with els
+  2)	+Fc deprecated workaround added
+  3)	+z zeroing of device MTIME/ATIME added
+
+19981212:  1.43a
+* 1)	Arguments now parsed during 1st pass, output generated during 2nd pass
+	(old behavior was to process args/output in order of arrival -- to
+	enable old behaviour define envvar "ELS_ARG_ORDER" or set els version
+	level <= 1.42)
+  2)	+F'U{...}' unusual filter documentation added
+  3)	Check for nobody UIDs and GIDs added to unusual filter
+  4)	Added (but didn't document) +z optional mask argument
+
+19980922:  1.42b
+  1)	Added +t inhibit traversal support for FREEBSD
+
+19980918:  1.42a
+  1)	Added +t inhibit traversal support
+  2)	Added +h option to allow +X and chdate to act upon symbolic links
+	(+h is counter to how Sys5's /bin/chown's -h option works in that
+	you need to implicitly tell it to change the target of a symbolic
+	link rather than having to tell it when not to change the target)
+  3)	Deprecated +T2, +T3 syntax in favor of +Tt, +TT
+  4)	Improved +Q unusual name quoting 
+
+19980227:  1.41a
+  1)	Improved -b octal and -Q name quoting
+  2)	Check for environment variable PAGER added
+  3)	Documented '~' negation option
+  4)	Added access time preservation when checksumming
+
+19980122:  1.40f
+  1)	Documented +z option
+  2)	Added +z zeroing of epoch dates
+  3)	Added -h option to chdate (-h later changed to +h in version 1.42a
+	to distinguish it from how -h behaves in Sys5's /bin/chown)
+  4)	Added +SF and +Sf stamp flavors
+
+19971030:  1.40e
+  1)	Added -b octal and -Q name quoting options
+  2)	Changed +Ty to +Tt (time or year depending on age)
+	Added +Ty (year modulo 100)
+  3)	Added printing of args during stamping
+  4)	Added +Q unusual name quoting 
+  5)	Added (but didn't document) +z option for zeroing of symlinks
+	and dir sizes
+  6)	Added +F'U{...}' filtering for Unusual files
+
+19971007:  1.40d
+* 1)	Fixed CPP logic error where G_format was uninitialized if running
+	under SUNOS < 50500 and compiled using HAVE_ACL
+
+19970930:  1.40c
+  1)	Documented "M" chmod format +G directive
+  2)	Documented "d", "f", "F" +G directive
+  3)	Documented use of +f<char> instead of deprecated +F<char>
+
+19970918:  1.40b
+* 1)	Added FreeBSD target
+  2)	Added "A" (ACL count) as a Quantity filter item
+  3)	Changed bsd semantics option "+b" to be "+4"
+
+19970913:  1.40a
+* 1)	Added OSF1 target
+  2)	Added ACL support for HPUX
+  3)	Added -G option (don't list group), added -U option (list unsorted),
+	and ignore -C non-functioning option
+  4)	Changed +V version option to be +v, added new +V option (verbose),
+	and changed bsd semantics option "+B" to be "+b"
+  5)	Added "M" chmod format directive to +G format
+  6)	Added "d", "f", "F" name directives to +G format
+  7)	Deprecated +F<char> to be +f<char>
+* 8)	Added +F Access, Type, Permission, and Quantity filtering
+* 9)	Added +X execute +G format
+ 10)	Added D type-mark for door files
+ 11)	Improved detection and reporting of syntax errors
+*12)	Implicit listing of top directory whenever using full_file_names
+
+19970718:  1.30b
+* 1)	Added ACL support for AIX4.x
+* 2)	Fixed side-effect *time* problem caused by recursion in N_print()
+
+19961111:  1.30a
+  1)	Added ACL "A" directive to +G format, added ACL documentation
+* 2)	Fixed side-effect *filename* problem caused by recursion in N_print()
+  3)	Added -1 single column option
+  4)	Added automatic ls/els semantic interpretations based on program name
+  5)	Added "l" for overloaded g+s,g-x bit under all SunOS5.x/Solaris2.x
+  6)	Discontinued deprecated support of "_" as a field separator.
+
+19961023:  1.29c
+* 1)	Introduced runtime ACL support for SunOS5.5/Solaris2.5
+  2)	Added stime() support for ancient Unixes.
+
+19960610:  1.29b
+* 1)	Fixed segmentation violation problem if readdir() fails.
+
+19960522:  1.29a
+* 1)	Support for reading various date formats added to getdate32()
+
+19960515:  1.28
+  1)	Reorganization of time/date routines into separate files.
+
+19960326:  1.27
+  1)	Replaced nasty regexp routines with my wildcard_match routine,
+	thus allowing for better portability.
+* 2)	First working LINUX version (I discovered a bug in LINUX's dirent
+	element d_reclen where the trailing NULL is not included in its count).
+
+19960205:  1.26
+  1)	Improved Makefile target selection
+  2)	ls-style format added to chdate
+  3)	"c" +T directive changed to "v"
+  4)	Fixed help to use either /usr/ucb/more or /usr/bin/more
+
+19960116:  1.25
+  1)	Unix clock format added to chdate
+  2)	Deprecated "_" as a field separator
+  3)	Fixed listing of major,minor device numbers for SunOS5.x
+
+19950929:  1.24
+  1)	Added G/L modifier to +T format for specifying GMT/Local dates
+  2)	Added G/L options to chdate
+  3)	Renamed +T format's E/L directives to be e/l
+  4)	Added Z directive to +T format
+  5)	Added preservation of access times when calculating checksums
+
+19941219:  1.23
+* 1)	Added time32 routines to allow listing of dates beyond Jan 19
+	03:14:07 2038 GMT
+* 2)	Added untouch +U utility
+  3)	+D option for listing directories as files added as an
+	alias/replacement of -D
+  4)	+R option for recursion added as an alias of -R
+
+19941208:  1.22
+  1)	Added "els5" version
+  2)	Initial support for SunOS5/Solaris2
+  3)	-L option implied by +MM
+
+19941122:  1.21
+
+19940129:  1.20
+
+19940118:  1.19
+
+19940113:  1.11
+
+19940107:  1.10
+
+19931222:  1.01
+
+19931221:  1.00
+  1)	16-bit checksum calculated internally rather than through system
+	call to /bin/sum.
+
+19930701:  0.99
+
+# EOF.

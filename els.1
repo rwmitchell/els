@@ -1,0 +1,784 @@
+.de EX		\"Begin example
+.ne 5
+.if n .sp 1
+.if t .sp .5
+.nf
+.in +5n
+..
+.de EE		\"End example
+.fi
+.in -5n
+.if n .sp 1
+.if t .sp .5
+..
+.TH ELS 1 "October 13, 2015"
+
+.SH NAME
+els \- An Enhanced LS look-alike with many additional features
+
+.SH SYNOPSIS
+\fBels\fR [-~aAbcCdFgGhilLnopQrRstuU1] [+~cdhHlqQRvVwz45]
+.in +4
+[+C=[BSPCU]] [+M[M[M]]] [+o=\fIoutfile\fR] [+~t=[~ML]]
+.in +0
+[+Z=\fIzonename\fR] [+f \fIchar\fR] [+GTN \fIformat\fR]
+.in +0
+[+IEie \fIpattern\fR] [+F \fIfexpr\fR]
+.in +0
+[+S\fICcOoFf\fR] [+U] [+W] [+X \fIstatus\fR] \fIfiles\fR
+
+.SH DESCRIPTION
+.I ELS
+is an Extensible LS work-alike with many additional features.  Besides
+supporting most of what /bin/ls does, ELS also allows you to specify the
+output format so that any field can be listed in any order.  In addition to
+supporting the traditional /bin/ls time format, ELS allows you to list files
+with *both* time and year regardless of age, ISO-8601 format (i.e.
+YYYYMMDD.hhmmss format), age of file (i.e. the number of days, weeks,
+months, years, etc. ago the file was created), European style, etc.  ELS allows
+you to specify absolute file paths and names so that the output can be
+further manipulated by /bin/sort, etc.  ELS has a built-in checksumming
+ability so that files can be listed along with their checksums.  ELS has a
+"untouch" facility which will allow you to recover the modification dates
+following a "touch".
+
+Other features of ELS are that it allows you to specify the format of your
+output using the general format (+G), it allows you to specify the time
+format (+T), and it allows you to specify the filename format (+N).  ELS
+also allows you to filter your output using wildcards and/or boolean
+expressions to generate listings based on each file's name, date, size,
+type, mode, permission, ownership, etc.
+
+ELS will even display the dates of files "created" after Jan 19 03:14:08
+2038 GMT (assuming that the future standard will treat the 32-bits
+used by Unix's present-day file system as unsigned).
+
+The reason that ELS was originally written was so that consistent dates
+could be generated and saved into a file and that these dates could be
+compared at a later date to determine which files had changed.  /bin/ls
+is unsuited for this purpose as sometimes it lists the date/time and
+other times it lists the date/year depending on the age of the file.  ELS
+always lists the date/year/time regardless of when the file was created.
+
+.SH "LS: STANDARD OPTIONS"
+.TP
+.B \-a
+List all files including . and ..
+.TP
+.B \-A
+List all files except . and ..
+.TP
+.B \-b
+List non-graphic characters using octal notation
+.TP
+.B \-c
+List time of last status change(SYS5, ELS),
+List time of last status change and sort(BSD)
+.TP
+.B \-C
+List multi-columns (unimplemented)
+.TP
+.B \-d
+List directories as files, but don't list their contents
+.TP
+.B \-F
+Mark files
+.TP
+.B \-g
+List GIDs(BSD), long listing omitting UIDs(SYS5), ignored(ELS)
+.TP
+.B \-G
+Don't list GIDs(ELS)
+.TP
+.B \-h
+List size in human readable format scaled by powers of 1024
+If a second -h (i.e. -hh), then scaled by powers of 1000
+.TP
+.B \-i
+List inode number
+.TP
+.B \-l
+Long listing using BSD, SYS5, or ELS semantics
+.TP
+.B \-L
+List actual file rather than symbolic link
+.TP
+.B \-n
+Long listing using numeric UIDs and GIDs(SYS5, ELS)
+.TP
+.B \-o
+Long listing omitting GIDs(SYS5, ELS)
+.TP
+.B \-p
+Mark directories
+.TP
+.B \-Q
+List non-graphic characters using double-quotes and C-style notation
+.TP
+.B \-r
+Reverse the sort
+.TP
+.B \-R
+Recursively list contents of all directories
+.TP
+.B \-s
+List size in KBytes(BSD, ELS) or in blocks(SYS5)
+.TP
+.B \-t
+Sort files according to time
+.TP
+.B \-u
+List time of last access
+.TP
+.B \-U
+List unsorted(ELS)
+.TP
+.B \-1
+List single column
+.TP
+.B \~
+If a tilde precedes any of the above options then that option is
+reset, effectively causing it to be canceled.
+
+.SH "Enhanced LS: MISCELLANEOUS"
+.TP
+.B \+H
+Give HELP piped through PAGER
+.TP
+.B \+l
+Mimic /bin/ls behavior
+.TP
+.B \+4
+Use BSD semantics
+.TP
+.B \+5
+Use SYS5 semantics
+.TP
+.B \+c
+Output ELS options and environment settings used to produce listing
+(useful for documenting how a particular listing was generated)
+.TP
+.B \+d
+Don't list directories as files, but list their contents (has the
+opposite effect of -d)
+.TP
+.B \+h
+Allow +X to act upon symbolically linked files
+.TP
+.B \+q
+Quote unusual and troublesome file names (besides doing a more
+thorough job than either -b or -Q, this option also quotes special
+and non-graphic characters so that the file name can subsequently be
+used as an argument for most Unix commands; thus, the +q option is
+automatically implied whenever using the +X option).
+.TP
+.B \+Q
+Display Quotals (quota+total) for indicated hierarchy or files.
+The quotal option will list the total size and number of files
+owned by each user/UID and group/GID.  For example, to display
+quotals for all files in /usr hierarchy:
+.EX
+els +Q -AR /usr
+.EE
+.TP
+.B \+R
+Recursively list contents of all directories (same as -R)
+.TP
+.B \+v
+Print els version and information
+.TP
+.B \+V
+Verbose mode
+.TP
+.B \+w
+Suppress warnings about unreadable files, etc.
+.TP
+.B \+z
+List volatile file information as zero (volatile file information is
+defined as those values that change whenever a file is listed or
+those values that aren't preserved after a hierarchy gets copied
+or restored; for example, a directory or a symbolic link changes its
+access time whenever being listed; a symbolic link changes its
+modification time and/or ownership after being copied; a directory
+doesn't always preserve its size after being copied).  Also, since
+volatile file information can change over time, this option is
+particularly useful when stamping a hierarchy (see +S option), or
+when comparing the listings of two very similar hierarchies.
+.TP
+.B \~
+If a tilde precedes any of the above options then that option is
+reset, effectively causing it to be canceled.
+.TP
+.B \+C
+Specify checksum algorithm (B|bsd, S|sysv, P|posix, or C|crc32).
+Additionally, if U|unaccess is specified then each file's access
+time will be preserved (if possible).  'bsd' is similar to
+/usr/ucb/sum under SunOS5/Solaris or '/usr/bin/sum -r' under
+Linux; 'sysv' is similar to /usr/bin/sum under SunOS5/Solaris or
+\'/usr/bin/sum -s' under Linux; 'posix' is similar to
+\'/usr/bin/cksum' under SunOS5/Solaris, Linux, HPUX10+, etc; and
+\'crc32' is the algorithm used by ZLIB et al.  For example, to
+recursively list checksums of all files:
+.EX
+els +C=bsd +z +GCSN -L -RA	# similar to /usr/ucb/sum
+els +C=sysv +5l +z +GCSN -L -RA	# similar to /usr/bin/sum
+els +C=posix +z +GCsN -L -RA	# similar to /usr/bin/cksum
+els +C=crc32 +z +GCsN -L -RA	# crc32 algorithm
+els +C=posix,U +z +GCsN -L -RA	# preserve access times
+els +C=PU +z +GCsN -L -RA	# same as 'posix,unaccess'
+.EE
+.TP
+.B \+M
+Macro 1 for listing ISO8601 \fImodification\fR dates of all files
+except directories (same as: els +Gmn +NFL +TI +d).  For example, to
+list the 30 most recently modified source code files in a hierarchy:
+.EX
+els +M -RA +I'*.{c,h,cc,hh}' | sort | tail -30
+.EE
+.TP
+.B \+MM
+Macro 2 for listing ISO8601 \fIaccess\fR dates of all files except
+directories and symbolic links (same as: els +Gan +NF +TI +d +F'T{~l}').
+For example, to list the 100 most recently accessed executable files
+under the /usr hierarchy:
+.EX
+els +MM -RA +F'P{+x}' /usr | sort | tail -100
+.EE
+.TP
+.B \+MMM
+Macro 3 for listing ISO8601 \fIchange\fR dates of all files and
+directories (same as: els +Gcn +NFL +TI).  For example, to list
+the 100 most recently changed files and directories under the /usr
+hierarchy:
+.EX
+els +MMM -RA /usr | sort | tail -100
+.EE
+.TP
+.B \+o
+Specify file for output, e.g.:  els -laR +o=output.dat
+.TP
+.B \+t
+Traverse mount-points(M) and/or expanded symbolic-links(L) during
+recursive listings.  For example, to traverse any mount-point (i.e.
+a different file-system) encountered during a recursive listing:
+.EX
+els -laR +t=M
+.EE
+To traverse both mount-points and expanded symbolic-links:
+.EX
+els -laR -L +t=ML
+.EE
+Note: '+t=L' is effective only if '-L' is also specified, as '-L'
+is what enables expansion of symbolic-links.  '+t=M' must also be
+specified with '+t=L' (i.e. +t=ML), if you want to traverse expanded
+symbolic-links that vector-off onto different mount-points.  By
+default all traversing is disabled unless requested.  To disable all
+traversal specify '+t=~L~M' (or the logical equivalent '+~t=LM').
+.TP
+.B \+Z
+Specify timezone to be used in place of current TZ setting.
+The timezone should be in the form of:
+.EX
+All OSes:         STDoffset[DST[offset][,rule]]
+.EE
+Additionally, if your host provides zoneinfo then you can also
+use names from the appropriate zoneinfo directory:
+.EX
+SunOS/Solaris:            /usr/share/lib/zoneinfo
+Linux2, Darwin, FreeBSD:  /usr/share/zoneinfo
+OSF1:                     /etc/zoneinfo
+.EE
+For example:
+.EX
+els -la +Z=EST5EDT +TIZ     (Available on \fIall\fR OSes)
+els -la +Z=US/Eastern +Tv   (Available on OSes with zoneinfo)
+.EE
+
+.SH "Enhanced LS: FORMATTING"
+.TP
+.BI \+f char
+Field separator character, e.g.: els -la +f: +TI
+.TP
+.BI \+G options
+GENERAL format, e.g.: els +G~tp~lusmn +NfL (same as els -l)
+       i:  inode number
+     t,T:  type of file in alpha(t), symbolic(T)
+     p,P:  permission in alpha(p), numeric(P)
+       M:  permission in chmod format
+           (e.g. u=rwxs,g=x,o=x)
+       A:  ACL indicator '+' if present
+       l:  link count
+     u,U:  UID in alpha(u), numeric(U)
+     g,G:  GID in alpha(g), numeric(G)
+     o,O:  owner in alpha(o == u:g), numeric(O == U:G)
+     s,S:  size in bytes(s), blocks(S)
+       h:  size scaled by powers of 1000 with
+           one of kmgtpezy
+       H:  size scaled by powers of 1024 with
+           one of KMGTPEZY
+   m,a,c:  time modified(m), accessed(a), status
+           changed(c) (time displayed using +T format)
+     n,N:  file name(n), full file name(N)
+           (name displayed using +N format)
+   d,f,F:  directory name(d), file name(f), full file
+           name(F)
+       L:  Symbolic link target prefaced by '->'
+       C:  checksum (performed on regular files only using
+           algorithm and/or flags specified by +C option)
+.TP
+.BI \+T options
+TIME format, e.g.: els -la +T^rD (give age of file in days)
+      ^a:  Modifier for absolute time since the epoch
+      ^d:  Modifier for delta time from now (i.e.
+           difference)
+      ^r:  Modifier for relative time from now (i.e.
+           age)
+      ^y:  Modifier for relative time since start of year
+      ^A:  Modifier for alpha dates instead of numeric
+      ^N:  Modifier for numeric dates instead of alpha
+      ^G:  Modifier for GMT dates instead of local
+      ^L:  Modifier for local dates instead of GMT
+      ^M:  Modifier for meridian instead of military
+           time
+       F:  Floating-point style (same as +T^N~YMD.hms~)
+       I:  Iso8601 style
+       e:  els style (default, same as +TM%_DYt)
+       l:  ls style (same as +TM%_DQ)
+       d:  dos style (same as +T^N%_M-D-y^M%_h:~mp~)
+       w:  windows style
+           (same as +T"^N%_M/D/y^M%_tP'M'")
+       v:  verbose style (same as +TWM%_DTZY)
+ Y,M,D,W:  year(Y), month(M), day(D), weekday(W)
+ h,m,s,c:  hour(h), minutes(m), seconds(s), clock(c)
+     t,T:  time as h:m(t), h:m:s(T)
+       Q:  time or year depending on age
+       p:  'a' or 'p' depending on meridian
+           (meaningful only with ^M modifier)
+       P:  'A' or 'P' depending on meridian
+           (meaningful only with ^M modifier)
+       y:  year modulo 100
+       Z:  zone name
+.TP
+.BI \+N options
+NAME format, e.g.: els -laR +NF
+      ^q:  Modifier for quoting unusual file names
+           (same as +q)
+       F:  Full file name (same as +Nd/f)
+       d:  Directory name
+       f:  File name
+       l:  Symbolic link target
+       L:  Symbolic link target prefaced by '->'
+.TP
+.B \+G, \+T, \+N format controls
+       \\:  Output following character verbatim
+       ~:  Toggle spacing off/on
+      %%:  Output a single % character
+      %D:  Output directive 'D' using default width
+           and default padding
+     %_D:  Pad left side of output with blanks
+           using default width
+     %0D:  Pad left side of output with zeros
+           using default width
+     %-D:  Suppress all padding and use minimum width
+    %0nD:  Output a zero padded field 'n' characters
+           wide
+    %_nD:  Output a blank padded field 'n' characters
+           wide
+     %nD:  Output a right justified field 'n'
+           characters wide
+    %-nD:  Output a left justified field 'n'
+           characters wide
+    %+nD:  Output a field 'n' characters wide
+           regardless of ~ spacing
+
+E.g.: els +G%10u%-10gN (print the uid right justified and the gid
+left justified in two 10 character fields followed by the file name)
+
+If a string occurs within an inner set of quotes then the string
+is output verbatim (except for any directives within the inner
+quotes prefaced by a %).  Thus, the following are equivalent:
+.EX
++T"'DATE: '^N%M/D/Y"    # M/D/Y in outer quotes (% optional)
++T'"DATE: "^NM/%D/Y'    # M/D/Y in outer quotes (% optional)
++T'"DATE: ^N%M/%D/%Y"'  # M/D/Y in INNER quotes (% REQUIRED)
+.EE
+
+.SH "Enhanced LS: FILTERING"
+.TP
+.BI \+I pattern
+Include specified files, e.g.: els -laR +I"*.{c,h,cc,hh}"
+.TP
+.BI \+E pattern
+Exclude specified files, e.g.: els -laR +E"*.o"
+.TP
+.BI \+i pattern
+Include specified directories, e.g.: els -laR +i"[a-m]*"
+.TP
+.BI \+e pattern
+Exclude specified directories, e.g.: els -laR +e".git"
+.TP
+.BI \+F fexpr
+A filter expression (fexpr) consists of one or more of the
+following filter types separated by Boolean operators:
+   A{...} -- Access Filter
+   T{...} -- Type Filter
+   P{...} -- Permission Filter
+   Q{...} -- Quantity Filter
+   U{...} -- Unusual Filter
+   c{...} -- clearcase Filter
+   l{...} -- link Filter
+
+Each filter type consists of one or more terms separated by
+Boolean operators.  The following lists each term appropriate
+for the associated filter type:
+
+   Access Filter Terms:
+      rwxe: read, write, execute(x), or existence(e)
+
+   Type Filter Terms:
+      rf: regular file (r and f are synonymous)
+      dcb: directory, char device, block device
+      plsD: pipe/fifo, symbolic link, socket, Door
+      S: Special/device file (same as 'b|c')
+
+   Permission Filter Terms:
+      value: octal value <= 07777
+      ugo: user field, group field, other field
+      a: all fields (same as 'ugo')
+      +: test if indicated field(s) contain any
+         attribute(s)
+      -: test if indicated field(s) missing any
+         attribute(s)
+      =: test if indicated field(s) match attribute(s)
+         exactly
+      rwx: read attribute, write attribute, execute
+         attribute
+      s: setuid/setgid attribute (applies to u and/or g
+         fields)
+      t: sticky attribute (applies to u field)
+      l: mandatory lock attribute (applies to g field)
+
+   Quantity Filter Terms:
+      iAl: inode, ACL count, link count
+      ugs: uid, gid, size
+      mac: time modified, accessed, status changed
+      == != ~= : equals, not equals, not equals
+      > >= : greater than, greater than or equals
+      < <= : less than, less than or equals
+      value: positive integer to be compared against
+      YMWD: Years, Months, Weeks, Days
+      hmsc: hours, minutes, seconds, clock
+
+   Unusual Filter Terms:
+      t: unusual type
+         (i.e. !regular & !directory & !symlink)
+      p: unusual permissions
+         (i.e. o+w & !+t & !symlink | setuid | setgid |
+               mandatory_locking)
+      P: unusual permissions
+         (i.e. access(o) > access(g) |
+               access(o) > access(u) |
+               access(g) > access(u))
+      A: ACL_count > 0
+      l: link_count > 1
+      u: nobody/noaccess UID
+         (60001, 60002, 65534, or 4294967294)
+         or unassigned UID
+         (i.e. not listed in /etc/passwd)
+      g: nobody/noaccess GID
+         (60001, 60002, 65534, or 4294967294)
+         or unassigned GID
+         (i.e. not listed in /etc/group)
+      mac: modification, access, change time is in the
+         future
+      n: name containing unusual or troublesome
+         characters
+      N: full pathname containing unusual or
+         troublesome characters
+      L: symbolic link pointing to non-existent file
+      s: sparse file (i.e. partially filled w/data)
+      G: General tests
+         (i.e. perform all the above unusual tests)
+      S: Security related tests
+         (i.e. !directory & o+w |
+               directory & o+w & !+t |
+               setuid | setgid | device_file)
+
+   clearcase Filter terms:
+      e: VOB element
+      p: VIEW private
+
+   link Filter terms:
+      e: symbolic link target exists
+      t: symbolic link traverses filesystem and/or clearcase VOB
+
+Boolean operators are as follows:
+      ! or ~ -- Boolean NOT (evaluated first)
+      & or , -- Boolean AND (evaluated second)
+      | or : -- Boolean OR (evaluated last)
+
+(The reason for allowing multiple symbols for Boolean operations is
+that characters such as '!' have special meaning within the shell
+and are awkward to use.  Also, characters such as ',' can improve
+readability when grouping lists of terms, e.g.: 'u+rw,g-rw,o-rw'
+is more readable than 'u+rw&g-rw&o-rw'.)
+
+The syntax for each term is based upon its associated filter type.
+In all cases, any filter having multiple terms must use Boolean
+operators to separate each of its terms.  The 'Access' and 'Type'
+Filters are the simplest cases when it comes to syntax, as each of
+their terms consists of a single letter.
+
+The syntax for each term of the permission filter is very similar to
+Unix's chmod command with the following exceptions: if the left-hand
+side of a term is blank then it is taken to mean ANY instead of ALL
+fields; the symbol '+' is taken to mean HAS instead of GIVE; the
+symbol '-' is taken to mean MISSING instead of TAKE; and the
+symbol '=' is taken to mean MATCH EXACTLY instead of SET EXACTLY.  Thus,
+the filter '+FP{+rw}' means ANY FIELD HAVING READ-WRITE PERMISSION,
+while the filter '+FP{a=}' means ALL FIELDS HAVING EXACTLY NO
+PERMISSIONS.
+
+The syntax for each term of the quantity filter consists of a
+single letter and an integer quantity separated by a comparison
+operator.  Moreover, if the quantity being compared represents the
+file modification, access, or status change time (i.e. one of 'mac'),
+then the integer quantity must be followed by a qualifier
+designating Years, Months, Weeks, Days, hours, minutes, seconds,
+or clock (i.e. one of 'YMWDhmsc').
+
+.SH "Enhanced LS: UTILITIES"
+.TP
+.BI \+S option
+STAMP: The output from this option is used for recording the state
+of a hierarchy for future comparison to determine any changes.
+       C:  Stamp a source code hierarchy excluding
+           *.[aod], *~, and .git files
+       c:  Same as +SC, except nothing is excluded
+
+       O:  Stamp an operating system hierarchy (no
+           files are excluded and more detail given)
+       o:  Same as +SO, except checksumming is also
+           performed
+
+       F:  Stamp a file hierarchy (same as +SO except
+           that UIDs and GIDs are excluded)
+       f:  Same as +SF, except checksumming is also
+           performed
+.TP
+.B \+U
+UNTOUCH: Create a script which can be saved into a file for later
+recovery of modification dates following a /bin/touch.
+.TP
+.B \+W
+WATCH: Watch the progress of how many files have been examined.
+This option is best used in conjunction with +F filtering when
+output is sparse and there are numerous files being examined or
+when stdout is being redirected to a file.
+Additionally, +W will intercept SIGQUIT (i.e. ^\\) while listing
+and display the name of the directory currently being processed.
+.TP
+.B \+X
+EXECUTE: The output of the +G format will be executed instead of
+listed for each file.  If +X is followed by a number then els will
+terminate whenever the command returns a status of some other value,
+otherwise the return status will be ignored.  Additionally, if +V is
+specified then each command will be echoed before being executed.
+
+.SH "Enhanced LS: SPECIAL FEATURES"
+.TP
+.B \--version
+Print els version and information (same as +v)
+.TP
+.B \--CCaseMode, --ClearCaseMode
+Mimic ClearCase behavior such as masking 'w' permissions, etc.
+.TP
+.B \--GTarStyle
+Mimic GNU 'tar tv' listings, e.g.:
+        els -lAR --GTarStyle
+.TP
+.B \--Tar5Style
+Mimic Sys5 'tar tv' listings, e.g.:
+        els -lAR --Tar5Style
+.TP
+.B \--FirstFound
+List first occurrence found then exit (used to locate hierarchies
+containing one or more files with desired properties), e.g.:
+        els +F'T{r}&Q{a<30D}' -AR +NF --FirstFound /tmp
+.TP
+.B \--OncePerDir
+List once per directory (used to locate directories containing one
+or more files with desired properties)
+.TP
+.B \--DirDepth=N
+Limit the recursion depth of directories to N
+.TP
+.B \--IncludeSS, --IncludeSnapShot
+Include listing of snapshot directories
+.TP
+.B \--setenv:VARIABLE=VALUE
+Create and set named environment variable to given value, e.g.:
+        els -laR +c --setenv:LC_ALL=fr_CA.ISO8859-1
+        els -laR +c --setenv:TZ=US/Mountain
+.TP
+.B \--unsetenv:VARIABLE
+Unset and delete named environment variable, e.g.:
+        els -laR +c --unsetenv:TZ
+
+.SH EXAMPLES
+Search for the most recently modified *.c, *.h, *.cc, and *.hh files
+in a source-code hierarchy:
+.EX
+els +Gmn +TI +NF +I"*.{[ch],cc,hh}" -R | sort | tail
+.EE
+.LP
+Search for all files greater than 100K bytes that have not been
+accessed within the last 180 days and were modified over 365 days ago:
+.EX
+#!/bin/sh
+echo "    Size   Acc   Mod File"
+echo " =======  ====  ==== ======"
+els +f" " +GsamN +T^rD +d -AR | awk -F" " '
+	{if ($1 >= 100000 && $2 > 180 && $3 > 365)
+		{printf "%8d%6d%6d %s\n", $1, $2, $3, $4};
+	}'
+.EE
+Create a stamp of a source code hierarchy excluding *.[aod], *~,
+and .git files:
+.EX
+els +SC -R /home/myfiles/src
+.EE
+Create a stamp of an operating system hierarchy (no files are excluded
+and posix checksum is performed--note that +z is used to zero volatile
+data):
+.EX
+els +C=posix +So +z -R  /  /usr /var /opt
+.EE
+Create an "untouch" script which can be saved into a file for later
+recovery of modification dates following a "touch":
+.EX
+els +U -R * > untouch  # Create untouch script file
+/bin/touch *           # Clobber modification dates
+sh untouch             # Recover modification dates
+.EE
+Recursively list regular files in /usr/bin that are
+setuid/setgid having a UID/GID of less than 10:
+.EX
+els -laR +F'T{r}&P{u+s|g+s}&A{x}&Q{u<10|g<10}' /usr/bin
+.EE
+Recursively list all non-directory files that share a common
+inode (i.e. hard-link) in /etc and /dev:
+.EX
+els +GilN +F'Q{l>1}&T{~d}' -R /etc /dev | sort
+.EE
+Recursively list all files modified on or after April 1, 1999
+belonging to either the user 'markb' or the group 'projectx':
+.EX
+els -laR +F'Q{m>=19990401}&Q{u=markb|g=projectx}'
+.EE
+Display all files where g or o have more permission than u:
+.EX
+els -laR +F'P{u-w,+w}|P{u-x,+x}|P{u-r,+r}' +NF
+.EE
+Display all files having 'unusual' types or permissions
+(e.g., world-writable or sticky files excluding symlinks,
+setuid/setgid/locking files excluding symlinks and dirs,
+or any file type other than regular/directory/symlink):
+.EX
+els -laR +NF +F'(P{o+w:+t},T{~l}) | (P{+s,+x:+l},~T{d:l}) |
+	(~T{r:d:l})'
+.EE
+List all files greater than 100K bytes that have not been
+accessed in over half a year (.5Y) and were modified over one
+year ago (1Y):
+.EX
+els +GsamN +T^rD +d -AR +F'Q{s>=100000 & a>182D & m>365D}'
+els +GsamN +T^rD +d -AR +F'Q{s>=100K & a>.5Y & m>1Y}'
+.EE
+List all files having troublesome characters in their name:
+.EX
+els -laR -Q +NF +F'U{N}'
+.EE
+Fix the mode of any .c, .h, .cc, .hh file having 'x' mode set
+in any of its fields:
+.EX
+els +F'P{+x}' +I'*.{c,h,cc,hh}' +G'"chmod a-x %N"' +XV -RA
+.EE
+Fix the mode of any file having 'x' mode set in the 'u' field
+but is missing from the 'g' or 'o' fields:
+.EX
+els +F'P{u+x,g-x|u+x,o-x}' +G'"chmod go+x %N"' +X0 +V -RA
+.EE
+List using specified locale:
+.EX
+els -laR +c --setenv:LC_ALL=fr_CA.ISO8859-1
+.EE
+
+.SH BUGS
+ELS does not yet support the -C option for displaying short listings
+using multi-columns, but this is not at issue as the primary reason
+for using ELS is to take advantage of ELS's ability to display long
+listings in a variety of ways.
+.sp
+There are still a few letters of the alphabet that have not yet been
+used as options.
+
+.SH EXIT STATUS
+.nf
+0    Normal completion
+1    Usage error
+2    One or more errors encountered during listing
+.fi
+
+.SH ENVIRONMENT
+.TP
+.B PAGER
+Name of pager program for displaying help text
+
+.TP
+.B ELS_LC_COLLATE, ELS_LC_TIME
+.B LC_ALL, LC_COLLATE, LC_TIME
+The Posix LC_ALL environment variable supersedes both LC_COLLATE and
+LC_TIME (e.g. SunOS5/Solaris and Linux behavior).  But ELS_LC_COLLATE
+and ELS_LC_TIME further supersede this behavior as follows:
+
+Collate/sorting locale determined as follows:
+   Use ELS_LC_COLLATE if defined, else use LC_ALL if defined,
+   else use LC_COLLATE if defined, else use 'C' locale.
+
+Time locale determined as follows:
+   Use ELS_LC_TIME if defined, else use LC_ALL if defined,
+   else use LC_TIME if defined, else use 'C' locale.
+
+In other words, ELS_LC_COLLATE and ELS_LC_TIME take precedence if set.
+
+Examples:
+   # Use fr_CA.ISO8859-1 for collate and time:
+   export LC_ALL=fr_CA.ISO8859-1
+   unset ELS_LC_COLLATE ELS_LC_TIME LC_TIME LC_COLLATE
+   els +c -l
+
+   # Use en_US.ISO8859-1 for collate and C for time:
+   export ELS_LC_COLLATE=en_US.ISO8859-1
+   export ELS_LC_TIME=C
+   els +c -l
+
+.TP
+.B ELS_VER_LEVEL
+If defined, ELS will mimic deprecated and/or obsolete behavior of a
+previous release.  E.g. if ELS_VER_LEVEL is set to 1.43, then ELS will
+behave similar to release 1.43 (the current ELS release can be
+obtained by executing 'els +v').  Please note that future ELS releases
+may or may not continue to support the behavior of an earlier release.
+
+.SH AUTHORS
+.nf
+Mark Baranowski, James M. Gleason
+.sp
+Email: requestXXX@els-software.org (remove XXX)
+.fi
+
+.SH "SEE ALSO"
+ls(1),
+chdate(1),
+edate(1)

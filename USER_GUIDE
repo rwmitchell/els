@@ -1,0 +1,1182 @@
+File: els/USER_GUIDE
+Last updated: October 13, 2015
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+ELS is an Extensible LS work-alike with many additional features.  Besides
+supporting most of what /bin/ls does, ELS also allows you to specify the
+output format so that any field can be listed in any order.  In addition to
+supporting the traditional /bin/ls time format, ELS allows you to list files
+with *both* time and year regardless of age, ISO-8601 format (i.e.
+YYYYMMDD.hhmmss format), age of file (i.e. the number of days, weeks,
+months, years, etc. ago the file was created), European style, etc.  ELS
+allows you to specify absolute file paths and names so that the output can
+be further manipulated by /bin/sort, etc.  ELS has a built-in checksumming
+ability so that files can be listed along with their checksums.  ELS has a
+"untouch" facility which will allow you to recover the modification dates
+following a "touch".
+
+The primary features of ELS are that it allows you to specify the format of
+your output using the general format (+G), it allows you to specify the time
+format (+T), and it allows you to specify the filename format (+N).  ELS
+also allows you to filter your output using wildcards and/or boolean
+expressions to generate listings based on each file's name, date, size,
+type, mode, permission, ownership, etc.
+
+ELS will even display the dates of files "created" after Jan 19 03:14:08
+2038 GMT, whereas standard /bin/ls gets confused by dates beyond 2038.
+
+The Feb/98 issue of HPUX/USR mentions ELS as being an "Internet Goodie".
+
+	"This is a truly unique program that everyone must have."
+	"Two big thumbs-up", say Ebert & Roper.
+
+QUOTE OF THE MONTH: "ls" is a program, "els" is a tool.
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+SUPPORTED ARCHITECTURES/OS:
+
+This program is known to compile and execute under SunOS 4.x, SunOS 5.x
+(aka Solaris 2.x to 11), HPUX 9 to 11, RS6000/AIX, OSF1, Linux, Cygwin,
+Darwin, FreeBSD, Irix, Ultrix, Dynix, and SCO.  ELS will probably compile
+under most other Unixes as well; however, if your Unix is ancient then support
+can also be provided with minimal effort.
+
+ELS recognizes Access Control Lists (ACLs) under SunOS 5.5+, HPUX 9+, OSF1,
+AIX, and Darwin 8.0+.  Moreover, if your version of Unix is *any* version of
+SunOS5.x, then ELS can be compiled with support for ACLs (special runtime
+checking has been added so that even if ELS was compiled under a version of
+SunOS5 supporting ACLs, then the same executable file will still run under
+older versions of SunOS5 that don't support ACLs).
+
+Big files (i.e. files having a size greater than 2^31) are supported
+under SunOS 5.6+ and HPUX 10+ as of ELS version 1.47a.  Big files are
+supported under Darwin and FreeBSD as of ELS version 1.48c.  Big files
+are supported under Linux2.2+ as of ELS version 1.48d.
+
+Note: The most recent version of this program may be obtained from
+      http://els-software.org
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+OVERVIEW:
+
+Usage: els [-~aAbcCdFgGhilLnopQrRstuU1] [+~cdhHlqQRvVwz45] \
+	[+C=[BSPCU]] [+M[M[M]]] [+o=outfile] [+~t=[~ML]] \
+	[+Z=zonename] [+f char] [+GTN format] \
+	[+IEie pattern] [+F fexpr] \
+	[+S[CcOoFf]] [+U] [+W] [+X status] files
+
+
+LS -- STANDARD OPTIONS:
+
+    -a: List all files including . and ..
+    -A: List all files except . and ..
+    -b: List non-graphic characters using octal notation
+    -c: List time of last status change(SYS5, ELS),
+        List time of last status change and sort(BSD)
+    -C: List multi-columns (unimplemented)
+    -d: List directories as files, but don't list their contents
+    -F: Mark files
+    -g: List GIDs(BSD), long listing omitting UIDs(SYS5), ignored(ELS)
+    -G: Don't list GIDs(ELS)
+    -h: List size in human readable format scaled by powers of 1024
+	If a second -h (i.e. -hh), then scaled by powers of 1000
+    -i: List inode number
+    -l: Long listing using BSD, SYS5, or ELS semantics
+    -L: List actual file rather than symbolic link
+    -n: Long listing using numeric UIDs and GIDs(SYS5, ELS)
+    -o: Long listing omitting GIDs(SYS5, ELS)
+    -p: Mark directories
+    -Q: List non-graphic characters using double-quotes and C-style notation
+    -r: Reverse the sort
+    -R: Recursively list contents of all directories
+    -s: List size in KBytes(BSD, ELS) or in blocks(SYS5)
+    -t: Sort files according to time
+    -u: List time of last access
+    -U: List unsorted(ELS)
+    -1: List single column
+     ~: If a tilde precedes any of the above options then that option is
+	reset, effectively causing it to be canceled.
+
+
+Enhanced LS -- MISCELLANEOUS:
+
+    +H: Give HELP piped through PAGER
+    +l: Mimic /bin/ls behavior
+    +4: Use BSD semantics
+    +5: Use SYS5 semantics
+    +c: Output ELS options and environment settings used to produce listing
+	(useful for documenting how a particular listing was generated)
+    +d: Don't list directories as files, but list their contents (has the
+	opposite effect of -d)
+    +h: Allow +X to act upon symbolically linked files
+    +q: Quote unusual and troublesome file names (besides doing a more
+	thorough job than either -b or -Q, this option also quotes special
+	and non-graphic characters so that the file name can subsequently be
+	used as an argument for most Unix commands; thus, the +q option is
+	automatically implied whenever using the +X option).
+    +Q: Display Quotals (quota+total) for indicated hierarchy or files.
+	The quotal option will list the total size and number of files
+	owned by each user/UID and group/GID.  For example, to display
+	quotals for all files in /usr hierarchy:
+		els +Q -AR /usr
+    +R: Recursively list contents of all directories (same as -R)
+    +v: Print els version and information
+    +V: Verbose mode
+    +w: Suppress warnings about unreadable files, etc.
+    +z: List volatile file information as zero (volatile file information is
+	defined as those values that change whenever a file is listed or
+	those values that aren't preserved after a hierarchy gets copied
+	or restored; for example, a directory or a symbolic link changes its
+	access time whenever being listed; a symbolic link changes its
+	modification time and/or ownership after being copied; a directory
+	doesn't always preserve its size after being copied).  Also, since
+	volatile file information can change over time, this option is
+	particularly useful when stamping a hierarchy (see +S option), or
+	when comparing the listings of two very similar hierarchies.
+     ~: If a tilde precedes any of the above options then that option is
+	reset, effectively causing it to be canceled.
+
+    +C: Specify checksum algorithm (B|bsd, S|sysv, P|posix, or C|crc32).
+	Additionally, if U|unaccess is specified then each file's access
+	time will be preserved (if possible).  'bsd' is similar to
+	/usr/ucb/sum under SunOS5/Solaris or '/usr/bin/sum -r' under
+	Linux; 'sysv' is similar to /usr/bin/sum under SunOS5/Solaris or
+	'/usr/bin/sum -s' under Linux; 'posix' is similar to
+	'/usr/bin/cksum' under SunOS5/Solaris, Linux, HPUX10+, etc; and
+	'crc32' is the algorithm used by ZLIB et al.  For example, to
+	recursively list checksums of all files:
+		els +C=bsd +z +GCSN -L -RA	# similar to /usr/ucb/sum
+		els +C=sysv +5l +z +GCSN -L -RA	# similar to /usr/bin/sum
+		els +C=posix +z +GCsN -L -RA	# similar to /usr/bin/cksum
+		els +C=crc32 +z +GCsN -L -RA	# crc32 algorithm
+		els +C=posix,U +z +GCsN -L -RA	# preserve access times
+		els +C=PU +z +GCsN -L -RA	# same as 'posix,unaccess'
+
+    +M: Macro 1 for listing ISO8601 *modification* dates of all files
+	except directories (same as: els +Gmn +NFL +TI +d).  For example, to
+	list the 30 most recently modified source code files in a hierarchy:
+		els +M -RA +I'*.{c,h,cc,hh}' | sort | tail -30
+   +MM: Macro 2 for listing ISO8601 *access* dates of all files except
+	directories and symbolic links (same as: els +Gan +NF +TI +d \
+	+F'T{~l}').  For example, to list the 100 most recently accessed 
+	executable files under the /usr hierarchy:
+		els +MM -RA +F'P{+x}' /usr | sort | tail -100
+  +MMM: Macro 3 for listing ISO8601 *change* dates of all files and
+	directories (same as: els +Gcn +NFL +TI).  For example, to list
+	the 100 most recently changed files and directories under the /usr
+	hierarchy:
+		els +MMM -RA /usr | sort | tail -100
+
+    +o: Specify file for output, e.g.:  els -laR +o=output.dat
+
+    +t: Traverse mount-points(M) and/or expanded symbolic-links(L) during
+	recursive listings.  For example, to traverse any mount-point (i.e.
+	a different file-system) encountered during a recursive listing:
+		els -laR +t=M
+	To traverse both mount-points and expanded symbolic-links:
+		els -laR -L +t=ML
+	Note: '+t=L' is effective only if '-L' is also specified, as '-L'
+	is what enables expansion of symbolic-links.  '+t=M' must also be
+	specified with '+t=L' (i.e. +t=ML), if you want to traverse expanded
+	symbolic-links that vector-off onto different mount-points.  By
+	default all traversing is disabled unless requested.  To disable all
+	traversal specify '+t=~L~M' (or the logical equivalent '+~t=LM').
+
+    +Z: Specify timezone to be used in place of current TZ setting.
+	The timezone should be in the form of:
+	    All OSes:		STDoffset[DST[offset][,rule]]
+	Additionally, if your host provides zoneinfo then you can also
+	use names from the appropriate zoneinfo directory:
+	    SunOS/Solaris:		/usr/share/lib/zoneinfo
+	    Linux2, Darwin, FreeBSD:	/usr/share/zoneinfo
+	    OSF1:			/etc/zoneinfo
+	For example:
+	    els -la +Z=EST5EDT +TIZ	(Available on *all* OSes)
+	    els -la +Z=US/Eastern +Tv	(Available on OSes with zoneinfo)
+
+
+Enhanced LS -- FORMATTING:
+
+    +f: Field separator character, e.g.:  els -la +f: +TI
+
+    +G: GENERAL format, e.g.:  els +G~tp~lusmn +NfL (same as els -l)
+	i:  inode number
+      t,T:  type of file in alpha(t), symbolic(T)
+      p,P:  permission in alpha(p), numeric(P)
+	M:  permission in chmod format (e.g. u=rwxs,g=x,o=x)
+	A:  ACL indicator '+' if present
+	l:  link count
+      u,U:  UID in alpha(u), numeric(U)
+      g,G:  GID in alpha(g), numeric(G)
+      o,O:  owner in alpha(o == u:g), numeric(O == U:G)
+      s,S:  size in bytes(s), blocks(S)
+        h:  size scaled by powers of 1000 with one of kmgtpezy
+        H:  size scaled by powers of 1024 with one of KMGTPEZY
+    m,a,c:  time modified(m), accessed(a), status changed(c)
+	    (time displayed using +T format)
+      n,N:  file name(n), full file name(N)
+	    (name displayed using +N format)
+    d,f,F:  directory name(d), file name(f), full file name(F)
+	L:  Symbolic link target prefaced by '->'
+	C:  checksum (performed on regular files only using
+	    algorithm and/or flags specified by +C option)
+
+    +T: TIME format, e.g.:  els -la +T^rD (give age of file in days)
+       ^a:  Modifier for absolute time since the epoch
+       ^d:  Modifier for delta time from now (i.e. difference)
+       ^r:  Modifier for relative time from now (i.e. age)
+       ^y:  Modifier for relative time since start of year
+       ^A:  Modifier for alpha dates instead of numeric
+       ^N:  Modifier for numeric dates instead of alpha
+       ^G:  Modifier for GMT dates instead of local
+       ^L:  Modifier for local dates instead of GMT
+       ^M:  Modifier for meridian instead of military time
+	F:  Floating-point style (same as +T^N~YMD.hms~)
+	I:  Iso8601 style
+	e:  els style (default, same as +TM%_DYt)
+	l:  ls style (same as +TM%_DQ)
+	d:  dos style (same as +T^N%_M-D-y^M%_h:~mp~)
+	w:  windows style (same as +T"^N%_M/D/y^M%_tP'M'")
+	v:  verbose style (same as +TWM%_DTZY)
+  Y,M,D,W:  year(Y), month(M), day(D), weekday(W)
+  h,m,s,c:  hour(h), minutes(m), seconds(s), clock(c)
+      t,T:  time as h:m(t), h:m:s(T)
+	Q:  time or year depending on age
+	p:  'a' or 'p' depending on meridian
+	    (meaningful only with ^M modifier)
+	P:  'A' or 'P' depending on meridian
+	    (meaningful only with ^M modifier)
+	y:  year modulo 100
+	Z:  zone name
+
+    +N: NAME format, e.g.:  els -laR +NF
+       ^q:  Modifier for quoting unusual file names (same as +q)
+	F:  Full file name (same as +Nd/f)
+	d:  Directory name
+	f:  File name
+	l:  Symbolic link target
+	L:  Symbolic link target prefaced by '->'
+
+    +G, +T, +N format controls
+	\:  Output following character verbatim
+	~:  Toggle spacing off/on
+       %%:  Output a single % character
+       %D:  Output directive 'D' using default width and default padding
+      %_D:  Pad left side of output with blanks using default width
+      %0D:  Pad left side of output with zeros using default width
+      %-D:  Suppress all padding and use minimum width
+     %0nD:  Output a zero padded field 'n' characters wide
+     %_nD:  Output a blank padded field 'n' characters wide
+      %nD:  Output a right justified field 'n' characters wide
+     %-nD:  Output a left justified field 'n' characters wide
+     %+nD:  Output a field 'n' characters wide regardless of ~ spacing
+
+	E.g.: els +G%10u%-10gN (print the uid right justified and the gid
+	left justified in two 10 character fields followed by the file name)
+
+	If a string occurs within an inner set of quotes then the string
+	is output verbatim (except for any directives within the inner
+	quotes prefaced by a %).  Thus, the following are equivalent:
+
+	+T"'DATE: '^N%M/D/Y"    # M/D/Y in outer quotes (% optional)
+	+T'"DATE: "^NM/%D/Y'    # M/D/Y in outer quotes (% optional)
+	+T'"DATE: ^N%M/%D/%Y"'  # M/D/Y in INNER quotes (% REQUIRED)
+
+
+Enhanced LS -- FILTERING:
+
+    +I: Include specified files, e.g.:  els -laR +I"*.{c,h,cc,hh}"
+    +E: Exclude specified files, e.g.:  els -laR +E"*.o"
+    +i: Include specified directories, e.g.:  els -laR +i"[a-m]*"
+    +e: Exclude specified directories, e.g.:  els -laR +e".git"
+
+    +F: FILTER EXPRESSION
+
+	A filter expression (fexpr) consists of one or more of the
+	following filter types separated by Boolean operators:
+		A{...} -- Access Filter
+		T{...} -- Type Filter
+		P{...} -- Permission Filter
+		Q{...} -- Quantity Filter
+		U{...} -- Unusual Filter
+		c{...} -- clearcase Filter
+		l{...} -- link Filter
+
+	Each filter type consists of one or more terms separated by
+	Boolean operators.  The following lists each term appropriate
+	for the associated filter type:
+	    Access Filter Terms:
+		rwxe: read, write, execute(x), or existence(e)
+	    Type Filter Terms:
+		rf: regular file (r and f are synonymous)
+		dcb: directory, char device, block device
+		plsD: pipe/fifo, symbolic link, socket, Door
+		S: Special/device file (same as 'b|c')
+	    Permission Filter Terms:
+		value: octal value <= 07777
+		ugo: user field, group field, other field
+		a: all fields (same as 'ugo')
+		+: test if indicated field(s) contain any attribute(s)
+		-: test if indicated field(s) missing any attribute(s)
+		=: test if indicated field(s) match attribute(s) exactly
+		rwx: read attribute, write attribute, execute attribute
+		s: setuid/setgid attribute (applies to u and/or g fields)
+		t: sticky attribute (applies to u field)
+		l: mandatory lock attribute (applies to g field)
+	    Quantity Filter Terms:
+		iAlugs: inode, ACL count, link count, uid, gid, size
+		mac: time modified, accessed, status changed
+		== != ~= : equals, not equals, not equals
+		> >= : greater than, greater than or equals
+		< <= : less than, less than or equals
+		value: positive integer to be compared against
+		YMWD: Years, Months, Weeks, Days
+		hmsc: hours, minutes, seconds, clock
+	    Unusual Filter Terms:
+		t: unusual type (i.e. !regular & !directory & !symlink)
+		p: unusual permissions (i.e. o+w & !+t & !symlink |
+		   setuid | setgid | mandatory_locking)
+		P: unusual permissions (i.e. access(o) > access(g) |
+		   access(o) > access(u) | access(g) > access(u))
+		A: ACL_count > 0
+		l: link_count > 1
+		u: nobody/noaccess UID (60001, 60002, 65534, or 4294967294)
+		   or unassigned UID (i.e. not listed in /etc/passwd)
+		g: nobody/noaccess GID (60001, 60002, 65534, or 4294967294)
+		   or unassigned GID (i.e. not listed in /etc/group)
+		mac: modification, access, change time is in the future
+		n: name containing unusual or troublesome characters
+		N: full pathname containing unusual or troublesome characters
+		L: symbolic link pointing to non-existent file
+		s: sparse file (i.e. partially filled w/data)
+		G: General tests (i.e. perform all the above unusual tests)
+		S: Security related tests (i.e. !directory & o+w |
+		   directory & o+w & !+t | setuid | setgid | device_file)
+	    clearcase Filter terms:
+		e: VOB element
+		p: VIEW private
+	    link Filter terms:
+		e: symbolic link target exists
+		t: symbolic link traverses filesystem and/or clearcase VOB
+
+	Boolean operators are as follows:
+		! or ~ -- Boolean NOT (evaluated first)
+		& or , -- Boolean AND (evaluated second)
+		| or : -- Boolean OR (evaluated last)
+	(The reason for allowing multiple symbols for Boolean operations is
+	that characters such as '!' have special meaning within the shell
+	and are awkward to use.  Also, characters such as ',' can improve
+	readability when grouping lists of terms, e.g.: 'u+rw,g-rw,o-rw'
+	is more readable than 'u+rw&g-rw&o-rw'.)
+
+	The syntax for each term is based upon its associated filter type.
+	In all cases, any filter having multiple terms must use Boolean
+	operators to separate each of its terms.  The 'Access' and 'Type'
+	Filters are the simplest cases when it comes to syntax, as each of
+	their terms consists of a single letter.
+
+	The syntax for each term of the permission filter is very similar to
+	Unix's chmod command with the following exceptions: if the left-hand
+	side of a term is blank then it is taken to mean ANY instead of ALL
+	fields; the symbol '+' is taken to mean HAS instead of GIVE; the
+	symbol '-' is taken to mean MISSING instead of TAKE; and the symbol
+	'=' is taken to mean MATCH EXACTLY instead of SET EXACTLY.  Thus,
+	the filter '+FP{+rw}' means ANY FIELD HAVING READ-WRITE PERMISSION,
+	while the filter '+FP{a=}' means ALL FIELDS HAVING EXACTLY NO
+	PERMISSIONS.
+
+	The syntax for each term of the quantity filter consists of a
+	single letter and an integer quantity separated by a comparison
+	operator.  Moreover, if the quantity being compared represents the
+	file modification, access, or status change time (i.e. one of
+	'mac'), then the integer quantity must be followed by a qualifier
+	designating Years, Months, Weeks, Days, hours, minutes, seconds,
+	or clock (i.e. one of 'YMWDhmsc').
+
+	Examples:
+	    Recursively list regular files in /usr/bin that are
+	    setuid/setgid having a UID/GID of less than 10:
+		els -laR +F'T{r}&P{u+s|g+s}&A{x}&Q{u<10|g<10}' /usr/bin
+
+	    Recursively list all non-directory files that share a common
+	    inode (i.e. hard-link) in /etc and /dev:
+		els +GilN +F'Q{l>1}&T{~d}' -R /etc /dev | sort
+
+	    Recursively list all files modified on or after April 1, 1999
+	    belonging to either the user 'markb' or the group 'projectx':
+		els -laR +F'Q{m>=19990401}&Q{u=markb|g=projectx}'
+
+	    Display all files where g or o have more permission than u:
+		els -laR +F'P{u-w,+w}|P{u-x,+x}|P{u-r,+r}' +NF
+
+	    Display all files having 'unusual' types or permissions
+	    (e.g., world-writable or sticky files excluding symlinks,
+	    setuid/setgid/locking files excluding symlinks and dirs,
+	    or any file type other than regular/directory/symlink):
+		els -laR +NF +F'(P{o+w:+t},T{~l}) | (P{+s,+x:+l},~T{d:l}) |
+			(~T{r:d:l})'
+
+	    List all files greater than 100K bytes that have not been
+	    accessed in over half a year (.5Y) and were modified over one
+	    year ago (1Y):
+		els +GsamN +T^rD +d -AR +F'Q{s>=100000 & a>182D & m>365D}'
+		els +GsamN +T^rD +d -AR +F'Q{s>=100K & a>.5Y & m>1Y}'
+
+	    List all files having troublesome characters in their name:
+		els -laR -Q +NF +F'U{N}'
+
+
+Enhanced LS -- UTILITIES:
+
+    +S: STAMP: The output from this option is used for recording the state
+	of a hierarchy for future comparison to determine any changes.
+
+	C:  Stamp a source code hierarchy excluding *.[aod], *~
+	    and .git files, e.g.:  els +SC -R /home/myfiles/src
+	c:  Same as +SC, except nothing is excluded
+
+	O:  Stamp an operating system hierarchy (no files are excluded and
+	    more detail given), e.g.:  els +SO +z -R  /  /usr /var /opt
+	    (Note that +z is recommended to zero volatile data)
+	o:  Same as +SO, except checksumming is also performed, e.g.:
+	    els +C=posix +So +z -R  /  /usr /var /opt
+
+	F:  Stamp a file hierarchy (same as +SO except that UIDs and GIDs
+	    are excluded), e.g.:  els +SF +z -R /etc /dev /usr /var
+	    (Note that +z is recommended to zero volatile data)
+	f:  Same as +SF, except checksumming is also performed
+
+    +U: UNTOUCH: Create a script which can be saved into a file for later
+	recovery of modification dates following a /bin/touch, e.g.:
+	    els +U -R * > untouch  # Create untouch script file
+	    /bin/touch *           # Clobber modification dates
+	    sh untouch             # Recover modification dates
+
+    +W: WATCH: Watch the progress of how many files have been examined.
+	This option is best used in conjunction with +F filtering when
+	output is sparse and there are numerous files being examined or
+	when stdout is being redirected to a file, e.g.:
+	    els +W +F'Q{s=0}' +NF -laR
+	    els +W -laR > /tmp/output
+	Additionally, +W will intercept SIGQUIT (i.e. ^\) while listing
+	and display the name of the directory currently being processed.
+
+    +X: EXECUTE: The output of the +G format will be executed instead of
+	listed for each file.  If +X is followed by a number then els will
+	terminate whenever the command returns a status of some other value,
+	otherwise the return status will be ignored.  Additionally, if +V is
+	specified then each command will be echoed before being executed.
+
+	E.g., fix the mode of any .c, .h, .cc, .hh file having 'x' mode set
+	in any of its fields:
+	    els +F'P{+x}' +I'*.{c,h,cc,hh}' +G'"chmod a-x %N"' +XV -RA
+
+	E.g., fix the mode of any file having 'x' mode set in the 'u' field
+	but is missing from the 'g' or 'o' fields:
+	    els +F'P{u+x,g-x|u+x,o-x}' +G'"chmod go+x %N"' +X0 +V -RA
+
+
+Enhanced LS -- SPECIAL FEATURES:
+
+    --version
+	Print els version and information (same as +v)
+    --CCaseMode, --ClearCaseMode
+	Mimic ClearCase behavior such as masking 'w' permissions, etc.
+    --GTarStyle
+	Mimic GNU 'tar tv' listings, e.g.:
+	    els -lAR --GTarStyle
+    --Tar5Style
+	Mimic Sys5 'tar tv' listings, e.g.:
+	    els -lAR --Tar5Style
+    --FirstFound
+	List first occurrence found then exit (used to locate hierarchies
+	containing one or more files with desired properties), e.g.:
+	    els +F'T{r}&Q{a<30D}' -AR +NF --FirstFound /tmp
+    --OncePerDir
+	List once per directory (used to locate directories containing one
+	or more files with desired properties)
+    --DirDepth=N
+	Limit the recursion depth of directories to N
+    --IncludeSS, --IncludeSnapShot
+	Include listing of snapshot directories
+    --setenv:VARIABLE=VALUE
+	Create and set named environment variable to given value, e.g.:
+	    els -laR +c --setenv:LC_ALL=fr_CA.ISO8859-1
+	    els -laR +c --setenv:TZ=US/Mountain
+    --unsetenv:VARIABLE
+	Unset and delete named environment variable, e.g.:
+	    els -laR +c --unsetenv:TZ
+
+
+Enhanced LS -- ENVIRONMENT:
+    PAGER: Name of pager program for displaying help text
+
+    ELS_LC_COLLATE, ELS_LC_TIME, LC_ALL, LC_COLLATE, LC_TIME:
+	The Posix LC_ALL environment variable supersedes both LC_COLLATE and
+	LC_TIME (e.g. SunOS5/Solaris and Linux behavior).  But ELS_LC_COLLATE
+	and ELS_LC_TIME further supersede this behavior as follows:
+
+	Collate/sorting locale determined as follows:
+	   Use ELS_LC_COLLATE if defined, else use LC_ALL if defined,
+	   else use LC_COLLATE if defined, else use 'C' locale.
+
+	Time locale determined as follows:
+	   Use ELS_LC_TIME if defined, else use LC_ALL if defined,
+	   else use LC_TIME if defined, else use 'C' locale.
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+INTRODUCTION:
+
+The reason that ELS was originally written was so that consistent dates
+could be generated and saved into a file and that these dates could be
+compared at a later date to determine which files had changed.  /bin/ls
+is unsuited for this purpose as sometimes it lists the date/time and
+other times it lists the date/year depending on the age of the file.  ELS
+always lists the date/year/time regardless of when the file was created.
+
+For example, els -la will *always* list files as:
+	drwxrwsr-x 1 markb   markb     1024 Feb 29 1996 12:21 leap.year
+
+Whereas /bin/ls -la will *sometimes* list files as:
+	drwxrwsr-x 1 markb   markb     1024 Feb 29 12:21 leap.year
+
+and *sometimes* /bin/ls -la will list files as:
+	drwxrwsr-x 1 markb   markb     1024 Feb 29  1996 leap.year
+
+
+ELS's main feature is that it allows you to specify the format of the output
+using the general format (+G).  ELS also supports formats for specifying the
+time format (+T) and for specifying the filename format (+N).
+
+
+--------
+You can obtain most of the same information with ELS that you can using
+/bin/ls.  For example, the following command will give you results similar
+to /bin/ls:
+	els -laR /home/markb
+
+If full path names are desired, you can accomplish this as follows:
+	els -laR +NF /home/markb
+
+If you prefer, you can even list these files in ISO-8601 format using
+full file names as follows:
+	els -laR +TI +NF /home/markb/*
+
+(ISO-8601 format is defined as YYYYMMDD.hhmmss and is available using the
+"+TI" option.  The advantage of using ISO-8601 format is obvious once you
+realize that /bin/sort can more easily deal with dates such as
+"19960229.122101" than it can with "Feb 29, 1996 12:21:01".)
+
+
+Any combination of output format can be accomplished using the +G general
+format.  For example, the command:
+	els -laR
+
+is equivalent to:
+	els +G~tp~lugmnL -aR
+
+The '~' is necessary to prevent spacing between the 't' (file type) and
+the 'p' (file permissions) field.  Appropriate spacing is normally
+inserted between all fields, but occasionally it is desirable to suppress
+spacing between certain fields.  Try executing the above command both with
+and without the '~' and the difference should be obvious.
+
+
+If you prefer, you can list the access time instead of the modification
+time using the +G general format:
+	els +G~tp~luganL -R /home/markb/*
+
+
+With ELS you can also list *both* the access and the modification times
+as follows:
+	els +G~tp~lugamnL -R /home/markb/*
+
+
+If you combine ELS's +G general format along with its ability to generate
+ISO-8601 formatted dates and full path names, you can now do useful things
+such as search for the most recently *modified* files in a source-code
+hierarchy:
+	els +Gmn +TI +NF -R /home/markb/src | sort | tail
+
+
+Another useful example might be to find which files have been most
+recently *accessed* in /usr/local/bin:
+	els +Gan +TI +NF -R /usr/local/bin | sort | more
+
+This is handy for locating those god-awful ancient programs that no
+one ever uses.
+
+
+Since it is often desirable to list the full pathname, ELS allows a
+shorthand way of doing this via the +G general format:
+	els +Gan +NF
+
+is equivalent to:
+	els +GaN
+
+
+--------
+
+ELS allows you to generate time RELATIVE to now (i.e. ^r).  For         
+example, you can list files by the number of 'W'eeks since they were
+last 'm'odified:
+	els +GmN +T^rW -R /usr/local/bin
+
+Or you can list files by the number of 'D'ays since they were last 'a'ccessed
+(this is very useful for finding files that no one is using):
+	els +GaN +T^rD -R /usr/local/bin
+
+ELS even also allows you to generate ABSOLUTE time since the epoch (i.e. ^a).
+For example, you can list files by the number of 's'econds since the epoch:
+	els +GmN +T^as -R /usr/local/bin
+
+
+The following script shows an example of how this RELATIVE time feature
+can be used as a filter to search for large files that haven't been
+accessed or modified in a given number of 'D'ays.  For example, suppose
+we wish to search for all files whose 's'ize is greater than 1.1M bytes
+(i.e. 1100000) that have not been 'a'ccessed in over half a year (i.e.
+182.5 days) and were 'm'odified over one year ago (i.e. 365 days):
+
+	#!/bin/sh
+	echo "    Size   Acc   Mod File"
+	echo " =======  ====  ==== ======"
+	els +f" " +GsamN +T^rD +d -AR | awk -F" " '
+		{if ($1 >= 1100000 && $2 > 182 && $3 > 365)
+			{printf "%8d%6d%6d %s\n", $1, $2, $3, $4};
+		}'
+
+Here is the same script using ELS's filtering capability:
+	#!/bin/sh
+	echo "    Size   Acc   Mod File"
+	echo " =======  ====  ==== ======"
+	els +GsamN +T^rD +d -AR +F'Q{s>=1100000 & a>182D & m>365D}'
+
+Or written more succinctly:
+	#!/bin/sh
+	echo "    Size   Acc   Mod File"
+	echo " =======  ====  ==== ======"
+	els +GsamN +T^rD +d -AR +F'Q{s>=1.1m & a>.5Y & m>1Y}'
+
+Note in the final example that 1.1M was used in place of 1100000,
+.5Y was used in place of 182D, and 1Y was used in place of 365D.
+
+
+--------
+By specifying the +N format you can separate the pathname and the
+filename components.  Suppose you want a sorted list of all files in
+a hierarchy, but you want this list sorted by the file's *first* name
+followed by the directory from whence each file originated (this is
+handy for finding which files in a hierarchy have the same name):
+	els +N"f d" -R | sort | more
+
+The +N"f d" format forces a space to follow the filename so that the
+listing is broken into two fields.
+
+Two other examples of forcing a space might be:
+	els -la +T"^NM/D/y h:m"	(generate U.S. style dates)
+	els -la +T"^ND,M,y h:m"	(generate European style dates)
+
+To further improve the appearance of the above output, you might consider
+padding the first field with blanks rather than zeros:
+	els -la +T"^N%_M/D/y h:m"
+	els -la +T"^N%_D,M,y h:m"
+
+You might also want to list using meridian rather than military time:
+	els -la +T"^N%_M/D/y ^M%_h:m P'M'"
+	els -la +T"^N%_D,M,y ^M%_h:m P'M'"
+
+If you desire Dos- or Windows-style dates, then the +T format has predefined
+macros named "d" and "w" which will simplify the format:
+	els -la +Td  (generate Dos-style dates)
+	els -la +Tw  (generate Windows-style dates)
+
+Note that the predefined macros +Td and +Tw are equivalent to:
+	+T"^N%_M-D-y ^M%_h:~mp~"
+	+T"^N%_M/D/y ^M%_t P'M'"
+
+The following lists files using the "v"erbose time format:
+	els -la +Tv
+
+If you want to list files using a different timezone, the following example
+shows how this might be done using SunOS/Solaris, Linux, FreeBSD, or Darwin
+(this example uses the "zoneinfo" database that exists on many brands of
+Unix, and may or may not be supported by your particular brand).  Notice
+also that the verbose time format +Tv was specified so as to include the
+timezone name:
+	els -la +Tv +Z=Canada/Newfoundland
+
+
+--------
+ELS allows you to selectively include/exclude files using wildcard patterns.
+For example, here is how you can EXCLUDE listing all files in a hierarchy
+ending in .o, .a, or .Z:
+	els -laR +E"*.[oaZ]" /home/markb/src
+
+Here is how you can INCLUDE all files in a hierarchy ending in .c:
+	els -laR +I"*.c" /home/markb/src
+
+More complex wildcard patterns can be specified using the same sub-string
+"{}" syntax similar to csh, tcsh, and bash.  For example, to list all .c,
+.cc, .h, and .hh files having substrings "Main", "main", "Sub", or "sub":
+	els -laR +I"*{[Mm]ain,[Ss]ub}*.{c,cc,h,hh}" /home/markb/src
+
+If you wish to include/exclude directories then use +i/+e (+i/+e apply
+matches to directories only, while +I/+E apply matches to files only).
+Note also that multiple +I, +E, +i, +e filters can be specified.  For
+example, to list all directories that START with the leters a, b, or c
+OR that END with the letters X, Y, or Z:
+	els -laR +i"[abc]*" +i"*[XYZ]" /home/markb/src
+
+Here is an example of a series of ELS commands that could be used to
+generate a script file containing all the mkdir, chown, and chmod commands
+for taking the directory hierarchy of your current working directory and
+then recreating a skeleton copy in /tmp/skel:
+
+	mkdir /tmp/skel
+	cd /home/markb
+	els -R +G'"mkdir %N"'   +E'*'   >! /tmp/mk-skeleton
+	els -R +G'"chown %u%N"' +E'*'   >> /tmp/mk-skeleton
+	els -R +G'"chgrp %g%N"' +E'*'   >> /tmp/mk-skeleton
+	els -R +G'"chmod %M%N"' +E'*'   >> /tmp/mk-skeleton
+	cd /tmp/skel
+	sh /tmp/mk-skeleton
+
+Or if you wish to bypass creating a script file and execute the commands
+directly using the "+X" execute function:
+
+	mkdir /tmp/skel
+	cd /home/markb
+	els -R +G'"cd /tmp/skel; mkdir %N"'   +E'*' +XV
+	els -R +G'"cd /tmp/skel; chown %u%N"' +E'*' +XV
+	els -R +G'"cd /tmp/skel; chgrp %g%N"' +E'*' +XV
+	els -R +G'"cd /tmp/skel; chmod %M%N"' +E'*' +XV
+
+Observe that +E'*' was used to exclude all non-directory files from being
+listed while traversing the directory hierarchy.  An alternate way to
+exclude all non-directory files is to use the filter expression: +F'T{d}'
+
+Second, observe that %M was used in the "chmod %M%N" command, as %M
+generates the modes using symbolic notation in the *correct* order for the
+chmod command.
+
+Third, observe that two pairs of quotes were used: the outer quotes were used
+to prevent the shell from breaking the +G argument up into two arguments due
+to the embedded space following the mkdir, etc. commands; the inner quotes
+were used to tell ELS to process the characters verbatim rather than as
+output directives.  However, when an output directive is desired inside of a
+string, then the indicator "%" is required.  Thus, the following two
+statements will achieve the same results:
+
+	els +G'"Date: "'m'", File: "'NL -R
+	els +G'"Date: %m, File: %N%L"' -R
+
+Note that the two pairs of quotes can be stated either as '"..."'  or
+"'...'" so long as they are symmetrically balanced on both sides:
+
+	els +G'"Date: %m, File: %N%L"' -R
+	els +G"'Date: %m, File: %N%L'" -R
+
+The indicator "%" works similar to printf().  For example, the following
+will output two separate fields each 20 characters wide and the first field
+will be right justified and second field will be left justified:
+
+	els +G%20N%-20s
+
+
+--------
+Suppose you want to find all non-directory files on the root file system
+"/" that share a common inode (i.e. files hard-linked via the 'ln'
+command that consequently have a link-count greater than 1).  One way of
+doing this is using ELS's Quantity and Type filters:
+
+	els +GilN +F'Q{l>1}&T{~d}' -RA / | sort
+
+Note that directories were excluded from this search via 'T{~d}' since
+by definition every directory has at least two links (i.e. '.' and '..').
+
+
+--------
+Suppose you want to check out all object and library (i.e. *.o/*.a) files
+in a ClearCase hierarchy (ClearCase is a versioning file system sold by
+Rational):
+
+    cd /home/clearcase/vob
+    els +I'*.[oa]' +G'"cleartool co -nc %N"' +F'c{~p}' -RA > /tmp/checkout-objs
+    # Execute checkout-obs script created by els:
+    source /tmp/checkout-objs   (or ". /tmp/checkout-objs" if using bash)
+
+Note that +F'c{~p}' was used to filter-out view-private files
+(view-private files are either non-clearcase elements or were previously
+checked-out elements).
+
+
+--------
+Since ELS's original intent was for tracking file changes in a hierarchy,
+special options for "stamping" a hierarchy are available.  A "stamp" is
+taken to mean a listing that is performed on a particular date and is
+saved to a file so that a similar "stamp" can be performed at a later date
+and the two "stamps" can then be compared for any changes that may have
+occurred.
+
+For example, suppose that on Dec 25, 1995 I did the following:
+	els +SC -R /home/markb/src > /home/markb/19951225.Stamp
+And on Feb 29, 1996 I performed a second stamp:
+	els +SC -R /home/markb/src > /home/markb/19960229.Stamp
+
+I can now determine any changes by doing a "diff":
+	diff /home/markb/19951225.Stamp /home/markb/19960229.Stamp
+
+
+Similarly, suppose I was the paranoid type and I wanted to protect my
+operating system from Joe Cracker.  Also suppose that my operating system
+resides on separate partitions for /  /usr /var /opt.  I would then
+want to do the following:
+	els +So +z -R  /  /usr /var /opt > /home/markb/19960229.OS-Stamp
+
+The +So stamp is more complete than the +SC stamp as +So performs a
+checksum, and saves the file type, mode, owner, group, size, and date.  If
+my system is compromised I can generate a second +So stamp and compare the
+two.
+
+ELS allows you to select one of the following four checksum algorithms via
+the +C option: +C=B|bsd, +C=S|sysv, +C=P|posix, or +C=C|crc32.  If no
+algorithm is specified then the 'bsd' algorithm will be used.  Neither
+'bsd' or 'sysv' algorithms are very robust, but will suffice for most
+purposes.  If a more robust checksum is desired, then specify either
++C=P|posix (which will generate a 32-bit CRC conforming to the Posix
+standard P1003.2/D11.2), or +C=C|crc32 (which will generate a 32-bit CRC
+conforming to the Ansi standard X3.66).  For example, to perform a stamp
+using 'posix' checksums:
+
+	els +C=P +So +z -R  /  /usr /var /opt  >  /posix-cksum.OS-Stamp
+
+NB: It is important to realize that ELS will not traverse mount-points
+unless directed to do so via the '+t=M' command (the above example assumes
+that /, /usr, /var, and /opt are all separately mounted file systems).
+
+It is also recommend that +z be used to zero volatile data--when a future
+stamp is performed it is likely that some of the volatile stat(2) data
+will have changed and it may be useful to prevent these changes from
+showing up as being different (see the +z option for more information
+on what constitutes volatile stat(2) data).
+
+FYI: OSF1 V4.0's /usr/bin/cksum uses a different algorithm than
+/usr/bin/cksum under SunOS5/Solaris, Linux, HPUX10+, etc.; thus,
+checksums generated with OSF1's /usr/bin/cksum will not agree with ELS
+nor with anyone else.  However, if you use "els +C=P +GCsN" to generate
+checksums under OSF1 then these can be used to compare with other OSes!
+
+
+--------
+ELS provides a mechanism for recovering the modification dates of files
+following a "touch".  For example, suppose you are working on a project with
+a group of pea-brains who believes that the "right" way to remake object
+files is to first "touch" all the source files before typing "make".  If you
+were to run the command "els +U -R" and save the output to a file, then at
+some later date you could execute the resulting "untouch" script and restore
+the original dates of your files (assuming the checksums of your files
+hadn't changed in the interim).
+
+Here's a possible scenario:
+	# Create and/or update your untouch script file:
+	els +U -R * > untouch
+
+	# Suppose that later on, someone decides to "touch" your files:
+	touch *
+
+	# You can then recover modification dates of all files whose checksums
+	# haven't changed since the last update of your "untouch" script:
+	sh untouch
+
+Note that the "untouch" feature requires the presence of the "chdate" program
+which is included with this software.
+
+It is also worth noting that ELS's builtin untouch command '+U' is roughly
+equivalent to the following set of commands:
+	els +q +TI +G'"[ -f %N ] && [ `els +GC %N` -eq %C ] && chdate -m %m%N"'
+
+
+--------
+ELS correctly interprets *negative* Unix-times (since most Unixes record
+time using a 32-bit counter representing the number of seconds since Jan 1,
+1970 GMT, any files created after Jan 19 03:14:08 2038 GMT will be negative).
+
+    Here is an educational experiment to try on your machine:
+	touch the_future
+	chdate -m 20991228.120000 the_future
+
+    Under most Unixes, "ls -la the_future" gives us the following:
+	-rw-rw-r--  1 markb           0 Nov 22  1963 the_future
+
+    However, using "els -la the_future" we get:
+	-rw-rw-r--  1 markb           0 Dec 28 2099 12:00 the_future
+
+In fact, ELS can correctly list the times of any file created on or before
+the date Jan 19 03:14:08 2106 GMT.  For those folks still running SunOS4 in
+the year 2038, this will prove to be a very useful feature %-)
+
+
+--------
+Other features have been squirreled-away which may or may not be of
+interest to you.  The command "els +M -RA" is a short-hand way of
+displaying modification time in ISO-8601 format (it is equivalent to
+"els +Gmn +TI +NF +d -RA"), as this is a command that I often find
+useful.
+
+The command "els +MM -RA" is a short-hand way of displaying access time in
+ISO-8601 format (it is equivalent to "els +Gan +TI +NF +d +F'T{~l}' -RA").
+It should be noted that the access time of a symbolic link is updated each
+time it is examined!  Because of this, symbolic links are filtered out.
+
+The command "els +MMM -RA" is a short-hand way of displaying change time in
+ISO-8601 format (it is equivalent to "els +Gcn +TI +NF +d -RA").  It should
+be noted that the change date changes quite often (e.g. Veritas backups
+change this value!).  Using chdate or GNU touch to change the modification
+or access time of a file will also change the change time.
+
+The command "els +MMMM" will generate the necessary "chdate" commands for
+restoring the modification and/or access dates of a file or directory to a
+previous date after having changed it.
+
+Note that if you want to restore the modification dates of directories, you
+need to remember to use the -d option to prevent expanding the contents of
+the directory.  E.g.:
+
+	els +MMMM -d /home/directory > /tmp/restore-dirdate
+	sh /tmp/restore-dirdate
+
+
+--------
+In addition to the examples of filter expressions intermixed within the
+previous examples, here are some additional examples of filter expressions:
+
+The following example illustrates recursively filtering for files having
+ACLs and then displaying them using a system-dependent program; SunOS5.5+
+uses getfacl, HPUX10 uses lsacl, and OSF1 uses getacl (unfortunately ACLs
+are not very standard between vendors):
+
+    SunOS5/Solaris2.x,7,8+:
+	els +F'Q{A>0}' +G'"getfacl %N"' -R +X
+
+    HPUX 10:
+	els +F'Q{A>0}' +G'"lsacl %N"' -R +X
+
+    OSF1:
+	els +F'Q{A>0}' +G'"getacl %N"' -R +X
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+BNF NOTATION FOR FILTER EXPRESSIONS: 
+
+	The following conventions are used:
+	    '...' ==> select the enclosed contents verbatim
+	    <...> ==> replace the enclosed contents with production-rule
+	    (...) ==> OPTIONALLY select enclosed sequence
+	    [...] ==> select EXACTLY ONE of the enclosed members
+	    [...]* ==> select ZERO OR MORE of the enclosed members
+	    [...]+ ==> select ONE OR MORE of the enclosed members
+	    [...]- ==> select EITHER ZERO OR ONE of the enclosed members
+
+	BOOLEAN OPERATORS:
+	    Not ::= [! ~]
+	    And ::= [&& & ,]
+	    Or  ::= [|| | :]
+	    AndOr ::= [<And> <Or>]
+	PARENTHESIS:
+	    OpenParen ::= [ '(' '{' ]
+	    CloseParen ::= [ ')' '}' ]
+	    NOTE: OpenParen must be paired with CloseParen of same type
+	ACCESS FILTER:
+	    Aterm ::= [r w x]+
+	    Aexpr ::= (<Not>) <Aterm> (<AndOr> <Aexpr>)
+	    Afilter ::= 'A{' <Aexpr> '}'
+	TYPE FILTER:
+	    Tterm ::= [r d c b p l s D S]
+	    Texpr ::= (<Not>) <Tterm> (<AndOr> <Texpr>)
+	    Tfilter ::= 'T{' <Texpr> '}'
+	PERMISSION FILTER:
+	    Pterm1 ::= [u g o a]* [+ - =] [r w x s t l]*
+	    Pterm2 ::= <OctalValue>
+	    Pterm ::= [<Pterm1> <Pterm2>]
+	    Pexpr ::= (<Not>) <Pterm> (<AndOr> <Pexpr>)
+	    Pfilter ::= 'P{' <Pexpr> '}'
+	QUANTITY FILTER:
+	    AbsoluteTime ::= <YYYYMMDD> (. [<hh> <hhmm> <hhmmss>])
+	    RelativeTime ::= <PositiveFloat> [Y M W D h m s c]
+	    Qop ::= [= != > >= < <=]
+	    Qterm1 ::= [i A l s] <Qop> <PositiveFloat> [ K k M m G g T t ]-
+	    Qterm2 ::= [m a c] <Qop> [<AbsoluteTime> <RelativeTime>]
+	    Qterm3 ::= [u g] <Qop> [<UserOrGroupNumber> <UserOrGroupName> '.']
+	    Qterm ::= [<Qterm1> <Qterm2> <Qterm3>]
+	    Qexpr ::= (<Not>) <Qterm> (<AndOr> <Qexpr>)
+	    Qfilter ::= 'Q{' <Qexpr> '}'
+	UNUSUAL FILTER:
+	    Uterm ::= [t p P A l u g m a c n N L s G S]
+	    Uexpr ::= (<Not>) <Uterm> (<AndOr> <Uexpr>)
+	    Ufilter ::= 'U{' <Uexpr> '}'
+	CLEARCASE FILTER:
+	    cterm ::= [p]
+	    cexpr ::= (<Not>) <cterm> (<AndOr> <cexpr>)
+	    cfilter ::= 'c{' <cexpr> '}'
+	LINK FILTER:
+	    lterm ::= [e t]
+	    lexpr ::= (<Not>) <lterm> (<AndOr> <lexpr>)
+	    lfilter ::= 'l{' <lexpr> '}'
+	FILTER EXPRESSION:
+	    Fterm ::= [<Afilter> <Tfilter> <Pfilter> <Qfilter> <Ufilter>
+			<cfilter> <lfilter>]
+	    Fexpr2 ::= (<Not>) <Fterm> (<AndOr> <Fexpr>)
+	    Fexpr ::= (<OpenParen>) <Fexpr2> (<CloseParen>)
+	    Filter ::= '+F' <Fexpr>
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+TESTIMONIALS:
+
+Once I accidentally typed "rm -fr" in my home directory when I meant to do
+it somewhere else.  As soon as that sick feeling of "why-is-that-rm-taking-
+so-long?" started setting in I quickly typed ^C.  I was now faced with the
+arduous task of assessing which files had been deleted and what it would
+take to recover them.  I keep good backups, but my home directory had over
+50,000 files in over 1,000 subdirectories and I didn't feel like spending
+the next several hours restoring every single file and then merging the
+restored files with my current files.  Rather, I decided to first determine
+which files had been deleted and then restore only what needed to be
+restored.
+
+Since "rm -fr" doesn't delete files alphabetically but instead deletes them
+in non-sorted order, I couldn't just restore those few directories starting
+at the front of the alphabet.  Instead, I relied upon the fact that
+whenever a file or directory is deleted the modification time of its parent
+directory is updated.  Thus, I executed the following els command and any
+subdirectories having a modification date occurring after my "rm -fr" would
+be the only ones needing to be restored:
+
+	els +GmN +TI -AR +E'*' | sort | tail -50
+
+After examining the dates of the most recently modified subdirectories, I
+discovered that "rm -fr" had barely begun deleting files in only one
+subdirectory before I had typed ^C.  With this knowledge it was an easy
+task to restore just the one subdirectory from tape.
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+DIFFERENCES:
+
+* ELS will always print an error message when attempting to list unreadable
+  directories, whereas most SYS5 /bin/ls-es fail to detect unreadable
+  directories in certain situations.  This failure of SYS5's /bin/ls is
+  particularly noticeable when one tries to list an unreadable directory
+  while logged in as *root* and the unreadable directory resides on an NFS
+  volume mounted from a machine that exports with root accesses disallowed.
+  Even Solaris 2.6's /bin/ls can fail in this situation if the NFS volume
+  is mounted from a host running Solaris 2.4 or below.
+
+* ELS does not yet support the -C option for displaying short listings
+  using multi-columns, but this is not at issue as the primary reason
+  for using ELS is to take advantage of ELS's ability to display long
+  listings in a variety of ways.
+
+* ELS does not support color.  If colorful output is your sole desire,
+  then use GNU's "ls" instead.  However, if you wish to examine your file
+  structure using more powerful analyses, then ELS is better suited.
+
+* ELS processes its arguments from left to right, thus in some rare
+  cases the argument ordering can affect the outcome.
+
+  For example, the following two commands behave identically as '-a'
+  always supersedes '-A' when using /bin/ls:
+	/bin/ls -lAa
+	/bin/ls -laA
+  On the other hand, the following two commands behave slightly different
+  depending on whether '-a' or '-A' comes last:
+	els -lAa
+	els -laA
+
+  Furthermore, the following two cases are NOT equivalent:
+	els -la +d +~d
+	els -la +~d +d
+  In the first case +d is canceled by +~d.  In the second case +d is enabled.
+
+* ELS allows file names to be interspersed within options, whereas /bin/ls
+  requires that all options precede any files.  For example, ELS allows
+  the following:
+	els -la /usr -d /etc
+  Both /usr and /etc will be listed the same as if the user had typed:
+	els -lad /usr /etc
+	
+  Note: the above two examples were NOT equivalent prior to ELS version 1.43.
+  For ELS versions 1.42 and below "els -la /usr -d /etc" would cause all
+  of /usr to be listed and only the top /etc directory would be listed since
+  it alone was preceded by the -d option.  Now ELS gathers all its options
+  together before listing any files.  If you want to enable the deprecated
+  pre-1.43 ELS style of argument evaluation order, you can do so by defining
+  the environment variable ELS_ARG_ORDER.
+  
+* Besides using '-' ELS also uses '+' as a command option indicator.
+  Thus, if explicitly listing a file name that starts with either
+  of these characters you must use './' as a preface.  For example:
+
+	els -la ./-file ./+file
+  
+* ELS does not search the directories of an expanded symbolic link.  This
+  is actually an advantage over /bin/ls, as consider the following:
+
+	ln -s .. link	# Create a recursive loop
+	/bin/ls -laLR	# ls will loop forever
+	els -laLR	# els will ignore "link" and not get trapped
+
+  On the other hand, if you want ELS to mimic /bin/ls's behavior then specify
+  '+t=LM' so ELS will traverse expanded links and traverse mount-points.
+  However, if you just specify '+t=L' then only those expanded symbolic links
+  residing on the same mount-point will be searched.
+
+* When using the "-L" option, ELS reports "No such file" if the file
+  pointed to by the symbolic link does not exist (ELS behaves the same as
+  SunOS5 and Linux2.4+ in this regard).  Some Unix's /bin/ls, however,
+  simply list the symbolic link rather than complain about an error (this
+  is how SunOS4, Linux2.2, HPUX11, and OSF1 behave).
+
+* Support has been added for "door" file types under SunOS5.5
+  While listing door files is fully supported under SunOS5.6, SunOS5.5's
+  /bin/ls neglected to support this file type.
+
+* The -g option has been abused under various Unixes to the point where it's
+  no longer useful.  ELS's (and GNU's) approach is to ignore the -g option
+  and to always list the group.  In its place the *uppercase* -G option has
+  been provided as consistent way of meaning "exclude group".
+
+* OSF1 V4.0's /usr/bin/cksum uses a different algorithm than
+  /usr/bin/cksum under SunOS5/Solaris, Linux, HPUX10+, etc.; thus,
+  checksums generated with OSF1's /usr/bin/cksum will not agree with ELS
+  nor with anyone else.  However, if you use "els +C=P +GCsN" to generate
+  checksums under OSF1 then these can be used to compare with other OSes!
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+SIGNIFICANT CHANGES:
+
+* The meaning of +t has changed as of release 1.47 (May 2000) Specifying +t
+  under release 1.47 causes file-systems to be traversed whereas before it
+  inhibited traversal.  Moreover, as of release 1.48 (March 2002) you should
+  specify '+t=M' for traversing mount-points and '+t=L' for traversing expanded
+  symbolic-links.  Unless you want to potentially list multiple file-systems
+  on your local host or across the network, you probably don't want to use
+  the +t option.  Changing the meaning of +t was an agonizing decision but
+  was necessary to allow future releases to use +t=<type> when specifying the
+  conditions and/or file-systems to traverse.
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+BUGS:
+
+There are still some letters of the alphabet that have not yet been
+used as options.
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+EOF.
