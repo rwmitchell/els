@@ -4326,7 +4326,7 @@ char *G_print(char *buff,
         int i, sz, firstblock = 1;
         unsigned long long x, tmp1, tmp2;
 
-        width += 7;
+        width += 3;           // 2019-03-17 RWM - was 7, seemed excessive
         tmp1 = info->st_size;
         sz = (tmp1 != 0) ? (int) log10( (double) info->st_size) : 0;
         i= 3 * (int) (sz/3);
@@ -4398,7 +4398,7 @@ char *G_print(char *buff,
 	  {
 	    char *pw_name = uid2name(info->st_uid);
 	    int trunc = MAX_USER_GROUP_NAME;
-	    if (!width_specified) width = -8;
+	    if (!width_specified) width = -10;     // 2019-03-17 RWM - was -8 (rwmitchell)
 	    if (TruncateName && width != 0)
 	      trunc = (width > 0 ? width : -width);
 	    if (pw_name != NULL)
