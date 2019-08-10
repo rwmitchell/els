@@ -710,20 +710,22 @@ void do_getenv(void)
   }
 
   if ( rwm_docolor ) {
+    char *psec;
     LSCOLOR = getenv("LS_COLORS");
     FSCOLOR = getenv("ELS_FS_COLOR");
     FTCOLOLD= getenv("ELS_FT_COLOLD");
     FTCOLNEW= getenv("ELS_FT_COLNEW");
-    FTSECOLD=strtoul( getenv("ELS_FT_SECOLD"), NULL, 10 );
-    FTSECNEW=strtoul( getenv("ELS_FT_SECNEW"), NULL, 10 );
+
+    psec = getenv("ELS_FT_SECOLD");
+    FTSECOLD = ( psec ? strtoul( psec, NULL, 10 ) : SECS_PER_YEAR * 2);
+
+    psec = getenv("ELS_FT_SECNEW");
+    FTSECNEW = ( psec ? strtoul( psec, NULL, 10 ) : SECS_PER_YEAR / 2);
 
     if ( FTCOLOLD || FTCOLNEW ) {
       if ( !FTCOLOLD  ) FTCOLOLD="";
       if ( !FTCOLNEW  ) FTCOLNEW="";
     }
-
-    if ( FTSECOLD <= 0 ) FTSECOLD = SECS_PER_YEAR * 2;
-    if ( FTSECNEW <= 0 ) FTSECNEW = SECS_PER_YEAR / 2;
   }
   if ( ! LSCOLOR ) rwm_docolor = FALSE;
 
