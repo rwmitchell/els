@@ -364,7 +364,6 @@ Boole rwm_filtering = FALSE,
       rwm_iflnk     = FALSE, // Symbolic Link
       rwm_ifsock    = FALSE, // Socket
       rwm_ifunk     = FALSE, // unkown
-      rwm_colset    = FALSE, // true when a color is being used
       rwm_docolor   = TRUE,  // colorize output
       rwm_docomma   = TRUE,
       rwm_dospace   = FALSE; // similar to find -print0
@@ -3679,7 +3678,6 @@ Boole list_item(Dir_Item *file,
       if ( !rwm_dospace ) {
         if ( rwm_docolor ) {
           strcat( bp, "[m" );
-          rwm_colset = FALSE;
           rwm_type = 0;
           rwm_mode = 0;
         }
@@ -4897,7 +4895,7 @@ char *N_print(char *buff, char *fmt,
 
         char rwm_col[16];
         int rwm_b = 0, rwm_f = 0, rwm_s;   // back, fore, and style
-        if ( !rwm_colset ) {
+        if ( rwm_docolor ) {
           rwm_col_ext( fname, &rwm_b, &rwm_f, &rwm_s );
           sprintf( rwm_col, "[%d;%d;%dm", rwm_b, rwm_f, rwm_s );
         } else rwm_col[0] = '\0';
