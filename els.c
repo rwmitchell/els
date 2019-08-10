@@ -130,7 +130,8 @@ int  Argc;
 char **Argv;
 char *Progname;
 char *LSCOLOR = NULL,      // rwm - from LS_COLORS
-     *FSCOLOR = NULL;      // rwm - ELS_FS_COLOR
+     *FSCOLOR = NULL,      // rwm - ELS_FS_COLOR  - file size
+     *FTCOLOR = NULL;      // rwm - ELS_FT_COLOR  - file time
 uid_t Whoami;
 time_t The_Time;
 time_t The_Time_in_an_hour;
@@ -707,6 +708,7 @@ void do_getenv(void)
   if ( rwm_docolor ) {
     LSCOLOR = getenv("LS_COLORS");
     FSCOLOR = getenv("ELS_FS_COLOR");
+    FTCOLOR = getenv("ELS_FT_COLOR");
   }
   if ( ! LSCOLOR ) rwm_docolor = FALSE;
 
@@ -3863,6 +3865,25 @@ char *scaleSizeToHuman(ELS_st_size val, int base)
   return(buf);
 }
 
+char *rwm_col_age( char *buff, time_t ftime, Boole flag ) {
+  char tmp[MAX_INFO];
+  strncpy( tmp, buff, MAX_INFO);
+
+# define HALF_A_YEAR  (SECS_PER_YEAR/2)
+  // colorize dates less than 6 months old
+  // should have options for both old and new files
+
+  if (flag ) {
+    if ((Ulong)The_Time - (Ulong)ftime < (Ulong)HALF_A_YEAR)
+      sprintf(buff, "[%sm%s", FTCOLOR, tmp);
+    else
+      sprintf(buff, "%s", tmp);
+  } else
+      sprintf(buff, "%s[m", tmp);
+
+  buff += strlen(buff);
+  return ( buff );
+}
 
 #define ZERO_PAD_DEFAULT  FALSE
 char *G_print(char *buff,
@@ -4416,11 +4437,15 @@ char *G_print(char *buff,
 	case Gf_TIME_MODIFIED:
 	case Gf_TIME_ACCESSED:
 	case Gf_TIME_MODE_CHANGED:
+          if ( FTCOLOR )
+            bp = rwm_col_age( bp, info->st_mtime, 1 );
 	  bp = T_print_width(bp, T_format,
 			     icase == Gf_TIME_MODIFIED ? info->st_mtime :
 			     icase == Gf_TIME_ACCESSED ? info->st_atime :
 			     /*icase == Gf_TIME_MODE_CHANGED ?*/ info->st_ctime,
 			     NULL, FALSE, FALSE, width);
+          if ( FTCOLOR )
+            bp = rwm_col_age( bp, info->st_mtime, 0 );
 	  break;
 
 	case Gf_UID_IN_ALPHA:
