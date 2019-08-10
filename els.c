@@ -149,6 +149,7 @@ char *Current_Opt = NULL;
 char *Current_Arg = NULL;
 Dir_Item *CwdItem = NULL;
 int CwdBlocksize = 0;
+const
 char *CwdPath = ".";
 
 Boole listingError = FALSE;
@@ -157,7 +158,7 @@ Boole zero_file_args;
 Boole multiple_file_args;
 Boole using_full_names;
 Boole avoid_trimmings;
-Boole list_topdir;
+// Boole list_topdir;      // defined in elsVars.h
 char first_mac;
 int recursion_level = 0;
 
@@ -3606,6 +3607,7 @@ void list_dir(Dir_List *dlist,
 	{
 	  Dir_List cur_dlist;
 	  int n;
+    const
 	  char *saveCwdPath = CwdPath;
 	  CwdPath = cur_dname;
 	  n = read_dir(&cur_dlist, cur_dname, dir);

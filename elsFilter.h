@@ -35,7 +35,7 @@ extern Boole filter_unusual(Dir_Item *file, char *path, char *ptr, char **end);
 extern Boole filter_ccase(Dir_Item *file, char *path, char *ptr, char **end);
 extern Boole filter_link(Dir_Item *file, char *path, char *ptr, char **end);
 
-extern void filter_error_msg(char *msg, char *ptr);
+extern void filter_error_msg(const char *msg, char *ptr);
 extern Boole filter_warning_msg(char *msg, char *ptr);
 extern void redundancy_warning(char *types, char *ptr);
 extern void expecting_error(Boole negate, char *items, Boole logic, Boole end,

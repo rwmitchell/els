@@ -1038,7 +1038,7 @@ void errnoMsgExit(int errnum, char *msg, int exit_sts)
 
 
 extern char *Current_Arg;
-void opt_error_msg(char *msg, char *ptr)
+void opt_error_msg(const char *msg, char *ptr)
 {
   fprintf(stderr, "\n");
   carrot_msg(NULL, NULL, Current_Arg, msg, ptr-1);

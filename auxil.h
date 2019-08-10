@@ -54,7 +54,7 @@ extern void errorMsgExit(char *msg, int exit_sts);
 extern void errnoMsg(int errnum, char *msg);
 extern void errnoMsgExit(int errnum, char *msg, int exit_sts);
 extern char *Current_Arg;
-extern void opt_error_msg(char *msg, char *ptr);
+extern void opt_error_msg(const char *msg, char *ptr);
 extern void arg_error_msg(char *msg, char *arg, char *ptr);
 extern void usage_error(void);
 

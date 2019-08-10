@@ -1968,7 +1968,7 @@ Boole filter_link(Dir_Item *file, char *path, char *ptr, char **end)
 /* END OF EXPERIMENT*/
 
 
-void filter_error_msg(char *msg, char *ptr)
+void filter_error_msg(const char *msg, char *ptr)
 {
   carrot_msg(NULL, Current_Opt, Current_Arg, msg, ptr);
   exit(USAGE_ERROR);
