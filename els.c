@@ -4348,7 +4348,7 @@ char *G_print(char *buff,
         int i, sz, firstblock = 1;
         unsigned long long x, tmp1, tmp2;
 
-        width += 3;           // 2019-03-17 RWM - was 7, seemed excessive
+        width += 7;           // 2019-03-17 RWM - was 7, seemed excessive
         tmp1 = info->st_size;
         sz = (tmp1 != 0) ? (int) log10( (double) info->st_size) : 0;
         i= 3 * (int) (sz/3);
