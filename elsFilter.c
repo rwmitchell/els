@@ -87,7 +87,7 @@ Local int fexprLevel = 0;
 Local Boole filter_fexprINT(Dir_Item *file, char *path, char *ptr, char **end);
 
 /* Static messages: */
-Local char *NUM_TOO_BIG = "Number too big for data type";
+const Local char *NUM_TOO_BIG = "Number too big for data type";
 
 
 struct stat *getCwdInfo(char *path)

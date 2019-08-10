@@ -129,6 +129,7 @@ int  Iarg;
 int  Argc;
 char **Argv;
 char *Progname;
+char *LSCOLOR;      // rwm - from LS_COLORS
 uid_t Whoami;
 time_t The_Time;
 time_t The_Time_in_an_hour;
@@ -347,24 +348,28 @@ Local Boole separated;
 Local char separator = ' ';
 
 /* Static messages: */
-Local char *NON_NEGATABLE = "Non-negatable option";
-Local char *MISSING_FILTER = "Missing filter";
-Local char *TOO_MANY_FILTERS = "Too many filters specified";
+const Local char *NON_NEGATABLE = "Non-negatable option";
+const Local char *MISSING_FILTER = "Missing filter";
+const Local char *TOO_MANY_FILTERS = "Too many filters specified";
 
 Boole rwm_filtering = FALSE,
-      rwm_ifreg     = FALSE, /* Regular */
-      rwm_ifexe     = FALSE, /* Executable */
-      rwm_ifwrt     = FALSE, /* Writable   */
-      rwm_ifred     = FALSE, /* Readable   */
-      rwm_ifdir     = FALSE, /* Directory */
-      rwm_ifchr     = FALSE, /* Char Special */
-      rwm_ifblk     = FALSE, /* Block Special */
-      rwm_ififo     = FALSE, /* Fifo */
-      rwm_iflnk     = FALSE, /* Symbolic Link */
-      rwm_ifsock    = FALSE, /* Socket */
-      rwm_ifunk     = FALSE, /* unkown */
+      rwm_ifreg     = FALSE, // Regular
+      rwm_ifexe     = FALSE, // Executable
+      rwm_ifwrt     = FALSE, // Writable
+      rwm_ifred     = FALSE, // Readable
+      rwm_ifdir     = FALSE, // Directory
+      rwm_ifchr     = FALSE, // Char Special
+      rwm_ifblk     = FALSE, // Block Special
+      rwm_ififo     = FALSE, // Fifo
+      rwm_iflnk     = FALSE, // Symbolic Link
+      rwm_ifsock    = FALSE, // Socket
+      rwm_ifunk     = FALSE, // unkown
+      rwm_colset    = FALSE, // true when a color is being used
+      rwm_docolor   = TRUE,  // colorize output
       rwm_docomma   = TRUE,
-      rwm_dospace   = FALSE; /* similiar to find -print0 */
+      rwm_dospace   = FALSE; // similar to find -print0
+Local int rwm_type,          // copy of file "type"
+          rwm_mode;          // copy of file "mode"
 
 Local ELS_st_blocks dir_block_total;
 Local int dir_file_count;
@@ -697,6 +702,9 @@ void do_getenv(void)
     char *debug = getenv("ELS_DEBUG");
     if (debug != NULL) Debug = strtoul(debug, NULL, 0);
   }
+
+  if ( rwm_docolor ) LSCOLOR = getenv("LS_COLORS");
+  if ( ! LSCOLOR ) rwm_docolor = FALSE;
 
   /* Enable behavior of earlier ELS releases if so requested: */
   MaxVersionLevel = VersionLevel;
@@ -3668,7 +3676,15 @@ Boole list_item(Dir_Item *file,
     else
     {
       char *bp = G_print(output_buff, G_format, dname, file);
-      if ( !rwm_dospace ) strcat(bp, "\n");
+      if ( !rwm_dospace ) {
+        if ( rwm_docolor ) {
+          strcat( bp, "[m" );
+          rwm_colset = FALSE;
+          rwm_type = 0;
+          rwm_mode = 0;
+        }
+        strcat(bp, "\n");
+      }
     }
   }
 
@@ -3720,9 +3736,10 @@ Boole list_item(Dir_Item *file,
 	  }
 	}
       }
-      else
+      else {
 	fputs(output_buff, stdout);
 	if ( rwm_dospace ) fprintf(stdout, "%c", '\0');
+      }
       item_listed = TRUE;
       output_nlines++;
     }
@@ -4037,9 +4054,14 @@ char *G_print(char *buff,
 	    else
 	      type = '?';
 
-	    if (!width_specified) width = 1;
-	    sprintf(bp, "%*c",width, type);
-	  }
+              if (!width_specified) width = 1;
+
+              if ( rwm_docolor ) {
+                rwm_type   = type;
+                rwm_mode   = fmode;
+              }
+              sprintf(bp, "%*c",width, type);
+            }
 	  break;
 
 	  /* Add various flavorings: */
@@ -4601,6 +4623,59 @@ char *G_print(char *buff,
 }
 #undef  ZERO_PAD_DEFAULT
 
+Boole rwm_get_cs( char *pat, int *b, int *f, int *s ) {   // background, foreground, style
+  char *mat = NULL;
+
+  mat = strstr( LSCOLOR, pat );
+  if ( mat ) mat = strchr( mat, '=');
+  if ( mat ) sscanf( mat, "=%d;%d;%d", b, f, s );
+  if ( *s == 0 ) *s = 8;                                  // 0 turns color off, 8 is normal
+  return ( mat != NULL );
+}
+Boole rwm_col_type( int *b, int *f, int *s ) {
+  Boole rc = TRUE;
+  char *pat=NULL;
+
+  switch( rwm_type ) {
+    case    type_DIR :  pat="di="; break;
+    case    type_CHR :  pat="cd="; break;  // character device
+    case    type_BLK :  pat="bd="; break;  // block     device
+    case    type_FIFO:  pat="pi="; break;  // pipe
+    case    type_LNK :  pat="ln="; break;
+    case    type_SOCK:  pat="so="; break;
+    case    type_DOOR:  pat="do="; break;
+//  case    type_orph:  pat="or="; break;  // symlink orphan, no type?
+    case type_SPECIAL:  pat="or="; break;  // special - no LS_COLOR attribute?
+
+    case symtype_REG :
+                        if ( rwm_mode & (S_IXUSR|S_IXGRP|S_IXOTH)) pat="ex=";
+                        if ( rwm_mode & S_ISUID )                  pat="su=";
+                        if ( !pat ) rc = FALSE;
+                        break;
+    case symtype_DIR :
+    case symtype_FIFO:
+    case symtype_LNK :
+    case symtype_SOCK:
+    case symtype_DOOR:
+    case    type_REG :
+    default: rc = FALSE; break;
+  }
+  if ( pat ) rc = rwm_get_cs( pat, b, f, s );
+
+  return( rc );
+}
+void rwm_col_ext( char *fn, int *b, int *f, int *s ) {
+  char *ext = NULL,
+        pat[16];
+  *b = *f = *s = 0;
+  if ( rwm_col_type( b, f, s ) == FALSE ) {
+    ext = strrchr( fn, '.' );
+    if ( ext ) {
+      sprintf( pat, "*%.13s=", ext );
+      rwm_get_cs( pat, b, f, s );
+    }
+  }
+}
 
 #define ZERO_PAD_DEFAULT  FALSE
 char *N_print(char *buff, char *fmt,
@@ -4819,6 +4894,14 @@ char *N_print(char *buff, char *fmt,
 	  width_specified = TRUE;
 	}
 
+
+        char rwm_col[16];
+        int rwm_b = 0, rwm_f = 0, rwm_s;   // back, fore, and style
+        if ( !rwm_colset ) {
+          rwm_col_ext( fname, &rwm_b, &rwm_f, &rwm_s );
+          sprintf( rwm_col, "[%d;%d;%dm", rwm_b, rwm_f, rwm_s );
+        } else rwm_col[0] = '\0';
+
 	/* Process a directive: */
 	switch (icase)
 	{
@@ -4840,14 +4923,14 @@ char *N_print(char *buff, char *fmt,
 
 	    if (!width_specified)
 	    {
-	      sprintf(bp, "%s%s%s", d, s, fname);
+	      sprintf(bp, "%s%s%s%s", d, s, rwm_col, fname);
 	      if ((d = quote_fname(bp, dash_b, dash_Q, use_quotes)) != NULL)
 		sprintf(bp, "%s", d);
 	    }
 	    else
 	    {
 	      char tmp[MAX_FULL_NAME];
-	      sprintf(tmp, "%s%s%s", d, s, fname);
+	      sprintf(tmp, "%s%s%s%s", d, s, rwm_col, fname);
 	      if ((d = quote_fname(tmp, dash_b, dash_Q, use_quotes)) != NULL)
 		sprintf(bp, "%*s",width, d);
 	      else
@@ -4873,9 +4956,9 @@ char *N_print(char *buff, char *fmt,
 	  {
 	    char *f;
 	    if ((f = quote_fname(fname, dash_b, dash_Q, use_quotes)) != NULL)
-	      sprintf(bp, "%*s",width, f);
+	      sprintf(bp, "%s%*s",rwm_col, width, f);
 	    else
-	      sprintf(bp, "%*s",width, fname);
+	      sprintf(bp, "%s%*s",rwm_col, width, fname);
 	    markable = TRUE;
 	  }
 	  break;
