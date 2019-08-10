@@ -129,9 +129,13 @@ int  Iarg;
 int  Argc;
 char **Argv;
 char *Progname;
+const
 char *LSCOLOR = NULL,      // rwm - from LS_COLORS
      *FSCOLOR = NULL,      // rwm - ELS_FS_COLOR  - file size
-     *FTCOLOR = NULL;      // rwm - ELS_FT_COLOR  - file time
+     *FTCOLOLD= NULL,      // rwm - ELS_FT_COLOLD - file time > 2 years  old
+     *FTCOLNEW= NULL;      // rwm - ELS_FT_COLNEW - file time < 6 months old
+Ulong FTSECOLD=0,
+      FTSECNEW=0;
 uid_t Whoami;
 time_t The_Time;
 time_t The_Time_in_an_hour;
@@ -708,7 +712,18 @@ void do_getenv(void)
   if ( rwm_docolor ) {
     LSCOLOR = getenv("LS_COLORS");
     FSCOLOR = getenv("ELS_FS_COLOR");
-    FTCOLOR = getenv("ELS_FT_COLOR");
+    FTCOLOLD= getenv("ELS_FT_COLOLD");
+    FTCOLNEW= getenv("ELS_FT_COLNEW");
+    FTSECOLD=strtoul( getenv("ELS_FT_SECOLD"), NULL, 10 );
+    FTSECNEW=strtoul( getenv("ELS_FT_SECNEW"), NULL, 10 );
+
+    if ( FTCOLOLD || FTCOLNEW ) {
+      if ( !FTCOLOLD  ) FTCOLOLD="";
+      if ( !FTCOLNEW  ) FTCOLNEW="";
+    }
+
+    if ( FTSECOLD <= 0 ) FTSECOLD = SECS_PER_YEAR * 2;
+    if ( FTSECNEW <= 0 ) FTSECNEW = SECS_PER_YEAR / 2;
   }
   if ( ! LSCOLOR ) rwm_docolor = FALSE;
 
@@ -3869,16 +3884,13 @@ char *rwm_col_age( char *buff, time_t ftime, Boole flag ) {
   char tmp[MAX_INFO];
   strncpy( tmp, buff, MAX_INFO);
 
-# define HALF_A_YEAR  (SECS_PER_YEAR/2)
-  // colorize dates less than 6 months old
-  // should have options for both old and new files
+  // colorize dates older than FTSECOLD and newer than FTSECNEW
+  if (flag ) {                  // start of date string
+    sprintf(buff, "[%sm%s",
+       ((Ulong)The_Time - (Ulong)ftime < FTSECNEW ) ?  FTCOLNEW :
+       ((Ulong)The_Time - (Ulong)ftime > FTSECOLD ) ?  FTCOLOLD : "", tmp );
 
-  if (flag ) {
-    if ((Ulong)The_Time - (Ulong)ftime < (Ulong)HALF_A_YEAR)
-      sprintf(buff, "[%sm%s", FTCOLOR, tmp);
-    else
-      sprintf(buff, "%s", tmp);
-  } else
+  } else                        // end   of date string
       sprintf(buff, "%s[m", tmp);
 
   buff += strlen(buff);
@@ -4437,14 +4449,14 @@ char *G_print(char *buff,
 	case Gf_TIME_MODIFIED:
 	case Gf_TIME_ACCESSED:
 	case Gf_TIME_MODE_CHANGED:
-          if ( FTCOLOR )
+          if ( FTCOLOLD || FTCOLNEW )
             bp = rwm_col_age( bp, info->st_mtime, 1 );
 	  bp = T_print_width(bp, T_format,
 			     icase == Gf_TIME_MODIFIED ? info->st_mtime :
 			     icase == Gf_TIME_ACCESSED ? info->st_atime :
 			     /*icase == Gf_TIME_MODE_CHANGED ?*/ info->st_ctime,
 			     NULL, FALSE, FALSE, width);
-          if ( FTCOLOR )
+          if ( FTCOLOLD || FTCOLNEW )
             bp = rwm_col_age( bp, info->st_mtime, 0 );
 	  break;
 
