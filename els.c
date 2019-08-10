@@ -129,7 +129,8 @@ int  Iarg;
 int  Argc;
 char **Argv;
 char *Progname;
-char *LSCOLOR = NULL;      // rwm - from LS_COLORS
+char *LSCOLOR = NULL,      // rwm - from LS_COLORS
+     *FSCOLOR = NULL;      // rwm - ELS_FS_COLOR
 uid_t Whoami;
 time_t The_Time;
 time_t The_Time_in_an_hour;
@@ -703,7 +704,10 @@ void do_getenv(void)
     if (debug != NULL) Debug = strtoul(debug, NULL, 0);
   }
 
-  if ( rwm_docolor ) LSCOLOR = getenv("LS_COLORS");
+  if ( rwm_docolor ) {
+    LSCOLOR = getenv("LS_COLORS");
+    FSCOLOR = getenv("ELS_FS_COLOR");
+  }
   if ( ! LSCOLOR ) rwm_docolor = FALSE;
 
   /* Enable behavior of earlier ELS releases if so requested: */
@@ -4365,7 +4369,8 @@ char *G_print(char *buff,
             Void sprintf(str, "%s%0*llu%s", str, 3, tmp2, i==0 ? "" : "," );
           tmp1 -= (tmp2 * x);
         }
-        Void sprintf(bp, "%*s", width, str);
+        if ( !FSCOLOR ) Void sprintf(bp, "%*s", width, str);
+        else            Void sprintf(bp, "[%sm%*s[m", FSCOLOR, width, str);
 
       }
     }
