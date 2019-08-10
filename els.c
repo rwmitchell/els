@@ -129,7 +129,7 @@ int  Iarg;
 int  Argc;
 char **Argv;
 char *Progname;
-char *LSCOLOR;      // rwm - from LS_COLORS
+char *LSCOLOR = NULL;      // rwm - from LS_COLORS
 uid_t Whoami;
 time_t The_Time;
 time_t The_Time_in_an_hour;
@@ -905,7 +905,8 @@ void do_options_minus(char *options)
       
     case 'C': /* List multi column */  /* hijacked -rwm 1999-01-11 */
       /* Unimplemented */
-      rwm_docomma = FALSE;
+      rwm_docomma = FALSE;    // use -C to disable both addons
+      rwm_docolor = FALSE;
       break;
       
     case '0':	/* rwm: space in filename handling */
@@ -1939,6 +1940,7 @@ LS -- STANDARD OPTIONS:\n\
     -c: List time of last status change(SYS5, ELS),\n\
         List time of last status change and sort(BSD)\n\
     -C: List multi-columns (unimplemented)\n\
+    -C: Disable commas in file sizes and colors in filenames (implemented-rwm)\n\
     -d: List directories as files, but don't list their contents\n\
     -F: Mark files\n\
     -g: List GIDs(BSD), long listing omitting UIDs(SYS5), ignored(ELS)\n\
