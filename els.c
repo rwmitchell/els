@@ -4706,6 +4706,7 @@ Boole rwm_col_type( int *b, int *f, int *s ) {
     case    type_REG :
     default: rc = FALSE; break;
   }
+  rwm_type = 0;         // initialize it before called for symlink
   if ( pat ) rc = rwm_get_cs( pat, b, f, s );
 
   return( rc );
@@ -5029,8 +5030,18 @@ char *N_print(char *buff, char *fmt,
 	      char *l;
 	      if ((l = quote_fname(lname, dash_b, dash_Q, plus_q)) != NULL)
 		sprintf(bp, fmt,width, l);
-	      else
-		sprintf(bp, fmt,width, lname);
+	      else {
+
+                if ( rwm_docolor ) {         // XYZZY - fix symlink dest color
+                  int b = 0, f = 0, s = 0;   // back, fore, and style
+                  char tname[MAX_FULL_NAME];
+                  rwm_col_ext( lname, &b, &f, &s );
+                  sprintf( tname, "[%d;%d;%dm%s[m", b, f, s, lname );
+                  sprintf(bp, fmt,width, tname);
+                } else
+                  sprintf(bp, fmt,width, lname);
+
+              }
 	    }
 
 #	ifdef OBSOLETE_BEHAVIOR
