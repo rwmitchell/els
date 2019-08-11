@@ -131,11 +131,12 @@ char **Argv;
 char *Progname;
 const
 char *LSCOLOR = NULL,      // rwm - from LS_COLORS
-     *FSCOLOR = NULL,      // rwm - ELS_FS_COLOR  - file size
-     *FTCOLOLD= NULL,      // rwm - ELS_FT_COLOLD - file time > 2 years  old
-     *FTCOLNEW= NULL;      // rwm - ELS_FT_COLNEW - file time < 6 months old
-Ulong FTSECOLD=0,
-      FTSECNEW=0;
+     *FSCOLOR = NULL;      // rwm - ELS_FS_COLOR  - file size
+// export ELS_FT_COLORS="86400=0;32;1:6480000=0;32:7121234=0;32;2:31557600=1;33;2:-1=0;31;1:"
+char *FTCOLOR = NULL,      // rwm - ELS_FT_COLORS - file ages and colors
+     *rwm_cols[32];
+Ulong rwm_ages[32];        // rwm - 32 date colors should be enough for anyone
+int   rwm_ftcnt=0;
 uid_t Whoami;
 time_t The_Time;
 time_t The_Time_in_an_hour;
@@ -389,6 +390,29 @@ Local Void_Function defaultSigHandler = NULL;
 Local Boole sigEvent = FALSE;
 Local Boole sigAskAbort = FALSE;
 
+/*****************************************************************************/
+int rwm_env2ft( char *env, char sep, Ulong *age, char **col ) {
+  int  cnt = 0;
+  char *p1, *p2;
+
+  p1   = env;
+
+  while ( *p1 ) {
+     p2 = strchr( p1, sep );  // find separator
+    *p2 = '\0';               // truncate string
+
+    age[cnt] = strtoul( p1, NULL, 10 );
+    p1=strchr( p1, '=' );
+    col[cnt] = p1+1;
+
+//  printf("%2d: #[%sm%20lu[m#  %s\n", cnt, col[cnt], age[cnt], col[cnt] );
+
+    cnt++;
+    p1 = p2+1;
+  }
+
+  return ( cnt );
+}
 /*****************************************************************************/
 
 int main(int argc, char *argv[])
@@ -710,22 +734,19 @@ void do_getenv(void)
   }
 
   if ( rwm_docolor ) {
-    char *psec;
-    LSCOLOR = getenv("LS_COLORS");
-    FSCOLOR = getenv("ELS_FS_COLOR");
-    FTCOLOLD= getenv("ELS_FT_COLOLD");
-    FTCOLNEW= getenv("ELS_FT_COLNEW");
+    LSCOLOR = getenv( "LS_COLORS"     );
+    FSCOLOR = getenv( "ELS_FS_COLOR"  );
+    FTCOLOR = getenv( "ELS_FT_COLORS" );
 
-    psec = getenv("ELS_FT_SECOLD");
-    FTSECOLD = ( psec ? strtoul( psec, NULL, 10 ) : SECS_PER_YEAR * 2);
+    if ( FTCOLOR)
+      rwm_ftcnt = rwm_env2ft( FTCOLOR, ':', rwm_ages, rwm_cols );
+#ifdef  RWM_DEBUG
+    printf("rwm_ftcnt: %d\n", rwm_ftcnt );
 
-    psec = getenv("ELS_FT_SECNEW");
-    FTSECNEW = ( psec ? strtoul( psec, NULL, 10 ) : SECS_PER_YEAR / 2);
-
-    if ( FTCOLOLD || FTCOLNEW ) {
-      if ( !FTCOLOLD  ) FTCOLOLD="";
-      if ( !FTCOLNEW  ) FTCOLNEW="";
-    }
+    for (int i=0; i<rwm_ftcnt; ++i )
+      printf("%2d: #[%sm%20lu[m#  %-8s\n", i, rwm_cols[i], rwm_ages[i], rwm_cols[i] );
+    printf("----\n");
+#endif
   }
   if ( ! LSCOLOR ) rwm_docolor = FALSE;
 
@@ -3886,12 +3907,15 @@ char *rwm_col_age( char *buff, time_t ftime, Boole flag ) {
   char tmp[MAX_INFO];
   strncpy( tmp, buff, MAX_INFO);
 
-  // colorize dates older than FTSECOLD and newer than FTSECNEW
+  // colorize dates based on ages in ELS_FT_COLORS
   if (flag ) {                  // start of date string
-    sprintf(buff, "[%sm%s",
-       ((Ulong)The_Time - (Ulong)ftime < FTSECNEW ) ?  FTCOLNEW :
-       ((Ulong)The_Time - (Ulong)ftime > FTSECOLD ) ?  FTCOLOLD : "", tmp );
+    int i=0;
+    Ulong f_age = (Ulong)The_Time - (Ulong) ftime;
+    while ( i<rwm_ftcnt && rwm_ages[i] < f_age ) ++i;
 
+//  printf("%2d: %lu %lu AGE\n", i, rwm_ages[i], f_age );
+
+    if ( i<rwm_ftcnt ) sprintf(buff, "[%sm%s", rwm_cols[i], tmp );
   } else                        // end   of date string
       sprintf(buff, "%s[m", tmp);
 
@@ -4451,14 +4475,14 @@ char *G_print(char *buff,
 	case Gf_TIME_MODIFIED:
 	case Gf_TIME_ACCESSED:
 	case Gf_TIME_MODE_CHANGED:
-          if ( FTCOLOLD || FTCOLNEW )
+          if ( rwm_ftcnt )
             bp = rwm_col_age( bp, info->st_mtime, 1 );
 	  bp = T_print_width(bp, T_format,
 			     icase == Gf_TIME_MODIFIED ? info->st_mtime :
 			     icase == Gf_TIME_ACCESSED ? info->st_atime :
 			     /*icase == Gf_TIME_MODE_CHANGED ?*/ info->st_ctime,
 			     NULL, FALSE, FALSE, width);
-          if ( FTCOLOLD || FTCOLNEW )
+          if ( rwm_ftcnt )
             bp = rwm_col_age( bp, info->st_mtime, 0 );
 	  break;
 
