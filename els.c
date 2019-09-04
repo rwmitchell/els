@@ -4475,14 +4475,14 @@ char *G_print(char *buff,
 	case Gf_TIME_MODIFIED:
 	case Gf_TIME_ACCESSED:
 	case Gf_TIME_MODE_CHANGED:
-          if ( rwm_ftcnt )
+          if ( rwm_docolor && rwm_ftcnt )
             bp = rwm_col_age( bp, info->st_mtime, 1 );
 	  bp = T_print_width(bp, T_format,
 			     icase == Gf_TIME_MODIFIED ? info->st_mtime :
 			     icase == Gf_TIME_ACCESSED ? info->st_atime :
 			     /*icase == Gf_TIME_MODE_CHANGED ?*/ info->st_ctime,
 			     NULL, FALSE, FALSE, width);
-          if ( rwm_ftcnt )
+          if ( rwm_docolor && rwm_ftcnt )
             bp = rwm_col_age( bp, info->st_mtime, 0 );
 	  break;
 
