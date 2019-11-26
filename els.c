@@ -4105,8 +4105,12 @@ char *G_print(char *buff,
 	      type = type_FIFO;
 #endif
 #ifdef S_IFLNK
-	    else if (ftype == S_IFLNK)  /* Symbolic Link */
+	    else if (ftype == S_IFLNK) {  /* Symbolic Link */
 	      type = type_LNK;
+              // RWM get info of actual file
+              if ( sigSafe_stat(file->fname, &file->info) == 0 )
+                fmode = file->info.st_mode;
+      }
 #endif
 #ifdef S_IFSOCK
 	    else if (ftype == S_IFSOCK) /* Socket */
