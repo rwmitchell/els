@@ -4106,10 +4106,11 @@ char *G_print(char *buff,
 #endif
 #ifdef S_IFLNK
       else if (ftype == S_IFLNK) {  /* Symbolic Link */
+        struct stat tinfo;
         type = type_LNK;
-              // RWM get info of actual file
-              if ( sigSafe_stat(file->fname, &file->info) == 0 )
-                fmode = file->info.st_mode;
+        // RWM get info of actual file
+        if ( sigSafe_stat(file->fname, &tinfo) == 0 )
+          fmode = tinfo.st_mode;
       }
 #endif
 #ifdef S_IFSOCK
