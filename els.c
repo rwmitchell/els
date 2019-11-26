@@ -1,12 +1,12 @@
 /******************************************************************************
   els.c -- An Enhanced LS look-alike with many additional features.
-  
+
   Author: Mark Baranowski and James M. Gleason
   Email:  requestXXX@els-software.org (remove XXX)
   Download: http://els-software.org
 
   Last significant change: August 10, 2012
-  
+
   This program is provided "as is" in the hopes that it might serve some
   higher purpose.  If you want this program to serve some lower purpose,
   then that too is all right.  So as to keep these hopes alive you may
@@ -14,7 +14,7 @@
   You may also freely distribute modified versions of this program so long
   as you indicate that such versions are modified and so long as you
   provide access to the unmodified original copy.
-  
+
   Acknowledgements and contributions:
   This program is based on an earlier program written by James M. Gleason.
   Access filtering idea contributed by Larry Gensch.
@@ -109,9 +109,9 @@ char *find_first_directive(char *list, char *fmt);
 char *G_print(char *buff, char *fmt, char *dname, Dir_Item *file);
 char *N_print(char *buff, char *fmt, char *dname, Dir_Item *file);
 char *T_print(char *buff, char *fmt, time_t ftime,
-	      struct tm *fdate, Boole gmt, Boole meridian);
+        struct tm *fdate, Boole gmt, Boole meridian);
 char *T_print_width(char *buff, char *fmt, time_t ftime,
-		    struct tm *fdate, Boole gmt, Boole meridian, int width);
+        struct tm *fdate, Boole gmt, Boole meridian, int width);
 char *separate(char *bp, char icase);
 char *finish(char *bp);
 char *full_name(char *dname, char *fname);
@@ -261,75 +261,75 @@ Local Boole N_option = FALSE;
 Local Boole T_option = FALSE;
 
 Local char *G_format;
-#define Gf_INODE		'i'
-#define Gf_TYPE_IN_ALPHA	't'
-#define Gf_TYPE_IN_SYMBOLIC	'T'
-#define Gf_PERM_IN_ALPHA	'p'
-#define Gf_PERM_IN_NUMERIC	'P'
-#define Gf_PERM_IN_SYMBOLIC	'M'
-#define Gf_ACL_INDICATOR	'A'
-#define Gf_SIZE_IN_BYTES	's'
-#define Gf_SIZE_IN_BLOCKS	'S'
-#define Gf_SIZE_HUMAN_2		'H'
-#define Gf_SIZE_HUMAN_10	'h'
-#define Gf_TIME_MODIFIED	'm'	/* Calls T_format */
-#define Gf_TIME_ACCESSED	'a'	/* Calls T_format */
-#define Gf_TIME_MODE_CHANGED	'c'	/* Calls T_format */
-#define Gf_UID_IN_ALPHA		'u'
-#define Gf_UID_IN_NUMERIC	'U'
-#define Gf_GID_IN_ALPHA		'g'
-#define Gf_GID_IN_NUMERIC	'G'
-#define Gf_OWNER_IN_ALPHA	'o'
-#define Gf_OWNER_IN_NUMERIC	'O'
-#define Gf_CHECKSUM		'C'
-#define Gf_NAME_FORMAT		'n'	/* Calls N_format */
-#define Gf_FULL_NAME_FORMAT	'N'	/* Calls N_format */
-#define Gf_LINK_COUNT		'l'
+#define Gf_INODE    'i'
+#define Gf_TYPE_IN_ALPHA  't'
+#define Gf_TYPE_IN_SYMBOLIC 'T'
+#define Gf_PERM_IN_ALPHA  'p'
+#define Gf_PERM_IN_NUMERIC  'P'
+#define Gf_PERM_IN_SYMBOLIC 'M'
+#define Gf_ACL_INDICATOR  'A'
+#define Gf_SIZE_IN_BYTES  's'
+#define Gf_SIZE_IN_BLOCKS 'S'
+#define Gf_SIZE_HUMAN_2   'H'
+#define Gf_SIZE_HUMAN_10  'h'
+#define Gf_TIME_MODIFIED  'm' /* Calls T_format */
+#define Gf_TIME_ACCESSED  'a' /* Calls T_format */
+#define Gf_TIME_MODE_CHANGED  'c' /* Calls T_format */
+#define Gf_UID_IN_ALPHA   'u'
+#define Gf_UID_IN_NUMERIC 'U'
+#define Gf_GID_IN_ALPHA   'g'
+#define Gf_GID_IN_NUMERIC 'G'
+#define Gf_OWNER_IN_ALPHA 'o'
+#define Gf_OWNER_IN_NUMERIC 'O'
+#define Gf_CHECKSUM   'C'
+#define Gf_NAME_FORMAT    'n' /* Calls N_format */
+#define Gf_FULL_NAME_FORMAT 'N' /* Calls N_format */
+#define Gf_LINK_COUNT   'l'
 
 Local char *N_format;
-#define Nf_LINK_NAME		'l'
-#define Nf_LINK_PTR_NAME	'L'	/* Shared by G_format */
-#define Nf_QUOTE_NAME		'q'
-#define Nf_FULL_NAME		'F'	/* Shared by G_format */
-#define Nf_DIR_NAME		'd'	/* Shared by G_format */
-#define Nf_FILE_NAME		'f'	/* Shared by G_format */
+#define Nf_LINK_NAME    'l'
+#define Nf_LINK_PTR_NAME  'L' /* Shared by G_format */
+#define Nf_QUOTE_NAME   'q'
+#define Nf_FULL_NAME    'F' /* Shared by G_format */
+#define Nf_DIR_NAME   'd' /* Shared by G_format */
+#define Nf_FILE_NAME    'f' /* Shared by G_format */
 
 Local char *T_format;
-#define Tf_ABS_TIME		'a'
-#define Tf_DELTA_TIME		'd'
-#define Tf_REL_TIME		'r'
-#define Tf_YOFFSET_TIME		'y'
-#define Tf_ALPHA_DATE		'A'
-#define Tf_NUM_DATE		'N'
-#define Tf_GMT_DATE		'G'
-#define Tf_LOCAL_DATE		'L'
-#define Tf_MERIDIAN_TIME	'M'
-#define Tf_HEX_OUTPUT		'x'
+#define Tf_ABS_TIME   'a'
+#define Tf_DELTA_TIME   'd'
+#define Tf_REL_TIME   'r'
+#define Tf_YOFFSET_TIME   'y'
+#define Tf_ALPHA_DATE   'A'
+#define Tf_NUM_DATE   'N'
+#define Tf_GMT_DATE   'G'
+#define Tf_LOCAL_DATE   'L'
+#define Tf_MERIDIAN_TIME  'M'
+#define Tf_HEX_OUTPUT   'x'
 
-#define Tf_FLOATING_POINT_DATE	'F'	/* YYYYMMDD.hhmmss */
-#define Tf_ISO8601_DATE		'I'	/* YYYYMMDD.hhmmss */
-#define Tf_FLOATING_POINT_DAY	'f'	/* YYYYMMDD */
-#define Tf_ISO8601_DAY		'i'	/* YYYYMMDD */
-#define Tf_ELS_DATE		'e'
-#define Tf_LS_DATE		'l'
-#define Tf_DOS_DATE		'd'
-#define Tf_WINDOWS_DATE		'w'
-#define Tf_VERBOSE_DATE		'v'
-#define Tf_ELAPSED_TIME		'E'	/* D+h:m:s */
+#define Tf_FLOATING_POINT_DATE  'F' /* YYYYMMDD.hhmmss */
+#define Tf_ISO8601_DATE   'I' /* YYYYMMDD.hhmmss */
+#define Tf_FLOATING_POINT_DAY 'f' /* YYYYMMDD */
+#define Tf_ISO8601_DAY    'i' /* YYYYMMDD */
+#define Tf_ELS_DATE   'e'
+#define Tf_LS_DATE    'l'
+#define Tf_DOS_DATE   'd'
+#define Tf_WINDOWS_DATE   'w'
+#define Tf_VERBOSE_DATE   'v'
+#define Tf_ELAPSED_TIME   'E' /* D+h:m:s */
 
-#define Tf_YEARS		'Y'
-#define Tf_MONTHS		'M'
-#define Tf_WEEKS		'W'
-#define Tf_DAYS			'D'
-#define Tf_HOURS		'h'
-#define Tf_MINS			'm'
-#define Tf_SECS			's'
-#define Tf_CLOCK		'c'
-#define Tf_TIME_2		't'	/* h:m */
-#define Tf_TIME_3		'T'	/* h:m:s */
-#define Tf_TIME_OR_YEAR		'Q'
-#define Tf_YEARS_MOD_100	'y'
-#define Tf_ZONE_NAME		'Z'
+#define Tf_YEARS    'Y'
+#define Tf_MONTHS   'M'
+#define Tf_WEEKS    'W'
+#define Tf_DAYS     'D'
+#define Tf_HOURS    'h'
+#define Tf_MINS     'm'
+#define Tf_SECS     's'
+#define Tf_CLOCK    'c'
+#define Tf_TIME_2   't' /* h:m */
+#define Tf_TIME_3   'T' /* h:m:s */
+#define Tf_TIME_OR_YEAR   'Q'
+#define Tf_YEARS_MOD_100  'y'
+#define Tf_ZONE_NAME    'Z'
 
 Local int munge = 0;
 Local int untouch = 0;
@@ -384,8 +384,8 @@ Local Ulong dirItemAllocAvail = 0;
 Local Ulong dirItemAllocInUse = 0;
 
 /* Uncomment the desired signal type for +W: */
-/*#define WATCH_SIGNAL  SIGINT*/	/* watch == ^C */
-#define WATCH_SIGNAL  SIGQUIT		/* watch == ^\ (^| on some systems) */
+/*#define WATCH_SIGNAL  SIGINT*/  /* watch == ^C */
+#define WATCH_SIGNAL  SIGQUIT   /* watch == ^\ (^| on some systems) */
 Local Void_Function defaultSigHandler = NULL;
 Local Boole sigEvent = FALSE;
 Local Boole sigAskAbort = FALSE;
@@ -419,7 +419,7 @@ int main(int argc, char *argv[])
 {
   char *dname;
   Dir_List dlist;
-  
+
   Iarg = 1;
   Argc = argc;
   Argv = argv;
@@ -449,13 +449,13 @@ int main(int argc, char *argv[])
       fprintf(stderr, "\
 %s: This program compiled with HAVE_STAT64 defined, but is intended\n\
 %s: for non-stat64 capable OSes.  Please read TECH_NOTES #1.\n",
-	      new_prog, new_prog);
+        new_prog, new_prog);
       return(EXEC_ERROR);
     }
     else
     {
       /* Set an env var so that we can detect recursion should a version
-	 of els compiled with HAVE_STAT64 be renamed to els-32bit: */
+   of els compiled with HAVE_STAT64 be renamed to els-32bit: */
       putenv("ELS_32BIT=1");
       /* NB: execvp() does NOT replace Argv[0] with the value of new_prog! */
       execvp(new_prog, Argv);
@@ -472,7 +472,7 @@ int main(int argc, char *argv[])
 
 #ifdef Wformat
   fprintf(stderr, "%s: Warning: compiled with -DWformat (zero_pad disabled)\n",
-	  Progname);
+    Progname);
 #endif
 
 #ifndef BUFFER_STDOUT
@@ -482,7 +482,7 @@ int main(int argc, char *argv[])
   setbuf(stdout, NULL);
   setbuf(stderr, NULL);
 #endif /*!BUFFER_STDOUT*/
-  
+
   /* Set the default OPTION values: */
 
   if (strcmp(Progname, "els5") == 0)
@@ -554,27 +554,27 @@ int main(int argc, char *argv[])
   zero_st_info_specified = FALSE;
 
   /* Default listing formats: */
-# define  G_format_DEFAULT  "n"	/* Gf_NAME_FORMAT */
-# define  N_format_DEFAULT  "f"	/* Nf_FILE_NAME */
-# define  T_format_DEFAULT  "e"	/* Tf_ELS_DATE */
+# define  G_format_DEFAULT  "n" /* Gf_NAME_FORMAT */
+# define  N_format_DEFAULT  "f" /* Nf_FILE_NAME */
+# define  T_format_DEFAULT  "e" /* Tf_ELS_DATE */
   G_format = G_format_DEFAULT;
   N_format = N_format_DEFAULT;
   T_format = T_format_DEFAULT;
-  
+
   fexpr_ORcount = 0;
   fexpr_ANDcount = 0;
   exc_file_count = 0;
   exc_dir_count = 0;
   inc_file_count = 0;
   inc_dir_count = 0;
-  
+
   /* How many files? */
   {
     int i, n_files = 0;
     for (i = 1; i < Argc; i++)
     {
       if (IS_NOT_MEMBER(Argv[i][0], "+-"))
-	n_files++;
+  n_files++;
     }
     zero_file_args = (n_files == 0);
     multiple_file_args = (n_files > 1);
@@ -592,38 +592,38 @@ int main(int argc, char *argv[])
       /* Process options in the order they arive: */
       while (Iarg < Argc && IS_MEMBER(Argv[Iarg][0], "+-"))
       {
-	do_options(Argv[Iarg]);
-	Iarg++;
+  do_options(Argv[Iarg]);
+  Iarg++;
       }
       analyze_options();
-      
+
       /* Process files and directories in the order they arrive: */
       dlist.head = NULL;
       while (Iarg < Argc && IS_NOT_MEMBER(Argv[Iarg][0], "+-"))
       {
-	if (Argv[Iarg][0] != CNULL)
-	  append_dir(&dlist, Argv[Iarg], 0);
-	Iarg++;
+  if (Argv[Iarg][0] != CNULL)
+    append_dir(&dlist, Argv[Iarg], 0);
+  Iarg++;
       }
-      
+
       /* If there were no valid files and this is the first listing, then by
-	 default list all files.  However, prevent "els +G... f1 f2 +X" from
-	 listing "f1 f2" and then applying +X to every file the second time
-	 around.  On the other hand, "els +G... f1 f2 +X f3 f4" is
-	 considered valid (although f1 f2 will be listed while +X will apply
-	 only to f3 f4). */
+   default list all files.  However, prevent "els +G... f1 f2 +X" from
+   listing "f1 f2" and then applying +X to every file the second time
+   around.  On the other hand, "els +G... f1 f2 +X f3 f4" is
+   considered valid (although f1 f2 will be listed while +X will apply
+   only to f3 f4). */
       if (dlist.head == NULL)
       {
-	if (First_listing)
-	  append_dir(&dlist, ".", 0);
-	else
-	{
-	  Current_Arg = Argv[Argc-1];
-	  opt_error_msg("Option must precede files to have any effect",
-			Current_Arg+1);
-	}
+  if (First_listing)
+    append_dir(&dlist, ".", 0);
+  else
+  {
+    Current_Arg = Argv[Argc-1];
+    opt_error_msg("Option must precede files to have any effect",
+      Current_Arg+1);
+  }
       }
-      
+
       /* Perform the listing: */
       dname = "";
       stat_dir(&dlist, dname);
@@ -632,7 +632,7 @@ int main(int argc, char *argv[])
       free_dir(&dlist);
       First_listing = FALSE;
     } while (Iarg < Argc);
-  }  
+  }
 
   /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
   /* This section processes command arguments during the first pass and then
@@ -644,20 +644,20 @@ int main(int argc, char *argv[])
     for (Iarg = 1; Iarg < Argc; Iarg++)
     {
       if (IS_MEMBER(Argv[Iarg][0], "+-"))
-	do_options(Argv[Iarg]);
+  do_options(Argv[Iarg]);
     }
     analyze_options();
-      
+
     /* Process files and directories in the second pass: */
     dlist.head = NULL;
     for (Iarg = 1; Iarg < Argc; Iarg++)
     {
       if (IS_NOT_MEMBER(Argv[Iarg][0], "+-") && Argv[Iarg][0] != CNULL)
-	  append_dir(&dlist, Argv[Iarg], 0);
+    append_dir(&dlist, Argv[Iarg], 0);
     }
     if (dlist.head == NULL)
       append_dir(&dlist, ".", 0);
-    
+
     /* Perform the listing: */
     dname = "";
     stat_dir(&dlist, dname);
@@ -678,7 +678,7 @@ void finishExit(void)
 {
   if (quotaling)
     grandQuotal_print();
-    
+
   /* Put a period on it: */
   if (plus_c || stamping || untouch > 0)
     printf("# EOF.\n");
@@ -704,7 +704,7 @@ void finishExit(void)
 void do_getenv(void)
 {
   Whoami = geteuid();
-  
+
 #ifdef HAVE_LOCALE
   /* Freshen locale env settings from lowest to highest precedence: */
   {
@@ -766,8 +766,8 @@ void do_getenv(void)
     if (VersionLevel > MaxVersionLevel)
       fprintf(stderr, "\
 %s: Warning: Requested level %s exceeds this version's supported level %s\n\
-	Consider upgrading to a newer version of ELS\n",
-	      Progname, verToStr(VersionLevel), verToStr(MaxVersionLevel));
+  Consider upgrading to a newer version of ELS\n",
+        Progname, verToStr(VersionLevel), verToStr(MaxVersionLevel));
   }
 
   /* Parse options and file args in their given order if env var set: */
@@ -826,28 +826,28 @@ void do_options_minus(char *options)
     {
     case '-': /* Process extended -- option */
       do_options_minus_minus(options);
-      options = "";	/* No more options */
+      options = ""; /* No more options */
       break;
 
     case 'a': /* List all files including "." and ".." */
       list_hidden = OPTION(TRUE);
       list_dotdir = OPTION(TRUE);
-      Aa_option = TRUE;	/* One of 'A', 'a', '~A', '~a' was specified */
+      Aa_option = TRUE; /* One of 'A', 'a', '~A', '~a' was specified */
       break;
 
     case 'A': /* List all files except "." and ".." */
       list_hidden = OPTION(TRUE);
       list_dotdir = FALSE;
       /* Note: both -A and -~A must disable "list_dotdir" otherwise -~A
-	 would have the strange effect of ignoring all hidden files *except*
-	 "." and ".."! */
-      Aa_option = TRUE;	/* One of 'A', 'a', '~A', '~a' was specified */
+   would have the strange effect of ignoring all hidden files *except*
+   "." and ".."! */
+      Aa_option = TRUE; /* One of 'A', 'a', '~A', '~a' was specified */
       break;
-      
+
     case 'd': /* Inhibit expansion of directories specified as params */
       expand_directories = OPTION(FALSE);
       break;
-      
+
     case 'l': /* Long listing as in ls -l */
       list_long = OPTION(TRUE);
       break;
@@ -865,15 +865,15 @@ void do_options_minus(char *options)
     case 'g': /* Interpret -g flag using either BSD or SYS5 semantics */
       g_flag = OPTION(TRUE);
       break;
-      
+
     case 'G': /* Interpret -G flag using GNU semantics */
       G_flag = OPTION(TRUE);
       break;
-      
+
     case 'L': /* Expand symbolic link */
       expand_symlink = OPTION(TRUE);
       break;
-      
+
     case 'u': /* List atime */
       list_atime = OPTION(TRUE);
       /* Both BSD and SYS5/GNU agree that -u always supersedes -c: */
@@ -884,8 +884,8 @@ void do_options_minus(char *options)
       list_ctime = OPTION(TRUE);
       if (list_ctime)
       {
-	/* In SYS5/GNU the last -c or -u specified supersedes the previous,
-	   while in BSD/ELS if -u is specified then -c is ignored: */
+  /* In SYS5/GNU the last -c or -u specified supersedes the previous,
+     while in BSD/ELS if -u is specified then -c is ignored: */
         if (!ANYBIT(Sem,SEM_BSD|SEM_ELS)) list_atime = FALSE;
         if (ANYBIT(Sem,SEM_BSD|SEM_ELS) && list_atime) list_ctime = FALSE;
       }
@@ -901,28 +901,28 @@ void do_options_minus(char *options)
 
     case 'h': /* List size human using 2^10 (first -h) or 10^3 (second -h) */
       {
-	Boole last_human_2 = list_size_human_2;
-	list_size_human_2  = FALSE;
-	list_size_human_10 = FALSE;
-	if (last_human_2)
-	  list_size_human_10 = OPTION(TRUE);
-	else
-	  list_size_human_2  = OPTION(TRUE);
+  Boole last_human_2 = list_size_human_2;
+  list_size_human_2  = FALSE;
+  list_size_human_10 = FALSE;
+  if (last_human_2)
+    list_size_human_10 = OPTION(TRUE);
+  else
+    list_size_human_2  = OPTION(TRUE);
       }
       break;
 
     case 'r': /* Reverse sort */
       reverse_sort = OPTION(TRUE);
       break;
-      
+
     case 't': /* Sort by time */
       time_sort = OPTION(TRUE);
       break;
-      
+
     case 'U': /* Unsort */
       unsort = OPTION(TRUE);
       break;
-      
+
     case 'R': /* Recursively list all directories found (same as +R) */
       recursive = OPTION(TRUE);
       break;
@@ -930,34 +930,34 @@ void do_options_minus(char *options)
     case 'F': /* Mark files */
       mark_files = OPTION(TRUE);
       break;
-      
+
     case 'p': /* Mark directories */
       mark_dirs = OPTION(TRUE);
       break;
-      
+
     case 'b': /* List non-printable characters using \nnn octal */
       dash_b = OPTION(TRUE);
       break;
-      
+
     case 'Q': /* List names using C-syntax a la GNU */
       dash_Q = OPTION(TRUE);
       break;
-      
+
     case '1': /* List single column */
       /* Currently the default */
       break;
-      
+
     case 'C': /* List multi column */  /* hijacked -rwm 1999-01-11 */
       /* Unimplemented */
       rwm_docomma = FALSE;    // use -C to disable both addons
       rwm_docolor = FALSE;
       break;
-      
-    case '0':	/* rwm: space in filename handling */
+
+    case '0': /* rwm: space in filename handling */
       rwm_dospace = TRUE;
       break;
 
-    case 'f':	/* rwm: filter files */
+    case 'f': /* rwm: filter files */
       rwm_filtering = TRUE;
       switch ( *options++ ) {
         case 'd': rwm_ifdir = TRUE; break;
@@ -974,13 +974,13 @@ void do_options_minus(char *options)
         default: break;
       }
       break;
-      
+
     default: /* Give error message and usage, then exit: */
       opt_error_msg("Unrecognized '-' option", options);
       break;
     }
   }
-  
+
   return;
 }
 
@@ -995,46 +995,46 @@ void do_options_plus(char *options)
     switch (opt)
     {
       /* Exactly one of either SEM_ELS or SEM_LS must always be set;
-	 thus, clearing one implies setting the other: */
+   thus, clearing one implies setting the other: */
     case 'l':
       CLRBITS(Sem, SEM_ELS|SEM_LS);
       if (negate)
-	SETBIT(Sem, SEM_ELS);
+  SETBIT(Sem, SEM_ELS);
       else
-	SETBIT(Sem, SEM_LS);
+  SETBIT(Sem, SEM_LS);
       break;
 
       /* Either one or none of SEM_ELS, SEM_SYS5, or SEM_GNU can be set;
-	 thus, clearing one does not imply setting any of the others: */
+   thus, clearing one does not imply setting any of the others: */
     case 'b': /* '+b' is DEPRECATED, use +4 instead */
     case '4':
       if (negate)
-	CLRBIT(Sem, SEM_BSD);
+  CLRBIT(Sem, SEM_BSD);
       else
       {
-	CLRBITS(Sem, SEM_BSD|SEM_SYS5|SEM_GNU);
-	SETBIT(Sem, SEM_BSD);
+  CLRBITS(Sem, SEM_BSD|SEM_SYS5|SEM_GNU);
+  SETBIT(Sem, SEM_BSD);
       }
       break;
 
     case '5':
       if (negate)
-	CLRBIT(Sem, SEM_SYS5);
+  CLRBIT(Sem, SEM_SYS5);
       else
       {
-	CLRBITS(Sem, SEM_BSD|SEM_SYS5|SEM_GNU);
-	SETBIT(Sem, SEM_SYS5);
+  CLRBITS(Sem, SEM_BSD|SEM_SYS5|SEM_GNU);
+  SETBIT(Sem, SEM_SYS5);
       }
       break;
 
     case 'g':
       /* undocumented option */
       if (negate)
-	CLRBIT(Sem, SEM_GNU);
+  CLRBIT(Sem, SEM_GNU);
       else
       {
-	CLRBITS(Sem, SEM_BSD|SEM_SYS5|SEM_GNU);
-	SETBIT(Sem, SEM_GNU);
+  CLRBITS(Sem, SEM_BSD|SEM_SYS5|SEM_GNU);
+  SETBIT(Sem, SEM_GNU);
       }
       break;
 
@@ -1046,64 +1046,64 @@ void do_options_plus(char *options)
       if (negate) opt_error_msg(NON_NEGATABLE, options);
       if (*options == '=')
       {
-	options++;
-	do {
-	  int length = 1;
-	  if (*options == 'B' || strncmp(options, "bsd", 3) == 0)
-	  {
-	    cksum_type = CKSUM_BSD;
-	    cksum_size = 16;
-	    if (*options == 'b') length = 3;
-	  }
-	  else if (*options == 'S' || strncmp(options, "sysv", 4) == 0)
-	  {
-	    cksum_type = CKSUM_SYSV;
-	    cksum_size = 16;
-	    if (*options == 's') length = 4;
-	  }
-	  else if (*options == 'P' || strncmp(options, "posix", 5) == 0)
-	  {
-	    cksum_type = CKSUM_POSIX;
-	    cksum_size = 32;
-	    if (*options == 'p') length = 5;
-	  }
-	  else if (*options == 'C' || strncmp(options, "crc32", 5) == 0)
-	  {
-	    cksum_type = CKSUM_CRC32;
-	    cksum_size = 32;
-	    if (*options == 'c') length = 5;
-	  }
-	  else if (*options == 'U' || strncmp(options, "unaccess", 8) == 0)
-	  {
-	    cksum_unaccess = TRUE;
-	    if (*options == 'u') length = 8;
-	  }
-	  else
-	  {
-	    opt_error_msg("Expected B|bsd, S|sysv, P|posix, C|crc32, or U|unaccess",
-			  options+1);
-	  }
-	  options += length;
-	  if (*options == ',')
-	    options++;
-	  else if (length > 1 && *options != ',' && *options != '\0')
-	    opt_error_msg("Expected ','", options+1);
-	} while (*options != '\0');
+  options++;
+  do {
+    int length = 1;
+    if (*options == 'B' || strncmp(options, "bsd", 3) == 0)
+    {
+      cksum_type = CKSUM_BSD;
+      cksum_size = 16;
+      if (*options == 'b') length = 3;
+    }
+    else if (*options == 'S' || strncmp(options, "sysv", 4) == 0)
+    {
+      cksum_type = CKSUM_SYSV;
+      cksum_size = 16;
+      if (*options == 's') length = 4;
+    }
+    else if (*options == 'P' || strncmp(options, "posix", 5) == 0)
+    {
+      cksum_type = CKSUM_POSIX;
+      cksum_size = 32;
+      if (*options == 'p') length = 5;
+    }
+    else if (*options == 'C' || strncmp(options, "crc32", 5) == 0)
+    {
+      cksum_type = CKSUM_CRC32;
+      cksum_size = 32;
+      if (*options == 'c') length = 5;
+    }
+    else if (*options == 'U' || strncmp(options, "unaccess", 8) == 0)
+    {
+      cksum_unaccess = TRUE;
+      if (*options == 'u') length = 8;
+    }
+    else
+    {
+      opt_error_msg("Expected B|bsd, S|sysv, P|posix, C|crc32, or U|unaccess",
+        options+1);
+    }
+    options += length;
+    if (*options == ',')
+      options++;
+    else if (length > 1 && *options != ',' && *options != '\0')
+      opt_error_msg("Expected ','", options+1);
+  } while (*options != '\0');
       }
       else
       {
-	opt_error_msg("Expected =algorithm", options+1);
+  opt_error_msg("Expected =algorithm", options+1);
       }
       break;
 
     case 'D': /* '+D' is DEPRECATED, use +d instead */
     case 'd': /* List directories as files */
       /* NB: This does not affect the expansion of directories, rather, the
-	 purpose is to generate directory listings without directory files. */
+   purpose is to generate directory listings without directory files. */
       list_directories = OPTION(FALSE);
       list_directories_specified = TRUE;
       break;
-      
+
     case 'h': /* Allow +X to act on symbolic links */
       execute_symlinks = OPTION(TRUE);
       break;
@@ -1111,24 +1111,24 @@ void do_options_plus(char *options)
     case 'o': /* Specify output file for stdout */
       if (negate) opt_error_msg(NON_NEGATABLE, options);
       if (*options != '=')
-	opt_error_msg("Expected '=file_name'", options+1);
+  opt_error_msg("Expected '=file_name'", options+1);
       else
       {
-	/* Close stdout and then reopen using file_name (this assumes
-	   the first available file descriptor gets reused): */
-	if (close(1) != 0)
-	  opt_error_msg("Non-working option for this OS", options+1);
-	options++;
-	if (fopen(options, "w") == NULL)
-	  /*opt_error_msg("Unable to open output file", options+1);*/
-	  errnoMsgExit(-1, options, GENERAL_ERROR);
+  /* Close stdout and then reopen using file_name (this assumes
+     the first available file descriptor gets reused): */
+  if (close(1) != 0)
+    opt_error_msg("Non-working option for this OS", options+1);
+  options++;
+  if (fopen(options, "w") == NULL)
+    /*opt_error_msg("Unable to open output file", options+1);*/
+    errnoMsgExit(-1, options, GENERAL_ERROR);
       }
-      options = "";	/* No more options */
+      options = ""; /* No more options */
       break;
 
     case 'q': /* Quote file names having special characters */
       plus_q = OPTION(TRUE);
-      plus_q_specified = TRUE;	/* Command-line args take precedence */
+      plus_q_specified = TRUE;  /* Command-line args take precedence */
       break;
 
     case 'R': /* Recursively list all directories found (same as -R) */
@@ -1140,49 +1140,49 @@ void do_options_plus(char *options)
       traverse_specified = TRUE;
       if (*options == '=')
       {
-	options++;
-	if (IS_NOT_MEMBER(*options, "~ML"))
-	    opt_error_msg("Expected one of '~ML'", options+1);
+  options++;
+  if (IS_NOT_MEMBER(*options, "~ML"))
+      opt_error_msg("Expected one of '~ML'", options+1);
 
-	while (IS_MEMBER(*options, "~ML"))
-	{
-	  Boole save_negate = negate;
-	  char type = *options++;
-	  
-	  if (type == '~')
-	  {
-	    negate = !negate;
-	    type = *options++;
-	  }
-	  
-	  if (type == 'M')
-	    traverse_mp = OPTION(TRUE);
-	  else if (type == 'L')
-	    /* If a directory is symbolically linked to a parent directory,
-	       this will cause els (and /bin/ls) to loop infinitely.
-	       Possible infinite symlink loops can be avoided by disabling
-	       symlink traversal by specifying "+~t=L" or "+t=~L". */
-	    traverse_expanded_symlink = OPTION(TRUE);
-	  else
-	    opt_error_msg("Expected one of 'ML'", options);
-	  
-	  negate = save_negate;
-	}
+  while (IS_MEMBER(*options, "~ML"))
+  {
+    Boole save_negate = negate;
+    char type = *options++;
+
+    if (type == '~')
+    {
+      negate = !negate;
+      type = *options++;
+    }
+
+    if (type == 'M')
+      traverse_mp = OPTION(TRUE);
+    else if (type == 'L')
+      /* If a directory is symbolically linked to a parent directory,
+         this will cause els (and /bin/ls) to loop infinitely.
+         Possible infinite symlink loops can be avoided by disabling
+         symlink traversal by specifying "+~t=L" or "+t=~L". */
+      traverse_expanded_symlink = OPTION(TRUE);
+    else
+      opt_error_msg("Expected one of 'ML'", options);
+
+    negate = save_negate;
+  }
       }
       else
       {
-	traverse_mp = OPTION(TRUE);
-	if (VersionLevel <= 145) traverse_mp = OPTION(FALSE);
-	
-	/* Changing the meaning of +t was an agonizing decision but was
-	   necessary to allow +t=<type> specifying the types of directories
-	   and/or filesystems to traverse: */
-	if (VersionLevel >= 147)
-	{
-	  static Boole warned = FALSE;
-	  if (! warned)
-	  {
-	    fprintf(stderr, "\
+  traverse_mp = OPTION(TRUE);
+  if (VersionLevel <= 145) traverse_mp = OPTION(FALSE);
+
+  /* Changing the meaning of +t was an agonizing decision but was
+     necessary to allow +t=<type> specifying the types of directories
+     and/or filesystems to traverse: */
+  if (VersionLevel >= 147)
+  {
+    static Boole warned = FALSE;
+    if (! warned)
+    {
+      fprintf(stderr, "\
 \n\
 %s: Warning: The meaning of +t has changed as of release 1.47 (May 2000)\n\
 Specifying +t under release 1.47 causes file-systems to be traversed whereas\n\
@@ -1191,110 +1191,110 @@ you should specify '+t=M' for traversing mount-points and '+t=L' for\n\
 traversing expanded symbolic-links.\n\
 \n\
 ", Progname);
-	    warned = TRUE;
-	  }
-	}
+      warned = TRUE;
+    }
+  }
       }
       break;
-      
+
     case 'w': /* Warning suppression */
       warning_suppress = OPTION(TRUE);
       /* TBD: 'w' will eventually take a mask argument and maybe have
-	 its logic reversed? */
+   its logic reversed? */
       break;
 
     case 'W': /* Watch progress */
       watch_progress = OPTION(TRUE);
       /* TBD: 'W' might eventually take an argument to specify report
-	 interval or report type (e.g. number, spinning wheel). */
+   interval or report type (e.g. number, spinning wheel). */
       if (watch_progress)
       {
-	if (defaultSigHandler == NULL)
-	  defaultSigHandler = signal(WATCH_SIGNAL, watchSigHandler);
-	else
-	  (void) signal(WATCH_SIGNAL, watchSigHandler);
-	if (ttyin  == NULL) ttyin  = fopen("/dev/tty", "r");
-	if (ttyout == NULL) ttyout = fopen("/dev/tty", "w");
-	if (ttyin == NULL || ttyout == NULL)
-	{
-	  fprintf(stderr, "%s: Warning: Unable to open /dev/tty\n" , Progname);
-	  if (ttyin == NULL) ttyin = stdin;
-	  if (ttyout == NULL) ttyout = stderr;
-	}
+  if (defaultSigHandler == NULL)
+    defaultSigHandler = signal(WATCH_SIGNAL, watchSigHandler);
+  else
+    (void) signal(WATCH_SIGNAL, watchSigHandler);
+  if (ttyin  == NULL) ttyin  = fopen("/dev/tty", "r");
+  if (ttyout == NULL) ttyout = fopen("/dev/tty", "w");
+  if (ttyin == NULL || ttyout == NULL)
+  {
+    fprintf(stderr, "%s: Warning: Unable to open /dev/tty\n" , Progname);
+    if (ttyin == NULL) ttyin = stdin;
+    if (ttyout == NULL) ttyout = stderr;
+  }
       }
       else
       {
-	if (defaultSigHandler != NULL)
-	  (void) signal(WATCH_SIGNAL, defaultSigHandler);
+  if (defaultSigHandler != NULL)
+    (void) signal(WATCH_SIGNAL, defaultSigHandler);
       }
       break;
 
     case 'z': /* Zero-out meaningless stat info */
       zero_st_info = OPTION(TRUE);
-      zero_st_info_specified = TRUE;	/* Command-line args take precedence */
-      zero_st_mask = 0xffffffff;	/* Mask everything is the default */
+      zero_st_info_specified = TRUE;  /* Command-line args take precedence */
+      zero_st_mask = 0xffffffff;  /* Mask everything is the default */
       /* Look for and read optional/undocumented bit-mask: */
       if (*options == '=')
       {
-	char *tmp;
-	/* Since never documented using any other syntax, '=' is required
-	   and no subsequent options may follow: */
-	options++; tmp = options;
-	zero_st_mask = strtoul(options, &options, 0);
-	if (*options != CNULL || tmp == options)
-	  opt_error_msg("Invalid bit-mask", options+1);
+  char *tmp;
+  /* Since never documented using any other syntax, '=' is required
+     and no subsequent options may follow: */
+  options++; tmp = options;
+  zero_st_mask = strtoul(options, &options, 0);
+  if (*options != CNULL || tmp == options)
+    opt_error_msg("Invalid bit-mask", options+1);
       }
       break;
 
     case 'M': /* MUNGE dates and file names */
       if (negate) opt_error_msg(NON_NEGATABLE, options);
-      munge++;	/* Go to next munge-level */
+      munge++;  /* Go to next munge-level */
 
       /* Modification and change dates have interest for symbolic links,
-	 but access times are not interesting because stat()ing a symbolic
-	 link causes its access time to change, thus levels 2 and 4 employ
-	 +F*T{~l}.  Nevertheless, leave L in level 2's +G format in case -L
-	 is explicitly specified. */
+   but access times are not interesting because stat()ing a symbolic
+   link causes its access time to change, thus levels 2 and 4 employ
+   +F*T{~l}.  Nevertheless, leave L in level 2's +G format in case -L
+   is explicitly specified. */
       {
-	char *g_opt;
-	char *n_opt = "+NFL";
-	if (munge == 1)
-	{
-	  g_opt = "+Gmn";
-	}
-	else if (munge == 2)
-	{
-	  g_opt = "+Gan";
-	}
-	else if (munge == 3)
-	{
-	  g_opt = "+Gcn";
-	}
-	else if (munge == 4)	/* undocumented */
-	{
-	  g_opt = "+G'chdate -m %m -a %a%n'";
-	  n_opt = "+NF";
-	}
-	else
-	{
-	  g_opt = "";
-	  n_opt = "";
-	}
+  char *g_opt;
+  char *n_opt = "+NFL";
+  if (munge == 1)
+  {
+    g_opt = "+Gmn";
+  }
+  else if (munge == 2)
+  {
+    g_opt = "+Gan";
+  }
+  else if (munge == 3)
+  {
+    g_opt = "+Gcn";
+  }
+  else if (munge == 4)  /* undocumented */
+  {
+    g_opt = "+G'chdate -m %m -a %a%n'";
+    n_opt = "+NF";
+  }
+  else
+  {
+    g_opt = "";
+    n_opt = "";
+  }
 
-	/* Defer to any previous G option from the command-line: */
-	if (!G_option) { do_options(g_opt); G_option = FALSE; }
+  /* Defer to any previous G option from the command-line: */
+  if (!G_option) { do_options(g_opt); G_option = FALSE; }
 
-	/* Defer to any previous N option from the command-line: */
-	if (!N_option) { do_options(n_opt);  N_option = FALSE; }
+  /* Defer to any previous N option from the command-line: */
+  if (!N_option) { do_options(n_opt);  N_option = FALSE; }
 
-	/* Do not defer to any previous T option, as all munge levels imply
-	   that we want ISO8601 dates: */
-	do_options("+TI");	/* Tf_ISO8601_DATE */
+  /* Do not defer to any previous T option, as all munge levels imply
+     that we want ISO8601 dates: */
+  do_options("+TI");  /* Tf_ISO8601_DATE */
       }
 
       /* Additional options may follow any MUNGE command */
       break;
-      
+
     case 'U': /* Generate Untouch script commands */
       if (negate) opt_error_msg(NON_NEGATABLE, options);
       untouch++;
@@ -1308,41 +1308,41 @@ traversing expanded symbolic-links.\n\
       fielding = TRUE;
       separator = *options++;
       if (separator == CNULL)
-	opt_error_msg("Missing character", options);
+  opt_error_msg("Missing character", options);
       break;
 
     case 'G': /* Specify the general format */
       if (negate) opt_error_msg(NON_NEGATABLE, options);
-      G_option = TRUE;	/* Command-line args take precedence */
+      G_option = TRUE;  /* Command-line args take precedence */
       G_format = options;
-      options = "";	/* No more options */
+      options = ""; /* No more options */
       break;
-      
+
     case 'N': /* Specify the name format */
       if (negate) opt_error_msg(NON_NEGATABLE, options);
-      N_option = TRUE;	/* Command-line args take precedence */
+      N_option = TRUE;  /* Command-line args take precedence */
       N_format = options;
-      options = "";	/* No more options */
+      options = ""; /* No more options */
       break;
-      
+
     case 'T': /* Specify the time & date format */
       if (negate) opt_error_msg(NON_NEGATABLE, options);
-      T_option = TRUE;	/* Command-line args take precedence */
+      T_option = TRUE;  /* Command-line args take precedence */
       T_format = options;
-      options = "";	/* No more options */
+      options = ""; /* No more options */
       break;
-      
+
     case 'E': /* Exclude file names filter */
       if (negate) opt_error_msg(NON_NEGATABLE, options);
       filtering = TRUE;
       exc_filtering = TRUE;
       if (*options == CNULL)
-	opt_error_msg(MISSING_FILTER, options);
+  opt_error_msg(MISSING_FILTER, options);
       else if (exc_file_count >= MAX_EXC_FILTER)
-	opt_error_msg(TOO_MANY_FILTERS, options);
+  opt_error_msg(TOO_MANY_FILTERS, options);
       else
-	exc_file_filter[exc_file_count++] = options;
-      options = "";	/* No more options */
+  exc_file_filter[exc_file_count++] = options;
+      options = ""; /* No more options */
       break;
 
     case 'e': /* Exclude directory names filter */
@@ -1350,12 +1350,12 @@ traversing expanded symbolic-links.\n\
       filtering = TRUE;
       exc_filtering = TRUE;
       if (*options == CNULL)
-	opt_error_msg(MISSING_FILTER, options);
+  opt_error_msg(MISSING_FILTER, options);
       else if (exc_dir_count >= MAX_EXC_FILTER)
-	opt_error_msg(TOO_MANY_FILTERS, options);
+  opt_error_msg(TOO_MANY_FILTERS, options);
       else
-	exc_dir_filter[exc_dir_count++] = options;
-      options = "";	/* No more options */
+  exc_dir_filter[exc_dir_count++] = options;
+      options = ""; /* No more options */
       break;
 
     case 'I': /* Include file names filter */
@@ -1363,68 +1363,68 @@ traversing expanded symbolic-links.\n\
       filtering = TRUE;
       inc_filtering = TRUE;
       if (*options == CNULL)
-	opt_error_msg(MISSING_FILTER, options);
+  opt_error_msg(MISSING_FILTER, options);
       else if (inc_file_count >= MAX_INC_FILTER)
-	opt_error_msg(TOO_MANY_FILTERS, options);
+  opt_error_msg(TOO_MANY_FILTERS, options);
       else
-	inc_file_filter[inc_file_count++] = options;
-      options = "";	/* No more options */
+  inc_file_filter[inc_file_count++] = options;
+      options = ""; /* No more options */
       break;
-      
+
     case 'i': /* Include directory names filter */
       if (negate) opt_error_msg(NON_NEGATABLE, options);
       filtering = TRUE;
       inc_filtering = TRUE;
       if (*options == CNULL)
-	opt_error_msg(MISSING_FILTER, options);
+  opt_error_msg(MISSING_FILTER, options);
       else if (inc_dir_count >= MAX_INC_FILTER)
-	opt_error_msg(TOO_MANY_FILTERS, options);
+  opt_error_msg(TOO_MANY_FILTERS, options);
       else
-	inc_dir_filter[inc_dir_count++] = options;
-      options = "";	/* No more options */
+  inc_dir_filter[inc_dir_count++] = options;
+      options = ""; /* No more options */
       break;
-      
+
     case 'F': /* Filter expression */
       if (negate) opt_error_msg(NON_NEGATABLE, options);
       filtering = TRUE;
       {
-	char *filter_ns = strdup_ns(options);
-	if (*filter_ns == '*')
-	{
-	  exc_filtering = TRUE;
-	  if (fexpr_ANDcount < MAX_FEXPR_FILTER)
-	    fexpr_ANDfilter[fexpr_ANDcount++] = filter_ns;
-	  else
-	    opt_error_msg(TOO_MANY_FILTERS, options);
-	}
-	else
-	{
-	  inc_filtering = TRUE;
-	  if (fexpr_ORcount < MAX_FEXPR_FILTER)
-	    fexpr_ORfilter[fexpr_ORcount++] = filter_ns;
-	  else
-	    opt_error_msg(TOO_MANY_FILTERS, options);
-	}
+  char *filter_ns = strdup_ns(options);
+  if (*filter_ns == '*')
+  {
+    exc_filtering = TRUE;
+    if (fexpr_ANDcount < MAX_FEXPR_FILTER)
+      fexpr_ANDfilter[fexpr_ANDcount++] = filter_ns;
+    else
+      opt_error_msg(TOO_MANY_FILTERS, options);
+  }
+  else
+  {
+    inc_filtering = TRUE;
+    if (fexpr_ORcount < MAX_FEXPR_FILTER)
+      fexpr_ORfilter[fexpr_ORcount++] = filter_ns;
+    else
+      opt_error_msg(TOO_MANY_FILTERS, options);
+  }
       }
-      options = "";	/* No more options */
+      options = ""; /* No more options */
       break;
 
     case 'Q': /* Quotals */
       /* In version 1.45, +Q meant to quote characters, in version 1.47
-	 +Q was deprecated, and in version 1.48 +Q was changed to quotal, */
+   +Q was deprecated, and in version 1.48 +Q was changed to quotal, */
       if (VersionLevel <= 147)
-	plus_q = OPTION(TRUE);
+  plus_q = OPTION(TRUE);
       else
       {
-	quotaling = OPTION(TRUE);
-	if (quotaling)
-	{
-	  untouch = 0;  /* Quotaling negates untouch/stamping */
-	  stamping = FALSE;
-	  /* Don't disguise any IDs unless specifically requested: */
-	  if (!envGetBoole("ELS_MASK_ID"))
-	    MaskId = FALSE;	/* override 149's default behavior */
-	}
+  quotaling = OPTION(TRUE);
+  if (quotaling)
+  {
+    untouch = 0;  /* Quotaling negates untouch/stamping */
+    stamping = FALSE;
+    /* Don't disguise any IDs unless specifically requested: */
+    if (!envGetBoole("ELS_MASK_ID"))
+      MaskId = FALSE; /* override 149's default behavior */
+  }
       }
       break;
 
@@ -1438,121 +1438,121 @@ traversing expanded symbolic-links.\n\
       stamp_setup(1);
       options++;
       break;
-      
+
     case 'v': /* Give version and bits of information: */
       if (negate) opt_error_msg(NON_NEGATABLE, options);
       if (*options == '=' || isDigit(*options))
       {
-	if (Iarg != 1 || options != Current_Arg+2)
-	  opt_error_msg("If specified, +v must be first argument", options);
-	if (*options == '=') options++;
-	VersionLevel = strToVer(options, &options);
-	if (*options != CNULL)
-	  opt_error_msg("Invalid version", options+1);
-	VersionLevelArg = TRUE;
+  if (Iarg != 1 || options != Current_Arg+2)
+    opt_error_msg("If specified, +v must be first argument", options);
+  if (*options == '=') options++;
+  VersionLevel = strToVer(options, &options);
+  if (*options != CNULL)
+    opt_error_msg("Invalid version", options+1);
+  VersionLevelArg = TRUE;
       }
       else
       {
-	puts(VersionID);
-	if (verboseLevel > 0)
-	{
-	  printf("	Compiled ELS version: %d\n", MaxVersionLevel);
-	  printf("	Running ELS version: %d\n", VersionLevel);
-	  show_options();
-	  printf("\n");
-	}
-	if (verboseLevel > 0)
-	{
-	  printf("	Max dir name: %d\n", MAX_DNAME-1);
-	  printf("	Max file name: %d\n", MAX_FNAME-1);
-	  printf("	sizeof char,short,int,long,llong: %d,%d,%d,%d,%d\n",
-		 ELS_SIZEOF_char, ELS_SIZEOF_short, ELS_SIZEOF_int,
-		 ELS_SIZEOF_long, ELS_SIZEOF_llong);
-	  printf("	sizeof uid_t,gid_t,time_t,tm_year: %d,%d,%d,%d\n",
-		 ELS_SIZEOF_uid_t, ELS_SIZEOF_gid_t,
-		 ELS_SIZEOF_time_t, ELS_SIZEOF_tm_year);
-	  printf("	sizeof st_ino,st_size,st_nlink,st_blocks: %d,%d,%d,%d\n",
-		 ELS_SIZEOF_st_ino, ELS_SIZEOF_st_size, ELS_SIZEOF_st_nlink,
-#		if defined(ELS_SIZEOF_st_blocks)
-		 ELS_SIZEOF_st_blocks
-#		else
-		 -1
-#		endif
-		 );
-	  printf("\n");
-	}
-	if (verboseLevel > 1)
-	{
-	  char *f = "	%10s: %d, %signed\n";
-#	define SHOW_TYPE(name,type) \
-	  printf(f, name, (int)sizeof(type), \
-		 (type)-2 < (type)2 ? "s" : "uns")
-	    SHOW_TYPE("Uint32",     Uint32);
-	  SHOW_TYPE("Uint64",     Uint64);
-	  SHOW_TYPE("size_t",     size_t);
-	  SHOW_TYPE("uid_t",      uid_t);
-	  SHOW_TYPE("gid_t",      gid_t);
-	  SHOW_TYPE("time_t",     time_t);
-	  SHOW_TYPE("ELS_time_t", ELS_time_t);
-#	if defined(MARKB_PREFERENCES) && \
-	  (SUNOS >= 50700 || LINUX >= 20400 || DARWIN >= 60000)
-	    /* Additional stuff I'm currious about: */
-	    printf("\n");
-	  SHOW_TYPE("dev_t", dev_t);
-	  SHOW_TYPE("ino_t", ino_t);
-	  SHOW_TYPE("mode_t", mode_t);
-	  SHOW_TYPE("nlink_t", nlink_t);
-	  SHOW_TYPE("off_t", off_t);
-	  /*SHOW_TYPE("timestruc_t", timestruc_t);*/
-#	  if !defined(LINUX)
-	  SHOW_TYPE("blksize_t", blksize_t);
-#	  endif
-	  SHOW_TYPE("blkcnt_t", blkcnt_t);
-#	endif
-	  printf("\n");
-	}
-	if (verboseLevel > 2)
-	{
-	  printf("	Debug,ArgOrder,TruncateName,MaskId: %d,%d,%d,%d\n",
-		 Debug, ArgOrder, TruncateName, MaskId);
-	  printf("\n");
-	}
-	exit(USAGE_ERROR);
+  puts(VersionID);
+  if (verboseLevel > 0)
+  {
+    printf("  Compiled ELS version: %d\n", MaxVersionLevel);
+    printf("  Running ELS version: %d\n", VersionLevel);
+    show_options();
+    printf("\n");
+  }
+  if (verboseLevel > 0)
+  {
+    printf("  Max dir name: %d\n", MAX_DNAME-1);
+    printf("  Max file name: %d\n", MAX_FNAME-1);
+    printf("  sizeof char,short,int,long,llong: %d,%d,%d,%d,%d\n",
+     ELS_SIZEOF_char, ELS_SIZEOF_short, ELS_SIZEOF_int,
+     ELS_SIZEOF_long, ELS_SIZEOF_llong);
+    printf("  sizeof uid_t,gid_t,time_t,tm_year: %d,%d,%d,%d\n",
+     ELS_SIZEOF_uid_t, ELS_SIZEOF_gid_t,
+     ELS_SIZEOF_time_t, ELS_SIZEOF_tm_year);
+    printf("  sizeof st_ino,st_size,st_nlink,st_blocks: %d,%d,%d,%d\n",
+     ELS_SIZEOF_st_ino, ELS_SIZEOF_st_size, ELS_SIZEOF_st_nlink,
+#   if defined(ELS_SIZEOF_st_blocks)
+     ELS_SIZEOF_st_blocks
+#   else
+     -1
+#   endif
+     );
+    printf("\n");
+  }
+  if (verboseLevel > 1)
+  {
+    char *f = " %10s: %d, %signed\n";
+# define SHOW_TYPE(name,type) \
+    printf(f, name, (int)sizeof(type), \
+     (type)-2 < (type)2 ? "s" : "uns")
+      SHOW_TYPE("Uint32",     Uint32);
+    SHOW_TYPE("Uint64",     Uint64);
+    SHOW_TYPE("size_t",     size_t);
+    SHOW_TYPE("uid_t",      uid_t);
+    SHOW_TYPE("gid_t",      gid_t);
+    SHOW_TYPE("time_t",     time_t);
+    SHOW_TYPE("ELS_time_t", ELS_time_t);
+# if defined(MARKB_PREFERENCES) && \
+    (SUNOS >= 50700 || LINUX >= 20400 || DARWIN >= 60000)
+      /* Additional stuff I'm currious about: */
+      printf("\n");
+    SHOW_TYPE("dev_t", dev_t);
+    SHOW_TYPE("ino_t", ino_t);
+    SHOW_TYPE("mode_t", mode_t);
+    SHOW_TYPE("nlink_t", nlink_t);
+    SHOW_TYPE("off_t", off_t);
+    /*SHOW_TYPE("timestruc_t", timestruc_t);*/
+#   if !defined(LINUX)
+    SHOW_TYPE("blksize_t", blksize_t);
+#   endif
+    SHOW_TYPE("blkcnt_t", blkcnt_t);
+# endif
+    printf("\n");
+  }
+  if (verboseLevel > 2)
+  {
+    printf("  Debug,ArgOrder,TruncateName,MaskId: %d,%d,%d,%d\n",
+     Debug, ArgOrder, TruncateName, MaskId);
+    printf("\n");
+  }
+  exit(USAGE_ERROR);
       }
       break;
 
     case 'V': /* Verbose level */
-      verboseLevel++;	/* Go to next verbose level */
+      verboseLevel++; /* Go to next verbose level */
       if (negate) verboseLevel = 0;
       break;
 
     case 'X': /* Execute mode */
       if (negate) opt_error_msg(NON_NEGATABLE, options);
       execute_mode = TRUE;
-      execute_sts_check = FALSE;	/* No status checking is the default */
+      execute_sts_check = FALSE;  /* No status checking is the default */
       execute_sts_good = 0;
       /* +X must always use names quoted using +q whenever unusual file names
-	 occur (-b and -Q are inadequate for these purposes!): */
+   occur (-b and -Q are inadequate for these purposes!): */
       do_options("+q");
       do_options("-~b~Q");
       /* Detect the following, otherwise unpleasant surprises may occur: */
       if (!First_listing)
-	errorMsgExit("+X must precede any file name arguments", USAGE_ERROR);
+  errorMsgExit("+X must precede any file name arguments", USAGE_ERROR);
       /* Look for and read optional status check value: */
       if (*options == '=' || isDigit(*options))
       {
-	char *tmp;
-	execute_sts_check = TRUE;
-	/* Originally status could come imbedded with other args, e.g. +X0V,
-	   so allow it as well as +X=0V or +X=0 +V */
-	if (*options == '=') options++;
-	tmp = options;
-	execute_sts_good = strtoul(options, &options, 0);
-	if (options == tmp)
-	  opt_error_msg("Invalid return code", options+1);
-	if (execute_sts_good > 255)
-	  /* ??? Maybe issue warning if > 255 ??? */
-	  execute_sts_good &= 0xff;
+  char *tmp;
+  execute_sts_check = TRUE;
+  /* Originally status could come imbedded with other args, e.g. +X0V,
+     so allow it as well as +X=0V or +X=0 +V */
+  if (*options == '=') options++;
+  tmp = options;
+  execute_sts_good = strtoul(options, &options, 0);
+  if (options == tmp)
+    opt_error_msg("Invalid return code", options+1);
+  if (execute_sts_good > 255)
+    /* ??? Maybe issue warning if > 255 ??? */
+    execute_sts_good &= 0xff;
       }
       break;
 
@@ -1560,14 +1560,14 @@ traversing expanded symbolic-links.\n\
       if (negate) opt_error_msg(NON_NEGATABLE, options);
       if (*options == '=')
       {
-	options++;
-	Time_Zone = get_validTZ(options);
-	set_currentTZ(Time_Zone);
-	options = "";	/* No more options */
+  options++;
+  Time_Zone = get_validTZ(options);
+  set_currentTZ(Time_Zone);
+  options = ""; /* No more options */
       }
       else
       {
-	opt_error_msg("Missing =ZONENAME", options);
+  opt_error_msg("Missing =ZONENAME", options);
       }
       break;
 
@@ -1582,7 +1582,7 @@ traversing expanded symbolic-links.\n\
       break;
     }
   }
-  
+
   return;
 }
 
@@ -1606,7 +1606,7 @@ void do_options_minus_minus(char *options)
   }
 
   else if (strcmp_ci(options, "CCaseMode") == 0 ||
-	   strcmp_ci(options, "ClearCaseMode") == 0)
+     strcmp_ci(options, "ClearCaseMode") == 0)
   {
     CCaseMode = OPTION(TRUE);
   }
@@ -1646,11 +1646,11 @@ void do_options_minus_minus(char *options)
     {
       char *tmp;
       /* Since never documented using any other syntax, '=' is required
-	 and no subsequent options may follow: */
+   and no subsequent options may follow: */
       options++; tmp = options;
       DirDepth = strtol(options, &options, 0);
       if (*options != CNULL || tmp == options)
-	opt_error_msg("Invalid DirDepth", options+1);
+  opt_error_msg("Invalid DirDepth", options+1);
     }
     else
     {
@@ -1659,7 +1659,7 @@ void do_options_minus_minus(char *options)
   }
 
   else if (strcmp_ci(options, "IncludeSS") == 0 ||
-	   strcmp_ci(options, "IncludeSnapShot") == 0)
+     strcmp_ci(options, "IncludeSnapShot") == 0)
   {
     /* Include listing of snapshot directories: */
     IncludeSS = OPTION(TRUE);
@@ -1700,63 +1700,63 @@ void stamp_setup(int pass)
     if (*stamp_option == 'o')
     {
       do_options("+GCtPUG~%+8s~mn"); /* ~%+8s~ lists device files as X,Y */
-      do_options("+NFL");	/* Nf_FULL_NAME Nf_LINK_PTR_NAME */
-      do_options("+TI");	/* Tf_ISO8601_DATE */
+      do_options("+NFL"); /* Nf_FULL_NAME Nf_LINK_PTR_NAME */
+      do_options("+TI");  /* Tf_ISO8601_DATE */
       stamp_uses_cksum = TRUE;
     }
     else if (*stamp_option == 'O')
     {
       do_options("+GtPUG~%+8s~mn");  /* ~%+8s~ lists device files as X,Y */
-      do_options("+NFL");	/* Nf_FULL_NAME Nf_LINK_PTR_NAME */
-      do_options("+TI");	/* Tf_ISO8601_DATE */
+      do_options("+NFL"); /* Nf_FULL_NAME Nf_LINK_PTR_NAME */
+      do_options("+TI");  /* Tf_ISO8601_DATE */
     }
     else if (*stamp_option == 'f')
     {
       do_options("+GCtP~%+8s~mn"); /* ~%+8s~ lists device files as X,Y */
-      do_options("+NFL");	/* Nf_FULL_NAME Nf_LINK_PTR_NAME */
-      do_options("+TI");	/* Tf_ISO8601_DATE */
+      do_options("+NFL"); /* Nf_FULL_NAME Nf_LINK_PTR_NAME */
+      do_options("+TI");  /* Tf_ISO8601_DATE */
       stamp_uses_cksum = TRUE;
     }
     else if (*stamp_option == 'F')
     {
       do_options("+GtP~%+8s~mn");  /* ~%+8s~ lists device files as X,Y */
-      do_options("+NFL");	/* Nf_FULL_NAME Nf_LINK_PTR_NAME */
-      do_options("+TI");	/* Tf_ISO8601_DATE */
+      do_options("+NFL"); /* Nf_FULL_NAME Nf_LINK_PTR_NAME */
+      do_options("+TI");  /* Tf_ISO8601_DATE */
     }
     else if (*stamp_option == 'C' || *stamp_option == 'c')
     {
       /* Tracking directory dates is pointless for sorce code: */
       do_options("+d");
-      
-      do_options("+Gm  u~%+-6s~n");	/* ~%+-6s~ lists device files as X,Y */
-      do_options("+NFL");	/* Nf_FULL_NAME Nf_LINK_PTR_NAME */
-      do_options("+TI");	/* Tf_ISO8601_DATE */
-      
+
+      do_options("+Gm  u~%+-6s~n"); /* ~%+-6s~ lists device files as X,Y */
+      do_options("+NFL"); /* Nf_FULL_NAME Nf_LINK_PTR_NAME */
+      do_options("+TI");  /* Tf_ISO8601_DATE */
+
       if (*stamp_option == 'C')
       {
-	/* Exclude library, object, and dependency files: */
-	do_options("+E*.[aod]");
+  /* Exclude library, object, and dependency files: */
+  do_options("+E*.[aod]");
 
-	/* Exclude git directories: */
-	do_options("+e.git");
+  /* Exclude git directories: */
+  do_options("+e.git");
 
-	/* Exclude CVS directories: */
-	do_options("+eCVS");
-	do_options("+eCVSROOT");
-	do_options("+ecvsroot");
-	
-	/* Exclude tilde backup files generated by Emacs: */
-	do_options("+E*~");
-	
+  /* Exclude CVS directories: */
+  do_options("+eCVS");
+  do_options("+eCVSROOT");
+  do_options("+ecvsroot");
+
+  /* Exclude tilde backup files generated by Emacs: */
+  do_options("+E*~");
+
 #ifdef MARKB_PREFERENCES
-	/* I like to use an older (and faster) version of GNU emacs that
-	   generates .~* backup files instead of *~: */
-	do_options("+E.~*");
-	
-	/* I use .v directories with numbers on the end of my files to
-	   designate versions; e.g. .v/els.c.49, .v/els.c.50, .v/els.c.51,
-	   etc. thus I choose to ignore them: */
-	do_options("+e.v");
+  /* I like to use an older (and faster) version of GNU emacs that
+     generates .~* backup files instead of *~: */
+  do_options("+E.~*");
+
+  /* I use .v directories with numbers on the end of my files to
+     designate versions; e.g. .v/els.c.49, .v/els.c.50, .v/els.c.51,
+     etc. thus I choose to ignore them: */
+  do_options("+e.v");
 #endif
       }
     }
@@ -1764,7 +1764,7 @@ void stamp_setup(int pass)
     {
       opt_error_msg("Expected one of 'CcFfOo'", stamp_option+1);
     }
-    
+
     /* Stamp version 1.54 and above implies +q unless previously specified: */
     if (!plus_q_specified && VersionLevel >= 154)
       do_options("+q");
@@ -1778,11 +1778,11 @@ void stamp_setup(int pass)
     if (stamp_uses_cksum && cksum_type == CKSUM_UNSPECIFIED)
     {
       if (VersionLevel <= 148)
-	/* Version 1.48 and below uses BSD by default: */
-	do_options("+C=bsd");
+  /* Version 1.48 and below uses BSD by default: */
+  do_options("+C=bsd");
       else
-	/* Version 1.49 and above uses POSIX by default: */
-	do_options("+C=posix");
+  /* Version 1.49 and above uses POSIX by default: */
+  do_options("+C=posix");
     }
   }
   else
@@ -1792,7 +1792,7 @@ void stamp_setup(int pass)
 
     /*showCommandEnv("\t", "Stamp performed");*/
     showCommandEnv("# ", "Stamp performed");
-    
+
     if (*stamp_option == 'o')
     {
       /* +GCtPUG~%+8s~mn +NFL */
@@ -1837,7 +1837,7 @@ T Mode    Size       Date          File\n\
   return;
 }
 
-      
+
 void untouch_setup(int pass)
 {
   if (pass == 1)
@@ -1849,14 +1849,14 @@ void untouch_setup(int pass)
     else
     {
       do_options("+G'untouch  %C %-8s %m %a  %N'");
-      do_options("+C=U");	/* Preserve access times (i.e. 'Unaccess') */
+      do_options("+C=U"); /* Preserve access times (i.e. 'Unaccess') */
     }
     /* Use posix checksums if no algorithm was previously specified: */
     if (cksum_type == CKSUM_UNSPECIFIED) do_options("+C=posix");
-    do_options("+q");		/* Use quoted names */
-    do_options("+NF");		/* Use full names (no symlinks) */
-    do_options("+TI");		/* Use Iso8601 dates */
-    do_options("+F*T{r}");	/* List regular files only */
+    do_options("+q");   /* Use quoted names */
+    do_options("+NF");    /* Use full names (no symlinks) */
+    do_options("+TI");    /* Use Iso8601 dates */
+    do_options("+F*T{r}");  /* List regular files only */
   }
   else
   {
@@ -1883,8 +1883,8 @@ untouch()\n\
    [ -f \"$FILE\" ] && \\\n\
      [ `els +G%%m +TI \"$FILE\"` != $DATE ] && \\\n\
        [ `els +G%%s \"$FILE\"` = $SIZE ] && \\\n\
-	 [ `els +C=%s +G%%C \"$FILE\"` = $CKSUM ] && \\\n\
-	   chdate -m $DATE \"$FILE\"\n\
+   [ `els +C=%s +G%%C \"$FILE\"` = $CKSUM ] && \\\n\
+     chdate -m $DATE \"$FILE\"\n\
 }\n", cksumTypeToName(cksum_type));
     else
       printf("\n\
@@ -1894,8 +1894,8 @@ untouch()\n\
    [ -f \"$FILE\" ] && \\\n\
      [ `els +G%%m,%%-a +TI \"$FILE\"` != $DATE,$ACCESS ] && \\\n\
        [ `els +G%%s \"$FILE\"` = $SIZE ] && \\\n\
-	 [ `els +C=%s,U +G%%C \"$FILE\"` = $CKSUM ] && \\\n\
-	   chdate -m $DATE -a $ACCESS \"$FILE\"\n\
+   [ `els +C=%s,U +G%%C \"$FILE\"` = $CKSUM ] && \\\n\
+     chdate -m $DATE -a $ACCESS \"$FILE\"\n\
 }\n", cksumTypeToName(cksum_type));
 
     /* Include TZ setting regardless of whether it's from the environment
@@ -1912,12 +1912,12 @@ untouch()\n\
       char *cksum_title = (cksum_size > 16 ? "  Checksum" : "CKSum");
       char *cksum_line  = (cksum_size > 16 ? "----------" : "-----");
       if (untouch == 1)
-	printf("\
+  printf("\
 #        %s Size           Date       File\n\
 #        %s ----     ---------------  ----\n\
 ", cksum_title, cksum_line);
       else
-	printf("\
+  printf("\
 #        %s Size           Date           Access      File\n\
 #        %s ----     --------------- ---------------  ----\n\
 ", cksum_title, cksum_line);
@@ -1954,14 +1954,14 @@ void give_usage_or_help(char U_or_H)
     out = stdout;
   else
     out = stderr;
-  
+
   fprintf(out, "\
 \n\
 Usage: %s [-~aAbcCdFgGhilLnopQrRstuU1] [+~cdhHlqQRvVwz45] \\\n\
-	[+C=[BSPCU]] [+M[M[M]]] [+o=outfile] [+~t=[~ML]] \\\n\
-	[+Z=zonename] [+f char] [+GTN format] \\\n\
-	[+IEie pattern] [+F fexpr] \\\n\
-	[+S[CcOoFf]] [+U] [+W] [+X status] files\n\
+  [+C=[BSPCU]] [+M[M[M]]] [+o=outfile] [+~t=[~ML]] \\\n\
+  [+Z=zonename] [+f char] [+GTN format] \\\n\
+  [+IEie pattern] [+F fexpr] \\\n\
+  [+S[CcOoFf]] [+U] [+W] [+X status] files\n\
 \n\
 ", Progname);
 
@@ -1990,7 +1990,7 @@ LS -- STANDARD OPTIONS:\n\
     -g: List GIDs(BSD), long listing omitting UIDs(SYS5), ignored(ELS)\n\
     -G: Don't list GIDs(ELS)\n\
     -h: List size in human readable format scaled by powers of 1024\n\
-	If a second -h (i.e. -hh), then scaled by powers of 1000\n\
+  If a second -h (i.e. -hh), then scaled by powers of 1000\n\
     -i: List inode number\n\
     -l: Long listing using BSD, SYS5, or ELS semantics\n\
     -L: List actual file rather than symbolic link\n\
@@ -2006,7 +2006,7 @@ LS -- STANDARD OPTIONS:\n\
     -U: List unsorted(ELS)\n\
     -1: List single column\n\
      ~: If a tilde precedes any of the above options then that option is\n\
-	reset, effectively causing it to be canceled.\n\
+  reset, effectively causing it to be canceled.\n\
 \n\
 ");
 
@@ -2019,94 +2019,94 @@ Enhanced LS -- MISCELLANEOUS:\n\
     +4: Use BSD semantics\n\
     +5: Use SYS5 semantics\n\
     +c: Output ELS options and environment settings used to produce listing\n\
-	(useful for documenting how a particular listing was generated)\n\
+  (useful for documenting how a particular listing was generated)\n\
     +d: Don't list directories as files, but list their contents (has the\n\
-	opposite effect of -d)\n\
+  opposite effect of -d)\n\
     +h: Allow +X to act upon symbolically linked files\n\
     +q: Quote unusual and troublesome file names (besides doing a more\n\
-	thorough job than either -b or -Q, this option also quotes special\n\
-	and non-graphic characters so that the file name can subsequently be\n\
-	used as an argument for most Unix commands; thus, the +q option is\n\
-	automatically implied whenever using the +X option).\n\
+  thorough job than either -b or -Q, this option also quotes special\n\
+  and non-graphic characters so that the file name can subsequently be\n\
+  used as an argument for most Unix commands; thus, the +q option is\n\
+  automatically implied whenever using the +X option).\n\
     +Q: Display Quotals (quota+total) for indicated hierarchy or files.\n\
-	The quotal option will list the total size and number of files\n\
-	owned by each user/UID and group/GID.  For example, to display\n\
-	quotals for all files in /usr hierarchy:\n\
-		els +Q -AR /usr\n\
+  The quotal option will list the total size and number of files\n\
+  owned by each user/UID and group/GID.  For example, to display\n\
+  quotals for all files in /usr hierarchy:\n\
+    els +Q -AR /usr\n\
     +R: Recursively list contents of all directories (same as -R)\n\
     +v: Print els version and information\n\
     +V: Verbose mode\n\
     +w: Suppress warnings about unreadable files, etc.\n\
     +z: List volatile file information as zero (volatile file information is\n\
-	defined as those values that change whenever a file is listed or\n\
-	those values that aren't preserved after a hierarchy gets copied\n\
-	or restored; for example, a directory or a symbolic link changes its\n\
-	access time whenever being listed; a symbolic link changes its\n\
-	modification time and/or ownership after being copied; a directory\n\
-	doesn't always preserve its size after being copied).  Also, since\n\
-	volatile file information can change over time, this option is\n\
-	particularly useful when stamping a hierarchy (see +S option), or\n\
-	when comparing the listings of two very similar hierarchies.\n\
+  defined as those values that change whenever a file is listed or\n\
+  those values that aren't preserved after a hierarchy gets copied\n\
+  or restored; for example, a directory or a symbolic link changes its\n\
+  access time whenever being listed; a symbolic link changes its\n\
+  modification time and/or ownership after being copied; a directory\n\
+  doesn't always preserve its size after being copied).  Also, since\n\
+  volatile file information can change over time, this option is\n\
+  particularly useful when stamping a hierarchy (see +S option), or\n\
+  when comparing the listings of two very similar hierarchies.\n\
      ~: If a tilde precedes any of the above options then that option is\n\
-	reset, effectively causing it to be canceled.\n\
+  reset, effectively causing it to be canceled.\n\
 \n\
     +C: Specify checksum algorithm (B|bsd, S|sysv, P|posix, or C|crc32).\n\
-	Additionally, if U|unaccess is specified then each file's access\n\
-	time will be preserved (if possible).  'bsd' is similar to\n\
-	/usr/ucb/sum under SunOS5/Solaris or '/usr/bin/sum -r' under\n\
-	Linux; 'sysv' is similar to /usr/bin/sum under SunOS5/Solaris or\n\
-	'/usr/bin/sum -s' under Linux; 'posix' is similar to\n\
-	'/usr/bin/cksum' under SunOS5/Solaris, Linux, HPUX10+, etc; and\n\
-	'crc32' is the algorithm used by ZLIB et al.  For example, to\n\
-	recursively list checksums of all files:\n\
-		els +C=bsd +z +GCSN -L -RA	# similar to /usr/ucb/sum\n\
-		els +C=sysv +5l +z +GCSN -L -RA	# similar to /usr/bin/sum\n\
-		els +C=posix +z +GCsN -L -RA	# similar to /usr/bin/cksum\n\
-		els +C=crc32 +z +GCsN -L -RA	# crc32 algorithm\n\
-		els +C=posix,U +z +GCsN -L -RA	# preserve access times\n\
-		els +C=PU +z +GCsN -L -RA	# same as 'posix,unaccess'\n\
+  Additionally, if U|unaccess is specified then each file's access\n\
+  time will be preserved (if possible).  'bsd' is similar to\n\
+  /usr/ucb/sum under SunOS5/Solaris or '/usr/bin/sum -r' under\n\
+  Linux; 'sysv' is similar to /usr/bin/sum under SunOS5/Solaris or\n\
+  '/usr/bin/sum -s' under Linux; 'posix' is similar to\n\
+  '/usr/bin/cksum' under SunOS5/Solaris, Linux, HPUX10+, etc; and\n\
+  'crc32' is the algorithm used by ZLIB et al.  For example, to\n\
+  recursively list checksums of all files:\n\
+    els +C=bsd +z +GCSN -L -RA  # similar to /usr/ucb/sum\n\
+    els +C=sysv +5l +z +GCSN -L -RA # similar to /usr/bin/sum\n\
+    els +C=posix +z +GCsN -L -RA  # similar to /usr/bin/cksum\n\
+    els +C=crc32 +z +GCsN -L -RA  # crc32 algorithm\n\
+    els +C=posix,U +z +GCsN -L -RA  # preserve access times\n\
+    els +C=PU +z +GCsN -L -RA # same as 'posix,unaccess'\n\
 \n\
     +M: Macro 1 for listing ISO8601 *modification* dates of all files\n\
-	except directories (same as: els +Gmn +NFL +TI +d).  For example, to\n\
-	list the 30 most recently modified source code files in a hierarchy:\n\
-		els +M -RA +I'*.{c,h,cc,hh}' | sort | tail -30\n\
+  except directories (same as: els +Gmn +NFL +TI +d).  For example, to\n\
+  list the 30 most recently modified source code files in a hierarchy:\n\
+    els +M -RA +I'*.{c,h,cc,hh}' | sort | tail -30\n\
    +MM: Macro 2 for listing ISO8601 *access* dates of all files except\n\
-	directories and symbolic links (same as: els +Gan +NF +TI +d \\\n\
-	+F'T{~l}').  For example, to list the 100 most recently accessed \n\
-	executable files under the /usr hierarchy:\n\
-		els +MM -RA +F'P{+x}' /usr | sort | tail -100\n\
+  directories and symbolic links (same as: els +Gan +NF +TI +d \\\n\
+  +F'T{~l}').  For example, to list the 100 most recently accessed \n\
+  executable files under the /usr hierarchy:\n\
+    els +MM -RA +F'P{+x}' /usr | sort | tail -100\n\
   +MMM: Macro 3 for listing ISO8601 *change* dates of all files and\n\
-	directories (same as: els +Gcn +NFL +TI).  For example, to list\n\
-	the 100 most recently changed files and directories under the /usr\n\
-	hierarchy:\n\
-		els +MMM -RA /usr | sort | tail -100\n\
+  directories (same as: els +Gcn +NFL +TI).  For example, to list\n\
+  the 100 most recently changed files and directories under the /usr\n\
+  hierarchy:\n\
+    els +MMM -RA /usr | sort | tail -100\n\
 \n\
     +o: Specify file for output, e.g.:  els -laR +o=output.dat\n\
 \n\
     +t: Traverse mount-points(M) and/or expanded symbolic-links(L) during\n\
-	recursive listings.  For example, to traverse any mount-point (i.e.\n\
-	a different file-system) encountered during a recursive listing:\n\
-		els -laR +t=M\n\
-	To traverse both mount-points and expanded symbolic-links:\n\
-		els -laR -L +t=ML\n\
-	Note: '+t=L' is effective only if '-L' is also specified, as '-L'\n\
-	is what enables expansion of symbolic-links.  '+t=M' must also be\n\
-	specified with '+t=L' (i.e. +t=ML), if you want to traverse expanded\n\
-	symbolic-links that vector-off onto different mount-points.  By\n\
-	default all traversing is disabled unless requested.  To disable all\n\
-	traversal specify '+t=~L~M' (or the logical equivalent '+~t=LM').\n\
+  recursive listings.  For example, to traverse any mount-point (i.e.\n\
+  a different file-system) encountered during a recursive listing:\n\
+    els -laR +t=M\n\
+  To traverse both mount-points and expanded symbolic-links:\n\
+    els -laR -L +t=ML\n\
+  Note: '+t=L' is effective only if '-L' is also specified, as '-L'\n\
+  is what enables expansion of symbolic-links.  '+t=M' must also be\n\
+  specified with '+t=L' (i.e. +t=ML), if you want to traverse expanded\n\
+  symbolic-links that vector-off onto different mount-points.  By\n\
+  default all traversing is disabled unless requested.  To disable all\n\
+  traversal specify '+t=~L~M' (or the logical equivalent '+~t=LM').\n\
 \n\
     +Z: Specify timezone to be used in place of current TZ setting.\n\
-	The timezone should be in the form of:\n\
-	    All OSes:		STDoffset[DST[offset][,rule]]\n\
-	Additionally, if your host provides zoneinfo then you can also\n\
-	use names from the appropriate zoneinfo directory:\n\
-	    SunOS/Solaris:		/usr/share/lib/zoneinfo\n\
-	    Linux2, Darwin, FreeBSD:	/usr/share/zoneinfo\n\
-	    OSF1:			/etc/zoneinfo\n\
-	For example:\n\
-	    els -la +Z=EST5EDT +TIZ	(Available on *all* OSes)\n\
-	    els -la +Z=US/Eastern +Tv	(Available on OSes with zoneinfo)\n\
+  The timezone should be in the form of:\n\
+      All OSes:   STDoffset[DST[offset][,rule]]\n\
+  Additionally, if your host provides zoneinfo then you can also\n\
+  use names from the appropriate zoneinfo directory:\n\
+      SunOS/Solaris:    /usr/share/lib/zoneinfo\n\
+      Linux2, Darwin, FreeBSD:  /usr/share/zoneinfo\n\
+      OSF1:     /etc/zoneinfo\n\
+  For example:\n\
+      els -la +Z=EST5EDT +TIZ (Available on *all* OSes)\n\
+      els -la +Z=US/Eastern +Tv (Available on OSes with zoneinfo)\n\
 \n\
 ");
 
@@ -2117,12 +2117,12 @@ Enhanced LS -- FORMATTING:\n\
     +f: Field separator character, e.g.:  els -la +f: +TI\n\
 \n\
     +G: GENERAL format, e.g.:  els +G~tp~lusmn +NfL (same as els -l)\n\
-	i:  inode number\n\
+  i:  inode number\n\
       t,T:  type of file in alpha(t), symbolic(T)\n\
       p,P:  permission in alpha(p), numeric(P)\n\
-	M:  permission in chmod format (e.g. u=rwxs,g=x,o=x)\n\
-	A:  ACL indicator '+' if present\n\
-	l:  link count\n\
+  M:  permission in chmod format (e.g. u=rwxs,g=x,o=x)\n\
+  A:  ACL indicator '+' if present\n\
+  l:  link count\n\
       u,U:  UID in alpha(u), numeric(U)\n\
       g,G:  GID in alpha(g), numeric(G)\n\
       o,O:  owner in alpha(o == u:g), numeric(O == U:G)\n\
@@ -2130,13 +2130,13 @@ Enhanced LS -- FORMATTING:\n\
         h:  size scaled by powers of 1000 with one of kmgtpezy\n\
         H:  size scaled by powers of 1024 with one of KMGTPEZY\n\
     m,a,c:  time modified(m), accessed(a), status changed(c)\n\
-	    (time displayed using +T format)\n\
+      (time displayed using +T format)\n\
       n,N:  file name(n), full file name(N)\n\
-	    (name displayed using +N format)\n\
+      (name displayed using +N format)\n\
     d,f,F:  directory name(d), file name(f), full file name(F)\n\
-	L:  Symbolic link target prefaced by '->'\n\
-	C:  checksum (performed on regular files only using\n\
-	    algorithm and/or flags specified by +C option)\n\
+  L:  Symbolic link target prefaced by '->'\n\
+  C:  checksum (performed on regular files only using\n\
+      algorithm and/or flags specified by +C option)\n\
 \n\
     +T: TIME format, e.g.:  els -la +T^rD (give age of file in days)\n\
        ^a:  Modifier for absolute time since the epoch\n\
@@ -2148,35 +2148,35 @@ Enhanced LS -- FORMATTING:\n\
        ^G:  Modifier for GMT dates instead of local\n\
        ^L:  Modifier for local dates instead of GMT\n\
        ^M:  Modifier for meridian instead of military time\n\
-	F:  Floating-point style (same as +T^N~YMD.hms~)\n\
-	I:  Iso8601 style\n\
-	e:  els style (default, same as +TM%%_DYt)\n\
-	l:  ls style (same as +TM%%_DQ)\n\
-	d:  dos style (same as +T^N%%_M-D-y^M%%_h:~mp~)\n\
-	w:  windows style (same as +T\"^N%%_M/D/y^M%%_tP'M'\")\n\
-	v:  verbose style (same as +TWM%%_DTZY)\n\
+  F:  Floating-point style (same as +T^N~YMD.hms~)\n\
+  I:  Iso8601 style\n\
+  e:  els style (default, same as +TM%%_DYt)\n\
+  l:  ls style (same as +TM%%_DQ)\n\
+  d:  dos style (same as +T^N%%_M-D-y^M%%_h:~mp~)\n\
+  w:  windows style (same as +T\"^N%%_M/D/y^M%%_tP'M'\")\n\
+  v:  verbose style (same as +TWM%%_DTZY)\n\
   Y,M,D,W:  year(Y), month(M), day(D), weekday(W)\n\
   h,m,s,c:  hour(h), minutes(m), seconds(s), clock(c)\n\
       t,T:  time as h:m(t), h:m:s(T)\n\
-	Q:  time or year depending on age\n\
-	p:  'a' or 'p' depending on meridian\n\
-	    (meaningful only with ^M modifier)\n\
-	P:  'A' or 'P' depending on meridian\n\
-	    (meaningful only with ^M modifier)\n\
-	y:  year modulo 100\n\
-	Z:  zone name\n\
+  Q:  time or year depending on age\n\
+  p:  'a' or 'p' depending on meridian\n\
+      (meaningful only with ^M modifier)\n\
+  P:  'A' or 'P' depending on meridian\n\
+      (meaningful only with ^M modifier)\n\
+  y:  year modulo 100\n\
+  Z:  zone name\n\
 \n\
     +N: NAME format, e.g.:  els -laR +NF\n\
        ^q:  Modifier for quoting unusual file names (same as +q)\n\
-	F:  Full file name (same as +Nd/f)\n\
-	d:  Directory name\n\
-	f:  File name\n\
-	l:  Symbolic link target\n\
-	L:  Symbolic link target prefaced by '->'\n\
+  F:  Full file name (same as +Nd/f)\n\
+  d:  Directory name\n\
+  f:  File name\n\
+  l:  Symbolic link target\n\
+  L:  Symbolic link target prefaced by '->'\n\
 \n\
     +G, +T, +N format controls\n\
-	\\:  Output following character verbatim\n\
-	~:  Toggle spacing off/on\n\
+  \\:  Output following character verbatim\n\
+  ~:  Toggle spacing off/on\n\
        %%%%:  Output a single %% character\n\
        %%D:  Output directive 'D' using default width and default padding\n\
       %%_D:  Pad left side of output with blanks using default width\n\
@@ -2188,16 +2188,16 @@ Enhanced LS -- FORMATTING:\n\
      %%-nD:  Output a left justified field 'n' characters wide\n\
      %%+nD:  Output a field 'n' characters wide regardless of ~ spacing\n\
 \n\
-	E.g.: els +G%%10u%%-10gN (print the uid right justified and the gid\n\
-	left justified in two 10 character fields followed by the file name)\n\
+  E.g.: els +G%%10u%%-10gN (print the uid right justified and the gid\n\
+  left justified in two 10 character fields followed by the file name)\n\
 \n\
-	If a string occurs within an inner set of quotes then the string\n\
-	is output verbatim (except for any directives within the inner\n\
-	quotes prefaced by a %%).  Thus, the following are equivalent:\n\
+  If a string occurs within an inner set of quotes then the string\n\
+  is output verbatim (except for any directives within the inner\n\
+  quotes prefaced by a %%).  Thus, the following are equivalent:\n\
 \n\
-	+T\"'DATE: '^N%%M/D/Y\"    # M/D/Y in outer quotes (%% optional)\n\
-	+T'\"DATE: \"^NM/%%D/Y'    # M/D/Y in outer quotes (%% optional)\n\
-	+T'\"DATE: ^N%%M/%%D/%%Y\"'  # M/D/Y in INNER quotes (%% REQUIRED)\n\
+  +T\"'DATE: '^N%%M/D/Y\"    # M/D/Y in outer quotes (%% optional)\n\
+  +T'\"DATE: \"^NM/%%D/Y'    # M/D/Y in outer quotes (%% optional)\n\
+  +T'\"DATE: ^N%%M/%%D/%%Y\"'  # M/D/Y in INNER quotes (%% REQUIRED)\n\
 \n\
 ");
 
@@ -2212,138 +2212,138 @@ Enhanced LS -- FILTERING:\n\
 \n\
     +F: FILTER EXPRESSION\n\
 \n\
-	A filter expression (fexpr) consists of one or more of the\n\
-	following filter types separated by Boolean operators:\n\
-		A{...} -- Access Filter\n\
-		T{...} -- Type Filter\n\
-		P{...} -- Permission Filter\n\
-		Q{...} -- Quantity Filter\n\
-		U{...} -- Unusual Filter\n\
-		c{...} -- clearcase Filter\n\
-		l{...} -- link Filter\n\
+  A filter expression (fexpr) consists of one or more of the\n\
+  following filter types separated by Boolean operators:\n\
+    A{...} -- Access Filter\n\
+    T{...} -- Type Filter\n\
+    P{...} -- Permission Filter\n\
+    Q{...} -- Quantity Filter\n\
+    U{...} -- Unusual Filter\n\
+    c{...} -- clearcase Filter\n\
+    l{...} -- link Filter\n\
 \n\
-	Each filter type consists of one or more terms separated by\n\
-	Boolean operators.  The following lists each term appropriate\n\
-	for the associated filter type:\n\
-	    Access Filter Terms:\n\
-		rwxe: read, write, execute(x), or existence(e)\n\
-	    Type Filter Terms:\n\
-		rf: regular file (r and f are synonymous)\n\
-		dcb: directory, char device, block device\n\
-		plsD: pipe/fifo, symbolic link, socket, Door\n\
-		S: Special/device file (same as 'b|c')\n\
-	    Permission Filter Terms:\n\
-		value: octal value <= 07777\n\
-		ugo: user field, group field, other field\n\
-		a: all fields (same as 'ugo')\n\
-		+: test if indicated field(s) contain any attribute(s)\n\
-		-: test if indicated field(s) missing any attribute(s)\n\
-		=: test if indicated field(s) match attribute(s) exactly\n\
-		rwx: read attribute, write attribute, execute attribute\n\
-		s: setuid/setgid attribute (applies to u and/or g fields)\n\
-		t: sticky attribute (applies to u field)\n\
-		l: mandatory lock attribute (applies to g field)\n\
-	    Quantity Filter Terms:\n\
-		iAlugs: inode, ACL count, link count, uid, gid, size\n\
-		mac: time modified, accessed, status changed\n\
-		== != ~= : equals, not equals, not equals\n\
-		> >= : greater than, greater than or equals\n\
-		< <= : less than, less than or equals\n\
-		value: positive integer to be compared against\n\
-		YMWD: Years, Months, Weeks, Days\n\
-		hmsc: hours, minutes, seconds, clock\n\
-	    Unusual Filter Terms:\n\
-		t: unusual type (i.e. !regular & !directory & !symlink)\n\
-		p: unusual permissions (i.e. o+w & !+t & !symlink |\n\
-		   setuid | setgid | mandatory_locking)\n\
-		P: unusual permissions (i.e. access(o) > access(g) |\n\
-		   access(o) > access(u) | access(g) > access(u))\n\
-		A: ACL_count > 0\n\
-		l: link_count > 1\n\
-		u: nobody/noaccess UID (60001, 60002, 65534, or 4294967294)\n\
-		   or unassigned UID (i.e. not listed in /etc/passwd)\n\
-		g: nobody/noaccess GID (60001, 60002, 65534, or 4294967294)\n\
-		   or unassigned GID (i.e. not listed in /etc/group)\n\
-		mac: modification, access, change time is in the future\n\
-		n: name containing unusual or troublesome characters\n\
-		N: full pathname containing unusual or troublesome characters\n\
-		L: symbolic link pointing to non-existent file\n\
-		s: sparse file (i.e. partially filled w/data)\n\
-		G: General tests (i.e. perform all the above unusual tests)\n\
-		S: Security related tests (i.e. !directory & o+w |\n\
-		   directory & o+w & !+t | setuid | setgid | device_file)\n\
-	    clearcase Filter terms:\n\
-		e: VOB element\n\
-		p: VIEW private\n\
-	    link Filter terms:\n\
-		e: symbolic link target exists\n\
-		t: symbolic link traverses filesystem and/or clearcase VOB\n\
+  Each filter type consists of one or more terms separated by\n\
+  Boolean operators.  The following lists each term appropriate\n\
+  for the associated filter type:\n\
+      Access Filter Terms:\n\
+    rwxe: read, write, execute(x), or existence(e)\n\
+      Type Filter Terms:\n\
+    rf: regular file (r and f are synonymous)\n\
+    dcb: directory, char device, block device\n\
+    plsD: pipe/fifo, symbolic link, socket, Door\n\
+    S: Special/device file (same as 'b|c')\n\
+      Permission Filter Terms:\n\
+    value: octal value <= 07777\n\
+    ugo: user field, group field, other field\n\
+    a: all fields (same as 'ugo')\n\
+    +: test if indicated field(s) contain any attribute(s)\n\
+    -: test if indicated field(s) missing any attribute(s)\n\
+    =: test if indicated field(s) match attribute(s) exactly\n\
+    rwx: read attribute, write attribute, execute attribute\n\
+    s: setuid/setgid attribute (applies to u and/or g fields)\n\
+    t: sticky attribute (applies to u field)\n\
+    l: mandatory lock attribute (applies to g field)\n\
+      Quantity Filter Terms:\n\
+    iAlugs: inode, ACL count, link count, uid, gid, size\n\
+    mac: time modified, accessed, status changed\n\
+    == != ~= : equals, not equals, not equals\n\
+    > >= : greater than, greater than or equals\n\
+    < <= : less than, less than or equals\n\
+    value: positive integer to be compared against\n\
+    YMWD: Years, Months, Weeks, Days\n\
+    hmsc: hours, minutes, seconds, clock\n\
+      Unusual Filter Terms:\n\
+    t: unusual type (i.e. !regular & !directory & !symlink)\n\
+    p: unusual permissions (i.e. o+w & !+t & !symlink |\n\
+       setuid | setgid | mandatory_locking)\n\
+    P: unusual permissions (i.e. access(o) > access(g) |\n\
+       access(o) > access(u) | access(g) > access(u))\n\
+    A: ACL_count > 0\n\
+    l: link_count > 1\n\
+    u: nobody/noaccess UID (60001, 60002, 65534, or 4294967294)\n\
+       or unassigned UID (i.e. not listed in /etc/passwd)\n\
+    g: nobody/noaccess GID (60001, 60002, 65534, or 4294967294)\n\
+       or unassigned GID (i.e. not listed in /etc/group)\n\
+    mac: modification, access, change time is in the future\n\
+    n: name containing unusual or troublesome characters\n\
+    N: full pathname containing unusual or troublesome characters\n\
+    L: symbolic link pointing to non-existent file\n\
+    s: sparse file (i.e. partially filled w/data)\n\
+    G: General tests (i.e. perform all the above unusual tests)\n\
+    S: Security related tests (i.e. !directory & o+w |\n\
+       directory & o+w & !+t | setuid | setgid | device_file)\n\
+      clearcase Filter terms:\n\
+    e: VOB element\n\
+    p: VIEW private\n\
+      link Filter terms:\n\
+    e: symbolic link target exists\n\
+    t: symbolic link traverses filesystem and/or clearcase VOB\n\
 \n\
-	Boolean operators are as follows:\n\
-		! or ~ -- Boolean NOT (evaluated first)\n\
-		& or , -- Boolean AND (evaluated second)\n\
-		| or : -- Boolean OR (evaluated last)\n\
-	(The reason for allowing multiple symbols for Boolean operations is\n\
-	that characters such as '!' have special meaning within the shell\n\
-	and are awkward to use.  Also, characters such as ',' can improve\n\
-	readability when grouping lists of terms, e.g.: 'u+rw,g-rw,o-rw'\n\
-	is more readable than 'u+rw&g-rw&o-rw'.)\n\
+  Boolean operators are as follows:\n\
+    ! or ~ -- Boolean NOT (evaluated first)\n\
+    & or , -- Boolean AND (evaluated second)\n\
+    | or : -- Boolean OR (evaluated last)\n\
+  (The reason for allowing multiple symbols for Boolean operations is\n\
+  that characters such as '!' have special meaning within the shell\n\
+  and are awkward to use.  Also, characters such as ',' can improve\n\
+  readability when grouping lists of terms, e.g.: 'u+rw,g-rw,o-rw'\n\
+  is more readable than 'u+rw&g-rw&o-rw'.)\n\
 \n\
-	The syntax for each term is based upon its associated filter type.\n\
-	In all cases, any filter having multiple terms must use Boolean\n\
-	operators to separate each of its terms.  The 'Access' and 'Type'\n\
-	Filters are the simplest cases when it comes to syntax, as each of\n\
-	their terms consists of a single letter.\n\
+  The syntax for each term is based upon its associated filter type.\n\
+  In all cases, any filter having multiple terms must use Boolean\n\
+  operators to separate each of its terms.  The 'Access' and 'Type'\n\
+  Filters are the simplest cases when it comes to syntax, as each of\n\
+  their terms consists of a single letter.\n\
 \n\
-	The syntax for each term of the permission filter is very similar to\n\
-	Unix's chmod command with the following exceptions: if the left-hand\n\
-	side of a term is blank then it is taken to mean ANY instead of ALL\n\
-	fields; the symbol '+' is taken to mean HAS instead of GIVE; the\n\
-	symbol '-' is taken to mean MISSING instead of TAKE; and the symbol\n\
-	'=' is taken to mean MATCH EXACTLY instead of SET EXACTLY.  Thus,\n\
-	the filter '+FP{+rw}' means ANY FIELD HAVING READ-WRITE PERMISSION,\n\
-	while the filter '+FP{a=}' means ALL FIELDS HAVING EXACTLY NO\n\
-	PERMISSIONS.\n\
+  The syntax for each term of the permission filter is very similar to\n\
+  Unix's chmod command with the following exceptions: if the left-hand\n\
+  side of a term is blank then it is taken to mean ANY instead of ALL\n\
+  fields; the symbol '+' is taken to mean HAS instead of GIVE; the\n\
+  symbol '-' is taken to mean MISSING instead of TAKE; and the symbol\n\
+  '=' is taken to mean MATCH EXACTLY instead of SET EXACTLY.  Thus,\n\
+  the filter '+FP{+rw}' means ANY FIELD HAVING READ-WRITE PERMISSION,\n\
+  while the filter '+FP{a=}' means ALL FIELDS HAVING EXACTLY NO\n\
+  PERMISSIONS.\n\
 \n\
-	The syntax for each term of the quantity filter consists of a\n\
-	single letter and an integer quantity separated by a comparison\n\
-	operator.  Moreover, if the quantity being compared represents the\n\
-	file modification, access, or status change time (i.e. one of\n\
-	'mac'), then the integer quantity must be followed by a qualifier\n\
-	designating Years, Months, Weeks, Days, hours, minutes, seconds,\n\
-	or clock (i.e. one of 'YMWDhmsc').\n\
+  The syntax for each term of the quantity filter consists of a\n\
+  single letter and an integer quantity separated by a comparison\n\
+  operator.  Moreover, if the quantity being compared represents the\n\
+  file modification, access, or status change time (i.e. one of\n\
+  'mac'), then the integer quantity must be followed by a qualifier\n\
+  designating Years, Months, Weeks, Days, hours, minutes, seconds,\n\
+  or clock (i.e. one of 'YMWDhmsc').\n\
 \n\
-	Examples:\n\
-	    Recursively list regular files in /usr/bin that are\n\
-	    setuid/setgid having a UID/GID of less than 10:\n\
-		els -laR +F'T{r}&P{u+s|g+s}&A{x}&Q{u<10|g<10}' /usr/bin\n\
+  Examples:\n\
+      Recursively list regular files in /usr/bin that are\n\
+      setuid/setgid having a UID/GID of less than 10:\n\
+    els -laR +F'T{r}&P{u+s|g+s}&A{x}&Q{u<10|g<10}' /usr/bin\n\
 \n\
-	    Recursively list all non-directory files that share a common\n\
-	    inode (i.e. hard-link) in /etc and /dev:\n\
-		els +GilN +F'Q{l>1}&T{~d}' -R /etc /dev | sort\n\
+      Recursively list all non-directory files that share a common\n\
+      inode (i.e. hard-link) in /etc and /dev:\n\
+    els +GilN +F'Q{l>1}&T{~d}' -R /etc /dev | sort\n\
 \n\
-	    Recursively list all files modified on or after April 1, 1999\n\
-	    belonging to either the user 'markb' or the group 'projectx':\n\
-		els -laR +F'Q{m>=19990401}&Q{u=markb|g=projectx}'\n\
+      Recursively list all files modified on or after April 1, 1999\n\
+      belonging to either the user 'markb' or the group 'projectx':\n\
+    els -laR +F'Q{m>=19990401}&Q{u=markb|g=projectx}'\n\
 \n\
-	    Display all files where g or o have more permission than u:\n\
-		els -laR +F'P{u-w,+w}|P{u-x,+x}|P{u-r,+r}' +NF\n\
+      Display all files where g or o have more permission than u:\n\
+    els -laR +F'P{u-w,+w}|P{u-x,+x}|P{u-r,+r}' +NF\n\
 \n\
-	    Display all files having 'unusual' types or permissions\n\
-	    (e.g., world-writable or sticky files excluding symlinks,\n\
-	    setuid/setgid/locking files excluding symlinks and dirs,\n\
-	    or any file type other than regular/directory/symlink):\n\
-		els -laR +NF +F'(P{o+w:+t},T{~l}) | (P{+s,+x:+l},~T{d:l}) |\n\
-			(~T{r:d:l})'\n\
+      Display all files having 'unusual' types or permissions\n\
+      (e.g., world-writable or sticky files excluding symlinks,\n\
+      setuid/setgid/locking files excluding symlinks and dirs,\n\
+      or any file type other than regular/directory/symlink):\n\
+    els -laR +NF +F'(P{o+w:+t},T{~l}) | (P{+s,+x:+l},~T{d:l}) |\n\
+      (~T{r:d:l})'\n\
 \n\
-	    List all files greater than 100K bytes that have not been\n\
-	    accessed in over half a year (.5Y) and were modified over one\n\
-	    year ago (1Y):\n\
-		els +GsamN +T^rD +d -AR +F'Q{s>=100000 & a>182D & m>365D}'\n\
-		els +GsamN +T^rD +d -AR +F'Q{s>=100K & a>.5Y & m>1Y}'\n\
+      List all files greater than 100K bytes that have not been\n\
+      accessed in over half a year (.5Y) and were modified over one\n\
+      year ago (1Y):\n\
+    els +GsamN +T^rD +d -AR +F'Q{s>=100000 & a>182D & m>365D}'\n\
+    els +GsamN +T^rD +d -AR +F'Q{s>=100K & a>.5Y & m>1Y}'\n\
 \n\
-	    List all files having troublesome characters in their name:\n\
-		els -laR -Q +NF +F'U{N}'\n\
+      List all files having troublesome characters in their name:\n\
+    els -laR -Q +NF +F'U{N}'\n\
 \n\
 ");
 
@@ -2352,51 +2352,51 @@ Enhanced LS -- FILTERING:\n\
 Enhanced LS -- UTILITIES:\n\
 \n\
     +S: STAMP: The output from this option is used for recording the state\n\
-	of a hierarchy for future comparison to determine any changes.\n\
+  of a hierarchy for future comparison to determine any changes.\n\
 \n\
-	C:  Stamp a source code hierarchy excluding *.[aod], *~\n\
-	    and .git files, e.g.:  els +SC -R /home/myfiles/src\n\
-	c:  Same as +SC, except nothing is excluded\n\
+  C:  Stamp a source code hierarchy excluding *.[aod], *~\n\
+      and .git files, e.g.:  els +SC -R /home/myfiles/src\n\
+  c:  Same as +SC, except nothing is excluded\n\
 \n\
-	O:  Stamp an operating system hierarchy (no files are excluded and\n\
-	    more detail given), e.g.:  els +SO +z -R  /  /usr /var /opt\n\
-	    (Note that +z is recommended to zero volatile data)\n\
-	o:  Same as +SO, except checksumming is also performed, e.g.:\n\
-	    els +C=posix +So +z -R  /  /usr /var /opt\n\
+  O:  Stamp an operating system hierarchy (no files are excluded and\n\
+      more detail given), e.g.:  els +SO +z -R  /  /usr /var /opt\n\
+      (Note that +z is recommended to zero volatile data)\n\
+  o:  Same as +SO, except checksumming is also performed, e.g.:\n\
+      els +C=posix +So +z -R  /  /usr /var /opt\n\
 \n\
-	F:  Stamp a file hierarchy (same as +SO except that UIDs and GIDs\n\
-	    are excluded), e.g.:  els +SF +z -R /etc /dev /usr /var\n\
-	    (Note that +z is recommended to zero volatile data)\n\
-	f:  Same as +SF, except checksumming is also performed\n\
+  F:  Stamp a file hierarchy (same as +SO except that UIDs and GIDs\n\
+      are excluded), e.g.:  els +SF +z -R /etc /dev /usr /var\n\
+      (Note that +z is recommended to zero volatile data)\n\
+  f:  Same as +SF, except checksumming is also performed\n\
 \n\
     +U: UNTOUCH: Create a script which can be saved into a file for later\n\
-	recovery of modification dates following a /bin/touch, e.g.:\n\
-	    els +U -R * > untouch  # Create untouch script file\n\
-	    /bin/touch *           # Clobber modification dates\n\
-	    sh untouch             # Recover modification dates\n\
+  recovery of modification dates following a /bin/touch, e.g.:\n\
+      els +U -R * > untouch  # Create untouch script file\n\
+      /bin/touch *           # Clobber modification dates\n\
+      sh untouch             # Recover modification dates\n\
 \n\
     +W: WATCH: Watch the progress of how many files have been examined.\n\
-	This option is best used in conjunction with +F filtering when\n\
-	output is sparse and there are numerous files being examined or\n\
-	when stdout is being redirected to a file, e.g.:\n\
-	    els +W +F'Q{s=0}' +NF -laR\n\
-	    els +W -laR > /tmp/output\n\
-	Additionally, +W will intercept SIGQUIT (i.e. ^\\) while listing\n\
-	and display the name of the directory currently being processed.\n\
+  This option is best used in conjunction with +F filtering when\n\
+  output is sparse and there are numerous files being examined or\n\
+  when stdout is being redirected to a file, e.g.:\n\
+      els +W +F'Q{s=0}' +NF -laR\n\
+      els +W -laR > /tmp/output\n\
+  Additionally, +W will intercept SIGQUIT (i.e. ^\\) while listing\n\
+  and display the name of the directory currently being processed.\n\
 \n\
     +X: EXECUTE: The output of the +G format will be executed instead of\n\
-	listed for each file.  If +X is followed by a number then els will\n\
-	terminate whenever the command returns a status of some other value,\n\
-	otherwise the return status will be ignored.  Additionally, if +V is\n\
-	specified then each command will be echoed before being executed.\n\
+  listed for each file.  If +X is followed by a number then els will\n\
+  terminate whenever the command returns a status of some other value,\n\
+  otherwise the return status will be ignored.  Additionally, if +V is\n\
+  specified then each command will be echoed before being executed.\n\
 \n\
-	E.g., fix the mode of any .c, .h, .cc, .hh file having 'x' mode set\n\
-	in any of its fields:\n\
-	    els +F'P{+x}' +I'*.{c,h,cc,hh}' +G'\"chmod a-x %%N\"' +XV -RA\n\
+  E.g., fix the mode of any .c, .h, .cc, .hh file having 'x' mode set\n\
+  in any of its fields:\n\
+      els +F'P{+x}' +I'*.{c,h,cc,hh}' +G'\"chmod a-x %%N\"' +XV -RA\n\
 \n\
-	E.g., fix the mode of any file having 'x' mode set in the 'u' field\n\
-	but is missing from the 'g' or 'o' fields:\n\
-	    els +F'P{u+x,g-x|u+x,o-x}' +G'\"chmod go+x %%N\"' +X0 +V -RA\n\
+  E.g., fix the mode of any file having 'x' mode set in the 'u' field\n\
+  but is missing from the 'g' or 'o' fields:\n\
+      els +F'P{u+x,g-x|u+x,o-x}' +G'\"chmod go+x %%N\"' +X0 +V -RA\n\
 \n\
 ");
 
@@ -2405,36 +2405,36 @@ Enhanced LS -- UTILITIES:\n\
 Enhanced LS -- SPECIAL FEATURES:\n\
 \n\
     --version\n\
-	Print els version and information (same as +v)\n\
+  Print els version and information (same as +v)\n\
     --CCaseMode, --ClearCaseMode\n\
-	Mimic ClearCase behavior such as masking 'w' permissions, etc.\n\
+  Mimic ClearCase behavior such as masking 'w' permissions, etc.\n\
     --GTarStyle\n\
-	Mimic GNU 'tar tv' listings, e.g.:\n\
-	    els -lAR --GTarStyle\n\
+  Mimic GNU 'tar tv' listings, e.g.:\n\
+      els -lAR --GTarStyle\n\
     --Tar5Style\n\
-	Mimic Sys5 'tar tv' listings, e.g.:\n\
-	    els -lAR --Tar5Style\n\
+  Mimic Sys5 'tar tv' listings, e.g.:\n\
+      els -lAR --Tar5Style\n\
     --FirstFound\n\
-	List first occurrence found then exit (used to locate hierarchies\n\
-	containing one or more files with desired properties), e.g.:\n\
-	    els +F'T{r}&Q{a<30D}' -AR +NF --FirstFound /tmp\n\
+  List first occurrence found then exit (used to locate hierarchies\n\
+  containing one or more files with desired properties), e.g.:\n\
+      els +F'T{r}&Q{a<30D}' -AR +NF --FirstFound /tmp\n\
     --OncePerDir\n\
-	List once per directory (used to locate directories containing one\n\
-	or more files with desired properties)\n\
+  List once per directory (used to locate directories containing one\n\
+  or more files with desired properties)\n\
     --DirDepth=N\n\
-	Limit the recursion depth of directories to N\n\
+  Limit the recursion depth of directories to N\n\
     --IncludeSS, --IncludeSnapShot\n\
-	Include listing of snapshot directories\n\
+  Include listing of snapshot directories\n\
     --setenv:VARIABLE=VALUE\n\
-	Create and set named environment variable to given value, e.g.:\n\
-	    els -laR +c --setenv:LC_ALL=fr_CA.ISO8859-1\n\
-	    els -laR +c --setenv:TZ=US/Mountain\n\
+  Create and set named environment variable to given value, e.g.:\n\
+      els -laR +c --setenv:LC_ALL=fr_CA.ISO8859-1\n\
+      els -laR +c --setenv:TZ=US/Mountain\n\
     --unsetenv:VARIABLE\n\
-	Unset and delete named environment variable, e.g.:\n\
-	    els -laR +c --unsetenv:TZ\n\
+  Unset and delete named environment variable, e.g.:\n\
+      els -laR +c --unsetenv:TZ\n\
 \n\
 ");
-  
+
     fprintf(out, "\
 \n\
 Enhanced LS -- ENVIRONMEMT:\n\
@@ -2442,24 +2442,24 @@ Enhanced LS -- ENVIRONMEMT:\n\
     PAGER: Name of pager program for displaying help text\n\
 \n\
     ELS_LC_COLLATE, ELS_LC_TIME, LC_ALL, LC_COLLATE, LC_TIME:\n\
-	The Posix LC_ALL environment variable supersedes both LC_COLLATE and\n\
-	LC_TIME (e.g. SunOS5/Solaris and Linux behavior).  But ELS_LC_COLLATE\n\
-	and ELS_LC_TIME further supersede this behavior as follows:\n\
+  The Posix LC_ALL environment variable supersedes both LC_COLLATE and\n\
+  LC_TIME (e.g. SunOS5/Solaris and Linux behavior).  But ELS_LC_COLLATE\n\
+  and ELS_LC_TIME further supersede this behavior as follows:\n\
 \n\
-	Collate/sorting locale determined as follows:\n\
-	   Use ELS_LC_COLLATE if defined, else use LC_ALL if defined,\n\
-	   else use LC_COLLATE if defined, else use 'C' locale.\n\
+  Collate/sorting locale determined as follows:\n\
+     Use ELS_LC_COLLATE if defined, else use LC_ALL if defined,\n\
+     else use LC_COLLATE if defined, else use 'C' locale.\n\
 \n\
-	Time locale determined as follows:\n\
-	   Use ELS_LC_TIME if defined, else use LC_ALL if defined,\n\
-	   else use LC_TIME if defined, else use 'C' locale.\n\
+  Time locale determined as follows:\n\
+     Use ELS_LC_TIME if defined, else use LC_ALL if defined,\n\
+     else use LC_TIME if defined, else use 'C' locale.\n\
 \n\
 ");
   }
-  
+
   if (more)
     pclose(out);
-  
+
   return;
 }
 
@@ -2487,7 +2487,7 @@ void analyze_options()
     if ((lc = getenv("ELS_LC_COLLATE")) != NULL)
     {
       /* ELS_LC_COLLATE, if set, overrides all other system/envvar locale
-	 settings: */
+   settings: */
       lc = setlocale(LC_COLLATE, lc);
       envUnset("LC_COLLATE");  /* Prevent +c reporting overridden envvar */
     }
@@ -2504,7 +2504,7 @@ void analyze_options()
     if ((lc = getenv("ELS_LC_TIME")) != NULL)
     {
       /* ELS_LC_TIME, if set, overrides all other system/envvar locale
-	 settings: */
+   settings: */
       lc = setlocale(LC_TIME, lc);
       envUnset("LC_TIME");  /* Prevent +c reporting overridden envvar */
     }
@@ -2535,7 +2535,7 @@ void analyze_options()
 
   /* When filtering without the +NF option being specified, dot-dirs can
      make for very sloppy output! */
-  if (VersionLevel < 151) 
+  if (VersionLevel < 151)
     /* Note: This practice was started as of 1.49a1 and was disabled starting
        with 1.51a1 as it is can be misleading. */
     if (filtering) list_dotdir = FALSE;
@@ -2573,18 +2573,18 @@ void analyze_options()
     /* Defer to any previous N option from the command-line: */
     if (!N_option)
     {
-      do_options("+NfL");	/* Nf_FILE_NAME Nf_LINK_PTR_NAME */
-      N_option = FALSE;	/* reset deferrability */
+      do_options("+NfL"); /* Nf_FILE_NAME Nf_LINK_PTR_NAME */
+      N_option = FALSE; /* reset deferrability */
     }
 
     /* Defer to any previous T option from the command-line: */
     if (!T_option)
     {
       if (ANYBIT(Sem,SEM_ELS))
-	do_options("+Te");	/* Tf_ELS_DATE */
+  do_options("+Te");  /* Tf_ELS_DATE */
       else
-	do_options("+Tl");	/* Tf_LS_DATE */
-      T_option = FALSE;	/* reset deferrability */
+  do_options("+Tl");  /* Tf_LS_DATE */
+      T_option = FALSE; /* reset deferrability */
     }
   }
 
@@ -2596,8 +2596,8 @@ void analyze_options()
     /* Defer to any previous N option from the command-line: */
     if (!N_option)
     {
-      do_options("+NFL");	/* Nf_FULL_NAME Nf_LINK_PTR_NAME */
-      N_option = FALSE;	/* reset deferrability */
+      do_options("+NFL"); /* Nf_FULL_NAME Nf_LINK_PTR_NAME */
+      N_option = FALSE; /* reset deferrability */
     }
   }
 
@@ -2612,95 +2612,95 @@ void analyze_options()
       char *uid, *gid;
 
       /* NOTE: SYS5 interprets the -g flag to mean "exclude the UID *and*
-	 perform a long listing", whereas BSD interprets the -g flag to mean
-	 "include GID *if* performing a long listing".
+   perform a long listing", whereas BSD interprets the -g flag to mean
+   "include GID *if* performing a long listing".
 
-	 It's also true that BSD has no -n or -o flag, however, just for fun
-	 let's also support -n and -o for BSD with the understanding that
-	 when combined -n and -o that the -g flag will always follow SYS5
-	 semantics. */
+   It's also true that BSD has no -n or -o flag, however, just for fun
+   let's also support -n and -o for BSD with the understanding that
+   when combined -n and -o that the -g flag will always follow SYS5
+   semantics. */
 
       if (list_long_numeric && list_long_omit_gid)
       {
-	uid = "%-8U";
-	gid = "";
+  uid = "%-8U";
+  gid = "";
       }
       else if (list_long_numeric)
       {
-	uid = "%-8U";
-	gid = "%-8G";
+  uid = "%-8U";
+  gid = "%-8G";
       }
       else if (list_long_omit_gid)
       {
-	uid = "u";
-	gid = "";
+  uid = "u";
+  gid = "";
       }
       else
       {
-	uid = "u";
-	gid = "g";
+  uid = "u";
+  gid = "g";
       }
 
       if (ANYBIT(Sem,SEM_SYS5) || list_long_numeric || list_long_omit_gid)
       {
-	/* Take -g flag to mean omit UID [sic] in this context: */
-	if (g_flag) uid = "";
+  /* Take -g flag to mean omit UID [sic] in this context: */
+  if (g_flag) uid = "";
       }
       else if (ANYBIT(Sem,SEM_BSD))
       {
-	/* Handle -g flag a la BSD: */
-	if (!g_flag) gid = "";
+  /* Handle -g flag a la BSD: */
+  if (!g_flag) gid = "";
       }
 
       /* Handle -G flag a la GNU: */
       if (G_flag) gid = "";
 
       /* If ACLs are supported on this platform, then scrunch the link-count
-	 so as to maintain columns following ACL '+'.  This can violate els'
-	 philosophy of having every item separated by a space by causing the
-	 link-count to butt-up against the '+' if an ACL is present and the
-	 link-count is greater than 99: */
+   so as to maintain columns following ACL '+'.  This can violate els'
+   philosophy of having every item separated by a space by causing the
+   link-count to butt-up against the '+' if an ACL is present and the
+   link-count is greater than 99: */
       {
-	Boole gfmt_with_acl;
+  Boole gfmt_with_acl;
 # if defined(HAVE_ACL)
-	/* ACLs are supported on this platform: */
-	gfmt_with_acl = TRUE;
+  /* ACLs are supported on this platform: */
+  gfmt_with_acl = TRUE;
 #   if defined(SUNOS)
-	/* SunOS decides at run-time whether or not ACLs are supported: */
-	if (osVersion < 50500) gfmt_with_acl = FALSE;
+  /* SunOS decides at run-time whether or not ACLs are supported: */
+  if (osVersion < 50500) gfmt_with_acl = FALSE;
 #   endif
 # else
-	/* ACLs are NOT supported on this platform: */
-	gfmt_with_acl = FALSE;
+  /* ACLs are NOT supported on this platform: */
+  gfmt_with_acl = FALSE;
 # endif
-	if (gfmt_with_acl)
-	{
-	  if (fielding)
-	    gfmt = "+G%s%s~tpA~l%s%s%c%cn";
-	  else
-	    gfmt = "+G%s%s~tp%%+A%%+l~%s%s%c%cn";
-	}
-	else
-	  gfmt = "+G%s%s~tp~l%s%s%c%cn";
+  if (gfmt_with_acl)
+  {
+    if (fielding)
+      gfmt = "+G%s%s~tpA~l%s%s%c%cn";
+    else
+      gfmt = "+G%s%s~tp%%+A%%+l~%s%s%c%cn";
+  }
+  else
+    gfmt = "+G%s%s~tp~l%s%s%c%cn";
       }
-      
+
       sprintf(cmd, gfmt,
-	      list_inode ? "i" : "",
-	      list_size_in_blocks ? "S" : "",
-	      uid,
-	      gid,
-	      list_size_human_2  ? Gf_SIZE_HUMAN_2 :
-	      list_size_human_10 ? Gf_SIZE_HUMAN_10 :
-	      /*list_size_in_bytes*/ Gf_SIZE_IN_BYTES,
-	      list_atime ? Gf_TIME_ACCESSED :
-	      list_ctime ? Gf_TIME_MODE_CHANGED :
-	      /*list_mtime*/ Gf_TIME_MODIFIED);
+        list_inode ? "i" : "",
+        list_size_in_blocks ? "S" : "",
+        uid,
+        gid,
+        list_size_human_2  ? Gf_SIZE_HUMAN_2 :
+        list_size_human_10 ? Gf_SIZE_HUMAN_10 :
+        /*list_size_in_bytes*/ Gf_SIZE_IN_BYTES,
+        list_atime ? Gf_TIME_ACCESSED :
+        list_ctime ? Gf_TIME_MODE_CHANGED :
+        /*list_mtime*/ Gf_TIME_MODIFIED);
     }
     else
       sprintf(cmd, "+G%s%sn",
-	      list_inode ? "i" : "",
-	      list_size_in_blocks ? "S" : "");
-    
+        list_inode ? "i" : "",
+        list_size_in_blocks ? "S" : "");
+
     do_options(cmd);
     G_option = FALSE; /* G_format was not specified on the command-line */
   }
@@ -2711,7 +2711,7 @@ void analyze_options()
     fprintf(stderr, "\
 %s: Both --GTarSytle and --Tar5Style special features defined.\n\
 %s: Only one may be defined at a time.\n",
-	    Progname, Progname);
+      Progname, Progname);
     exit(USAGE_ERROR);
   }
 
@@ -2720,26 +2720,26 @@ void analyze_options()
     if (list_long)
     {
       if (! G_option) {
-	static char cmd[32];
-	Boole numeric = (Tar5Style || list_long_numeric);
-	Boole omit_gid = (list_long_omit_gid);
-	char *id = "o";
-	if (!numeric && !omit_gid) id = "o";
-	if ( numeric && !omit_gid) id = "O";
-	if (!numeric &&  omit_gid) id = "u";
-	if ( numeric &&  omit_gid) id = "U";
-	sprintf(cmd, "+G~tp~%ssmn", id);
-	do_options(cmd);
-	G_option = FALSE; /* G_format was not specified on the command-line */
+  static char cmd[32];
+  Boole numeric = (Tar5Style || list_long_numeric);
+  Boole omit_gid = (list_long_omit_gid);
+  char *id = "o";
+  if (!numeric && !omit_gid) id = "o";
+  if ( numeric && !omit_gid) id = "O";
+  if (!numeric &&  omit_gid) id = "u";
+  if ( numeric &&  omit_gid) id = "U";
+  sprintf(cmd, "+G~tp~%ssmn", id);
+  do_options(cmd);
+  G_option = FALSE; /* G_format was not specified on the command-line */
       }
       if (! N_option) {
-	do_options("+NFL");
-	N_option = FALSE; /* N_format was not specified on the command-line */
+  do_options("+NFL");
+  N_option = FALSE; /* N_format was not specified on the command-line */
       }
       if (! T_option) {
-	if (GTarStyle) do_options("+T^NY-M-D h:m:s");
-	if (Tar5Style) do_options("+TM%_DY h:m");
-	T_option = FALSE; /* T_format was not specified on the command-line */
+  if (GTarStyle) do_options("+T^NY-M-D h:m:s");
+  if (Tar5Style) do_options("+TM%_DY h:m");
+  T_option = FALSE; /* T_format was not specified on the command-line */
       }
       /* GTar/Tar5 both mark directories: */
       do_options("-p");
@@ -2753,7 +2753,7 @@ void analyze_options()
       Tar5Style = FALSE;
     }
   }
-  
+
 
   /* All munge levels prior to 20130819 have implied +d unless explicitly
      disabled via +~d.  But since "change" times are of interest on all files
@@ -2776,7 +2776,7 @@ void analyze_options()
     do_options("+q");
 
   /* Munge level 4 has implied quoted names since 1.49f1: */
-  if (munge == 4) do_options("+q");	/* Use quoted names */
+  if (munge == 4) do_options("+q"); /* Use quoted names */
 
 
   /* If +N was explicitly defined on the command line then automatically
@@ -2800,15 +2800,15 @@ void analyze_options()
     if (find_first_directive(list, G_format) != NULL)
     {
       if (strcmp(N_format, N_format_DEFAULT) == 0)  /* Using default? */
-	N_format = "F";	/* Nf_FULL_NAME */
+  N_format = "F"; /* Nf_FULL_NAME */
     }
 
     /* Second: look for presense of 'F' or 'd' in either N_ or G_format: */
-    list[0] = Nf_FULL_NAME;	/* Shared by G_format */
-    list[1] = Nf_DIR_NAME;	/* Shared by G_format */
+    list[0] = Nf_FULL_NAME; /* Shared by G_format */
+    list[1] = Nf_DIR_NAME;  /* Shared by G_format */
     list[2] = CNULL;
     using_full_names = ((find_first_directive(list, N_format) != NULL) ||
-			(find_first_directive(list, G_format) != NULL));
+      (find_first_directive(list, G_format) != NULL));
   }
 
   /* Determine the default sort-by-time field by finding the first
@@ -2833,7 +2833,7 @@ void analyze_options()
       do_options("+C=posix");
   }
 
-    
+
   /* Avoid "ls" trimmings if using full names or executing output: */
   avoid_trimmings = using_full_names || execute_mode || quotaling;
 
@@ -2879,20 +2879,20 @@ void analyze_options()
       /* Look for start of quote mode (i.e. " or ' not preceded by \): */
       if (*cp == '"' || *cp == '\'')
       {
-	quote_mode = TRUE;
-	break;
+  quote_mode = TRUE;
+  break;
       }
       /* Skip a single quoted char: */
       else if (*cp == '\\')
-	cp++;
+  cp++;
       if (*cp != CNULL) cp++;
     }
     if (quote_mode)
     {
       if (verboseLevel > 0 && !plus_q)
-	fprintf(stderr, "%s: Notice: +q implied due to +G'...' argument\n",
-		Progname);
-      do_options("+q");	/* Use quoted names */
+  fprintf(stderr, "%s: Notice: +q implied due to +G'...' argument\n",
+    Progname);
+      do_options("+q"); /* Use quoted names */
     }
   }
 
@@ -2908,7 +2908,7 @@ void analyze_options()
 ", Progname);
       listed = TRUE;
     }
-    
+
     if (GTarStyle)
     {
       fprintf(stderr, "\
@@ -2916,7 +2916,7 @@ void analyze_options()
 ", Progname);
       listed = TRUE;
     }
-    
+
     if (Tar5Style)
     {
       fprintf(stderr, "\
@@ -2924,7 +2924,7 @@ void analyze_options()
 ", Progname);
       listed = TRUE;
     }
-    
+
     if (FirstFound)
     {
       fprintf(stderr, "\
@@ -2932,7 +2932,7 @@ void analyze_options()
 ", Progname);
       listed = TRUE;
     }
-    
+
     if (OncePerDir)
     {
       fprintf(stderr, "\
@@ -2940,7 +2940,7 @@ void analyze_options()
 ", Progname);
       listed = TRUE;
     }
-    
+
     if (DirDepth >= 0)
     {
       fprintf(stderr, "\
@@ -2948,7 +2948,7 @@ void analyze_options()
 ", Progname, DirDepth);
       listed = TRUE;
     }
-    
+
     if (IncludeSS)
     {
       fprintf(stderr, "\
@@ -2964,11 +2964,11 @@ void analyze_options()
 
 
 void append_dir(Dir_List *dlist,
-		char *fname,
-		int fname_size)
+    char *fname,
+    int fname_size)
 {
   register Dir_Item *file;
-  
+
   /* Append file name to directory list: */
   file = dirItemAlloc();
   if (dlist->head == NULL)
@@ -2977,7 +2977,7 @@ void append_dir(Dir_List *dlist,
     dlist->tail->next = file;
   dlist->tail = file;
   file->next = NULL;
-  
+
   if (fname_size > 0)
   {
     file->mem = memAlloc(fname_size+1); /* +1 needed by LINUX, CYGWIN */
@@ -2990,10 +2990,10 @@ void append_dir(Dir_List *dlist,
     file->mem = NULL;
     file->fname = fname;
   }
-  
+
   file->readdir_errno = 0;
   file->stat_errno = 0;
-  
+
   return;
 }
 
@@ -3022,7 +3022,7 @@ void copy_info(Dir_Item *dest, Dir_Item *src)
 
 
 int read_dir(Dir_List *dlist, char *dname, DIR *dir)
-{  
+{
   register struct dirent *dp;
   int nread = 0;
   int save_errno = errno;
@@ -3035,33 +3035,33 @@ int read_dir(Dir_List *dlist, char *dname, DIR *dir)
     while (!sigEvent && (dp = readdir(dir)) != NULL)
     {
       /* 20150916: Although d_reclen has proven reliable for all OSes
-	 (except CYGWIN), I have decided to use strlen(fname) regardless:  */
+   (except CYGWIN), I have decided to use strlen(fname) regardless:  */
 #   define DONT_USE_DIRENT_RECLEN
 #   if defined(CYGWIN) || defined(DONT_USE_DIRENT_RECLEN)
       int fname_size = strlen(dp->d_name);
 #   else
       /* NB: Rather than have to calculate strlen(fname), d_reclen can be
-	 used as a rough guess assuming that d_reclen >= strlen(fname).
-	 This assumption has proven true for SunOS4.x, SunOS5.x, Linux2.x,
-	 FREEBSD, Darwin, HP-UX10.x, HP-UX11.x, OSF1, AIX, IRIX, SCO.
-	 The only OS I know of where this is not the case is CYGWIN. */
+   used as a rough guess assuming that d_reclen >= strlen(fname).
+   This assumption has proven true for SunOS4.x, SunOS5.x, Linux2.x,
+   FREEBSD, Darwin, HP-UX10.x, HP-UX11.x, OSF1, AIX, IRIX, SCO.
+   The only OS I know of where this is not the case is CYGWIN. */
       int fname_size = dp->d_reclen;
 #   endif
       if (fname_size < 1) fname_size = 1;
       append_dir(dlist, dp->d_name, fname_size);
       nread++;
     }
-    
+
     /* Note: Some OSes set the final errno from readdir to indicate no more
        entries, in which case it shouldn't be considered an error.  Only in
        cases where no reads occurred should errno be considered valid.  */
     readdir_errno = errno;
-    
+
     /* Re-read directory if signal took place during read: */
     if (sigEvent)
     {
       /*fprintf(stderr, "readdir errno == %d, dlist == %p\n",
-	errno, dlist->head);*/
+  errno, dlist->head);*/
       if (dlist->head != NULL) free_dir(dlist);
       rewinddir(dir);
       nread = 0;
@@ -3086,7 +3086,7 @@ int read_dir(Dir_List *dlist, char *dname, DIR *dir)
     if (readdir_errno == 0)
     {
       fprintf(stderr, "%s: %s: Directory has no \".\" or \"..\"\n",
-	      Progname, dname);
+        Progname, dname);
       listingError = TRUE;
     }
   }
@@ -3111,7 +3111,7 @@ void stat_dir(Dir_List *dlist, char *dname)
   char *path;
   int sts;
   int save_errno = errno;
-  
+
   dir_block_total = 0;
   dir_file_count = 0;
 
@@ -3132,7 +3132,7 @@ void stat_dir(Dir_List *dlist, char *dname)
       slash = file->fname;
     file->dotdir = strcmp(slash,".") == 0 || strcmp(slash,"..") == 0;
     file->hidden = !file->dotdir && slash[0] == '.';
-    
+
     /* Set the remaining attributes that are dependent on stat(): */
 
     errno = 0;
@@ -3144,25 +3144,25 @@ void stat_dir(Dir_List *dlist, char *dname)
     {
       if (expand_symlink)
       {
-	/* Return info regarding the actual file rather than the link: */
-	sts = sigSafe_stat(path, &file->info);
+  /* Return info regarding the actual file rather than the link: */
+  sts = sigSafe_stat(path, &file->info);
       }
       else if (zero_st_info && VersionLevel >= 143)
       {
-	/* If not expanding symlinks then modification and access times can
-	   be annoying as st_mtime gets changed whenever a symlink gets
-	   copied via dump/restore, tar, etc.; also, st_atime gets updated
-	   whenever listing a symlink. */
-	if ((zero_st_mask & ZERO_LINK_MTIME) != 0) file->info.st_mtime = 0;
-	if ((zero_st_mask & ZERO_LINK_ATIME) != 0) file->info.st_atime = 0;
-	/* When first created, the uid/gid of a symbolic link is that
-	   of the user, but after being copied via dump/restore, tar,
-	   etc. the symbolic link ends up owned by root: */
-	if ((zero_st_mask & ZERO_LINK_OWNER) != 0)
-	{
-	  file->info.st_uid = 0;
-	  file->info.st_gid = 0;
-	}
+  /* If not expanding symlinks then modification and access times can
+     be annoying as st_mtime gets changed whenever a symlink gets
+     copied via dump/restore, tar, etc.; also, st_atime gets updated
+     whenever listing a symlink. */
+  if ((zero_st_mask & ZERO_LINK_MTIME) != 0) file->info.st_mtime = 0;
+  if ((zero_st_mask & ZERO_LINK_ATIME) != 0) file->info.st_atime = 0;
+  /* When first created, the uid/gid of a symbolic link is that
+     of the user, but after being copied via dump/restore, tar,
+     etc. the symbolic link ends up owned by root: */
+  if ((zero_st_mask & ZERO_LINK_OWNER) != 0)
+  {
+    file->info.st_uid = 0;
+    file->info.st_gid = 0;
+  }
       }
     }
 # else
@@ -3178,64 +3178,64 @@ void stat_dir(Dir_List *dlist, char *dname)
     {
       if (S_ISREG(file->info.st_mode) && zero_st_info)
       {
-	/* ClearCase's clearfsimport doesn't preserve modification times of
-	   regular files if the file size is 0: */
-	if (CCaseMode && (zero_st_mask & ZERO_CLEARCASE) != 0)
-	  if (file->info.st_size == 0) file->info.st_mtime = 0;
-	/* ClearCase turns all "w" bits off regular files during checkin: */
-	if (CCaseMode && (zero_st_mask & ZERO_CLEARCASE) != 0)
-	  file->info.st_mode &= ~(S_IWUSR|S_IWGRP|S_IWOTH);
+  /* ClearCase's clearfsimport doesn't preserve modification times of
+     regular files if the file size is 0: */
+  if (CCaseMode && (zero_st_mask & ZERO_CLEARCASE) != 0)
+    if (file->info.st_size == 0) file->info.st_mtime = 0;
+  /* ClearCase turns all "w" bits off regular files during checkin: */
+  if (CCaseMode && (zero_st_mask & ZERO_CLEARCASE) != 0)
+    file->info.st_mode &= ~(S_IWUSR|S_IWGRP|S_IWOTH);
       }
 
       file->isdir = S_ISDIR(file->info.st_mode);
       if (file->isdir && zero_st_info && VersionLevel >= 143)
       {
-	/* While directory modification times are usually preserved after
-	   being copied via dump/restore, tar, etc., they can still be a
-	   distraction when changes occur: */
-	if ((zero_st_mask & ZERO_DIR_MTIME) != 0) file->info.st_mtime = 0;
-	/* Access time can be annoying when listing directories as st_atime
-	   gets changed whenever listing the contents of a directory: */
-	if ((zero_st_mask & ZERO_DIR_ATIME) != 0) file->info.st_atime = 0;
-	/* Directories can change size over time or after being copied
-	   via dump/restore, tar, etc.: */
-	if ((zero_st_mask & ZERO_DIR_SIZE) != 0)
-	{
-	  file->info.st_size = 0;
+  /* While directory modification times are usually preserved after
+     being copied via dump/restore, tar, etc., they can still be a
+     distraction when changes occur: */
+  if ((zero_st_mask & ZERO_DIR_MTIME) != 0) file->info.st_mtime = 0;
+  /* Access time can be annoying when listing directories as st_atime
+     gets changed whenever listing the contents of a directory: */
+  if ((zero_st_mask & ZERO_DIR_ATIME) != 0) file->info.st_atime = 0;
+  /* Directories can change size over time or after being copied
+     via dump/restore, tar, etc.: */
+  if ((zero_st_mask & ZERO_DIR_SIZE) != 0)
+  {
+    file->info.st_size = 0;
 #       ifndef NO_ST_BLOCKS
-	  file->info.st_blocks = 0;
+    file->info.st_blocks = 0;
 #       endif
-	}
-	/* ClearCase doesn't grok "g+s" bits on directories: */
-	if (CCaseMode && (zero_st_mask & ZERO_CLEARCASE) != 0)
-	  file->info.st_mode &= ~(S_ISGID);
+  }
+  /* ClearCase doesn't grok "g+s" bits on directories: */
+  if (CCaseMode && (zero_st_mask & ZERO_CLEARCASE) != 0)
+    file->info.st_mode &= ~(S_ISGID);
       }
 
       if (GTarStyle || Tar5Style)
       {
-	if (file->isdir)
-	  /* GTar/Tar5 list directories as zero size: */
-	  file->info.st_size = 0;
-	else if (file->islink && GTarStyle)
-	  /* GTar lists symlinks as zero size, Tar5 lists normal size: */
-	  file->info.st_size = 0;
+  if (file->isdir)
+    /* GTar/Tar5 list directories as zero size: */
+    file->info.st_size = 0;
+  else if (file->islink && GTarStyle)
+    /* GTar lists symlinks as zero size, Tar5 lists normal size: */
+    file->info.st_size = 0;
       }
 
       file->isdev = (S_ISBLK(file->info.st_mode) ||
-		     S_ISCHR(file->info.st_mode));
+         S_ISCHR(file->info.st_mode));
       if (file->isdev && zero_st_info && VersionLevel >= 144)
       {
-	if ((zero_st_mask & ZERO_DEV_MTIME) != 0) file->info.st_mtime = 0;
-	if ((zero_st_mask & ZERO_DEV_ATIME) != 0) file->info.st_atime = 0;
-	/* Note: Sometime the owner of a device file matters, sometimes
-	   it doesn't; thus, "owner" should never be zeroed. */
+  if ((zero_st_mask & ZERO_DEV_MTIME) != 0) file->info.st_mtime = 0;
+  if ((zero_st_mask & ZERO_DEV_ATIME) != 0) file->info.st_atime = 0;
+  /* Note: Sometime the owner of a device file matters, sometimes
+     it doesn't; thus, "owner" should never be zeroed. */
       }
 
       if (S_ISFIFO(file->info.st_mode) && zero_st_info && VersionLevel >= 149)
       {
-	/* FYI: This should really be a 150 feature, but I want it now. */
-	if ((zero_st_mask & ZERO_FIFO_MTIME) != 0) file->info.st_mtime = 0;
-	if ((zero_st_mask & ZERO_FIFO_ATIME) != 0) file->info.st_atime = 0;
+  /* FYI: This should really be a 150 feature, but I want it now. */
+  if ((zero_st_mask & ZERO_FIFO_MTIME) != 0) file->info.st_mtime = 0;
+  if ((zero_st_mask & ZERO_FIFO_ATIME) != 0) file->info.st_atime = 0;
       }
 
       filter_file(file, path);
@@ -3246,9 +3246,9 @@ void stat_dir(Dir_List *dlist, char *dname)
       file->isdir = FALSE;
       file->isdev = FALSE;
       /* Even though an error was detected during stat(), we have enough
-	 information to see if it is to be filtered from our display list.
-	 If the file qualifies for filtering, then no error needs be reported
-	 during the output stage! */
+   information to see if it is to be filtered from our display list.
+   If the file qualifies for filtering, then no error needs be reported
+   during the output stage! */
       filter_file(file, path);
     }
 
@@ -3260,10 +3260,10 @@ void stat_dir(Dir_List *dlist, char *dname)
       static int nreport = 0;
       if (nfiles == nreport)
       {
-	sigAskAbort = FALSE; /* Ask to abort via ^C only once an interval */
-	fprintf(ttyout, "%d\r", nfiles);
-	fflush(ttyout);
-	nreport += 1000;
+  sigAskAbort = FALSE; /* Ask to abort via ^C only once an interval */
+  fprintf(ttyout, "%d\r", nfiles);
+  fflush(ttyout);
+  nreport += 1000;
       }
       /* Don't count dotdirs as they were already counted in the parent dir! */
       if (!file->dotdir) nfiles++;
@@ -3289,14 +3289,14 @@ void name_dir(Dir_List *dlist, char *dname)
     {
       /* Trimmings a la SYS5/LS: */
       /* SunOS5,HPUX10 list both dname and total, even if unreadable(!),
-	 except for OSF1 which behaves more like BSD if unreadable. */
+   except for OSF1 which behaves more like BSD if unreadable. */
       if (dname[0] != CNULL && (recursive || multiple_file_args))
       {
-	if (zero_file_args && recursion_level > 1 &&
-	    strncmp(dname, "./", 2) != 0)
-	  printf("./%s:\n", dname);
-	else
-	  printf("%s:\n", dname);
+  if (zero_file_args && recursion_level > 1 &&
+      strncmp(dname, "./", 2) != 0)
+    printf("./%s:\n", dname);
+  else
+    printf("%s:\n", dname);
       }
     }
     else if (ALLBITS(Sem,SEM_GNU|SEM_LS))
@@ -3304,11 +3304,11 @@ void name_dir(Dir_List *dlist, char *dname)
       /* Trimmings a la GNU/LS: */
       if (dname[0] != CNULL && recursive)
       {
-	/* GNU doesn't list dname or total if unreadable: */
-	if (unreadable)
-	  list_total = FALSE;
-	else
-	  printf("%s:\n", dname);
+  /* GNU doesn't list dname or total if unreadable: */
+  if (unreadable)
+    list_total = FALSE;
+  else
+    printf("%s:\n", dname);
       }
     }
     else
@@ -3316,16 +3316,16 @@ void name_dir(Dir_List *dlist, char *dname)
       /* Trimmings a la BSD/LS and ALL/ELS: */
       if (multiple_file_args || recursion_level > 1)
       {
-	/* BSD and ELS don't list dname or total if unreadable: */
-	if (unreadable)
-	{
-	  /* Unreadable directory a la BSD and ELS writes an informational
-	     message to stdout: */
-	  printf("%s unreadable\n", dname);
-	  list_total = FALSE;
-	}
-	else
-	  printf("%s:\n", dname);
+  /* BSD and ELS don't list dname or total if unreadable: */
+  if (unreadable)
+  {
+    /* Unreadable directory a la BSD and ELS writes an informational
+       message to stdout: */
+    printf("%s unreadable\n", dname);
+    list_total = FALSE;
+  }
+  else
+    printf("%s:\n", dname);
       }
     }
 
@@ -3333,8 +3333,8 @@ void name_dir(Dir_List *dlist, char *dname)
     {
       char nblocks[64];
       sprintf(nblocks, FU_st_blocks(FALSE,0,
-	      ALLBITS(Sem,SEM_SYS5|SEM_LS) ?
-	      dir_block_total : dir_block_total/2));
+        ALLBITS(Sem,SEM_SYS5|SEM_LS) ?
+        dir_block_total : dir_block_total/2));
       printf("total %s\n", nblocks);
     }
     output_nlines++;
@@ -3343,7 +3343,7 @@ void name_dir(Dir_List *dlist, char *dname)
   if (dlist == NULL)
   {
     if (!warning_suppress) fprintf(stderr, "%s: %s: Permission denied\n",
-				   Progname, dname);
+           Progname, dname);
     listingError = TRUE;
   }
   else if (dlist->head->readdir_errno != 0)
@@ -3353,13 +3353,13 @@ void name_dir(Dir_List *dlist, char *dname)
     if (ANYBIT(Sem,SEM_ELS))  /* What does SEM_GNU do??? */
     {
       if (!warning_suppress)
-	errnoMsg(dlist->head->readdir_errno, dname);
+  errnoMsg(dlist->head->readdir_errno, dname);
       listingError = TRUE;
     }
   }
 
   return;
-}	
+}
 
 
 int count_dir(Dir_List *dlist, char *dname)
@@ -3391,7 +3391,7 @@ void sort_dir(Dir_List *dlist, char *dname, int n)
     if (n == -1) n = count_dir(dlist, dname);
     if (n == 0) return;
     darray = memAlloc(n * sizeof(Dir_Item **));
-    
+
     i = 0;
     ptr = dlist->head;
     while (ptr != NULL && i < n)
@@ -3401,7 +3401,7 @@ void sort_dir(Dir_List *dlist, char *dname, int n)
     }
     /*DBG: ptr and i should both terminate together*/
     /*if (ptr != NULL || i != n) printf("Error in sort_dir loop\n");*/
-    
+
     /* Since time and name sorts may resort to calling each other when
        comparisons are 0, always set sortTimeBy setting regardless: */
     if (list_atime)
@@ -3414,11 +3414,11 @@ void sort_dir(Dir_List *dlist, char *dname, int n)
     {
       /* Use first occurrence of either m, a, or c as found in G_format: */
       if (first_mac == CNULL)
-	sortTimeBy = Gf_TIME_MODIFIED;	/* default */
+  sortTimeBy = Gf_TIME_MODIFIED;  /* default */
       else
-	sortTimeBy = first_mac;
+  sortTimeBy = first_mac;
     }
-    
+
     /* Perform sort: */
     if (time_sort)
       qsortDirTime(darray, n);
@@ -3427,13 +3427,13 @@ void sort_dir(Dir_List *dlist, char *dname, int n)
       qsortDirTime(darray, n);
     else
       qsortDirName(darray, n);
-    
+
     dlist->head = darray[0];
     for (i = 0; i < n-1; i++)
       darray[i]->next = darray[i+1];
     darray[i]->next = NULL;
     dlist->tail = darray[i];
-    
+
     memFree(darray);
   }
 
@@ -3527,7 +3527,7 @@ Local int qsortDirTime_compare(const void *arg1, const void *arg2)
 
   /* Carefully calculate "diff" so as to avoid possible underflow: */
   diff = (t1 == t2 ? 0 :
-	  t1 <  t2 ? 1 : -1);
+    t1 <  t2 ? 1 : -1);
 
   if (diff == 0)
   {
@@ -3553,16 +3553,16 @@ Local void qsortDirTime(Dir_Item *a[], int n)
 
 
 void list_dir(Dir_List *dlist,
-	      char *dname)
+        char *dname)
 {
   register Dir_Item *ptr;
   Dir_List sub_dlist;
   DIR *dir;
   Boole item_listed = FALSE;
-  
+
   recursion_level++;
   sub_dlist.head = NULL;
-  
+
   for (ptr = dlist->head; ptr != NULL; ptr = ptr->next)
   {
     if (OncePerDir && item_listed)
@@ -3576,32 +3576,32 @@ void list_dir(Dir_List *dlist,
 
       if (FirstFound && item_listed)
       {
-	/* No more listings or recursion desired: */
-	finishExit();
-	/*NOTREACHED*/
+  /* No more listings or recursion desired: */
+  finishExit();
+  /*NOTREACHED*/
       }
     }
 
     /* Recursively list directory (if appropriate): */
     if (ptr->searchable ||
-	(recursion_level == 1 && ptr->dotdir))
+  (recursion_level == 1 && ptr->dotdir))
     {
       if (expand_directories && (recursion_level == 1 || recursive))
       {
-	if (recursion_level == 1 || !ptr->dotdir)
-	{
-	  append_dir(&sub_dlist, ptr->fname, 0);
-	  copy_info(sub_dlist.tail, ptr);
-	}
+  if (recursion_level == 1 || !ptr->dotdir)
+  {
+    append_dir(&sub_dlist, ptr->fname, 0);
+    copy_info(sub_dlist.tail, ptr);
+  }
       }
     }
   }
-  
+
   if (quotaling)
   {
     subQuotal_print();
   }
-  
+
   if (DirDepth >= 0 && recursion_level-1 > DirDepth)
   {
     /* Skip subdirectories: */
@@ -3614,71 +3614,71 @@ void list_dir(Dir_List *dlist,
     {
       char cur_dname[MAX_FULL_NAME];
       if (dname[0] == CNULL || strcmp(dname, ".") == 0)
-	strcpy(cur_dname, ptr->fname);
+  strcpy(cur_dname, ptr->fname);
       else
       {
-	char *fmt;
-	if (dname[strlen(dname)-1] == '/')
-	  fmt = "%s%s";
-	else
-	  fmt = "%s/%s";
-	sprintf(cur_dname, fmt, dname, ptr->fname);
+  char *fmt;
+  if (dname[strlen(dname)-1] == '/')
+    fmt = "%s%s";
+  else
+    fmt = "%s/%s";
+  sprintf(cur_dname, fmt, dname, ptr->fname);
       }
-      
+
       if ((dir = opendir(cur_dname)) == NULL)
       {
-	name_dir(NULL, cur_dname);
+  name_dir(NULL, cur_dname);
       }
       else
       {
-	Boole ok_to_cross = TRUE;	/* allow crossing by default */
-	struct stat *old_mp = NULL;
+  Boole ok_to_cross = TRUE; /* allow crossing by default */
+  struct stat *old_mp = NULL;
 
-	/* Save top-most mount-point: */
-	if (recursion_level == 1) set_mp(&ptr->info);
+  /* Save top-most mount-point: */
+  if (recursion_level == 1) set_mp(&ptr->info);
 
-	if (ptr->islink)
-	{
-	  /* Designate a temporary mount-point for expanded symlinked
-	     directory and then cross if option enabled: */
-	  old_mp = set_mp(&ptr->info);
-	  ok_to_cross = traverse_expanded_symlink;
-	}
-	else if (!traverse_mp)
-	  /* If not traversing mount-points then allow crossing only if
-	     the mount-point hasn't changed since last set: */
-	  ok_to_cross = diff_mp(&ptr->info) == 0;
-	
-	if (ok_to_cross)
-	{
-	  Dir_List cur_dlist;
-	  int n;
+  if (ptr->islink)
+  {
+    /* Designate a temporary mount-point for expanded symlinked
+       directory and then cross if option enabled: */
+    old_mp = set_mp(&ptr->info);
+    ok_to_cross = traverse_expanded_symlink;
+  }
+  else if (!traverse_mp)
+    /* If not traversing mount-points then allow crossing only if
+       the mount-point hasn't changed since last set: */
+    ok_to_cross = diff_mp(&ptr->info) == 0;
+
+  if (ok_to_cross)
+  {
+    Dir_List cur_dlist;
+    int n;
     const
-	  char *saveCwdPath = CwdPath;
-	  CwdPath = cur_dname;
-	  n = read_dir(&cur_dlist, cur_dname, dir);
-	  stat_dir(&cur_dlist, cur_dname);
-	  name_dir(&cur_dlist, cur_dname);
-	  sort_dir(&cur_dlist, cur_dname, n);
-	  list_dir(&cur_dlist, cur_dname);
-	  free_dir(&cur_dlist);
-	  CwdPath = saveCwdPath;
-	}
-	else if (verboseLevel > 0)
-	{
-	  char *path = full_name(dname, ptr->fname);
-	  fprintf(stderr, "%s: %s: %s not traversed\n",
-		  Progname, path,
-		  ptr->islink ? "symlink" : "mount-point");
-	}
-	closedir(dir);
+    char *saveCwdPath = CwdPath;
+    CwdPath = cur_dname;
+    n = read_dir(&cur_dlist, cur_dname, dir);
+    stat_dir(&cur_dlist, cur_dname);
+    name_dir(&cur_dlist, cur_dname);
+    sort_dir(&cur_dlist, cur_dname, n);
+    list_dir(&cur_dlist, cur_dname);
+    free_dir(&cur_dlist);
+    CwdPath = saveCwdPath;
+  }
+  else if (verboseLevel > 0)
+  {
+    char *path = full_name(dname, ptr->fname);
+    fprintf(stderr, "%s: %s: %s not traversed\n",
+      Progname, path,
+      ptr->islink ? "symlink" : "mount-point");
+  }
+  closedir(dir);
 
-	/* Restore old mount-point prior to symlink traversal (if any): */
-	if (old_mp != NULL) set_mp(old_mp);
+  /* Restore old mount-point prior to symlink traversal (if any): */
+  if (old_mp != NULL) set_mp(old_mp);
       }
     }
   }
-  
+
   free_dir(&sub_dlist);
   recursion_level--;
 
@@ -3709,7 +3709,7 @@ void free_dir(Dir_List *dlist)
 
 
 Boole list_item(Dir_Item *file,
-		char *dname)
+    char *dname)
 {
   Boole item_listed = FALSE;
 
@@ -3742,7 +3742,7 @@ Boole list_item(Dir_Item *file,
     if (file->listable || file->searchable)
     {
       if (!warning_suppress)
-	errnoMsg(file->stat_errno, full_name(dname, file->fname));
+  errnoMsg(file->stat_errno, full_name(dname, file->fname));
       listingError = TRUE;
     }
   }
@@ -3755,36 +3755,36 @@ Boole list_item(Dir_Item *file,
     {
       if (execute_mode)
       {
-	Uint sts;
-	if (file->islink && !execute_symlinks)
-	{
-	  fprintf(stderr, "%s: %s: +X ignoring symbolic link\n",
-		  Progname, full_name(dname, file->fname));
-	  fprintf(stderr, "\
+  Uint sts;
+  if (file->islink && !execute_symlinks)
+  {
+    fprintf(stderr, "%s: %s: +X ignoring symbolic link\n",
+      Progname, full_name(dname, file->fname));
+    fprintf(stderr, "\
   (NOTE: +h flag must be specified for +X to act on symbolic links)\n");
 /*(+X requires that +h flag be specified before acting on symbolic links)*/
-	  sts = 1;
-	}
-	else
-	{
-	  if (verboseLevel > 0) fputs(output_buff, stdout);
-	  sts = system(output_buff);
-	}
-	if (QuitOnError || execute_sts_check)
-	{
-	  if ((sts & 0xff) == 0) sts >>= 8;
-	  if (sts != execute_sts_good)
-	  {
-	    if (verboseLevel > 0)
-	      fprintf(stderr, "%s: Terminated: return status %u != %u\n",
-		      Progname, sts, execute_sts_good);
-	    exit(sts);
-	  }
-	}
+    sts = 1;
+  }
+  else
+  {
+    if (verboseLevel > 0) fputs(output_buff, stdout);
+    sts = system(output_buff);
+  }
+  if (QuitOnError || execute_sts_check)
+  {
+    if ((sts & 0xff) == 0) sts >>= 8;
+    if (sts != execute_sts_good)
+    {
+      if (verboseLevel > 0)
+        fprintf(stderr, "%s: Terminated: return status %u != %u\n",
+          Progname, sts, execute_sts_good);
+      exit(sts);
+    }
+  }
       }
       else {
-	fputs(output_buff, stdout);
-	if ( rwm_dospace ) fprintf(stdout, "%c", '\0');
+  fputs(output_buff, stdout);
+  if ( rwm_dospace ) fprintf(stdout, "%c", '\0');
       }
       item_listed = TRUE;
       output_nlines++;
@@ -3797,7 +3797,7 @@ Boole list_item(Dir_Item *file,
       fprintf(stderr, "%s: Quitting due to error as requested\n", Progname);
     exit(LISTING_ERROR);
   }
-  
+
   return(item_listed);
 }
 
@@ -3812,33 +3812,33 @@ char *find_first_directive(char *list, char *fmt)
       /* Look for "'%...'" directive inside string: */
       if (*cp == '"' || *cp == '\'')
       {
-	char delimiter = *cp++;
-	while (*cp != CNULL && *cp != delimiter) 
-	{
-	  /* Skip a quoted character inside string: */
-	  if (*cp == '\\')
-	    cp++;
-	  /* Look for "'%...'" directive inside string (ignore "%%"): */
-	  else if (*cp == '%')
-	  {
-	    cp++;
-	    if (*cp != '%')
-	    {
-	      while (IS_MEMBER(*cp, "0_+-")) cp++;
-	      while (isDigit(*cp)) cp++;	/* Scan past width (if any) */
-	      if (IS_MEMBER(*cp, list))
-		return(cp);
-	    }
-	  }
-	  if (*cp != CNULL) cp++;
-	}
+  char delimiter = *cp++;
+  while (*cp != CNULL && *cp != delimiter)
+  {
+    /* Skip a quoted character inside string: */
+    if (*cp == '\\')
+      cp++;
+    /* Look for "'%...'" directive inside string (ignore "%%"): */
+    else if (*cp == '%')
+    {
+      cp++;
+      if (*cp != '%')
+      {
+        while (IS_MEMBER(*cp, "0_+-")) cp++;
+        while (isDigit(*cp)) cp++;  /* Scan past width (if any) */
+        if (IS_MEMBER(*cp, list))
+    return(cp);
+      }
+    }
+    if (*cp != CNULL) cp++;
+  }
       }
       /* Skip a quoted character outside of string: */
       else if (*cp == '\\')
-	cp++;
+  cp++;
       /* Look for directive outside of string: */
       else if (IS_MEMBER(*cp, list))
-	return(cp);
+  return(cp);
       if (*cp != CNULL) cp++;
     }
   }
@@ -3867,26 +3867,26 @@ char *scaleSizeToHuman(ELS_st_size val, int base)
     int i = 0;
     ELS_st_size mantissa = val;
     ELS_st_size scale = 1;
-    
+
     do {
       if (mantissa < 10) {
-	sprintf(buf, "%.1f", (double)val/scale);
-	break;
+  sprintf(buf, "%.1f", (double)val/scale);
+  break;
       }
       else if (mantissa < 1000) { /* Yes, 1000 for all! (see note above) */
-	ELS_st_size hscale = scale / 2;
-	sprintf(buf, F_st_size(FALSE,0, (val+hscale)/scale));
-	break;
+  ELS_st_size hscale = scale / 2;
+  sprintf(buf, F_st_size(FALSE,0, (val+hscale)/scale));
+  break;
       }
       if (base == 2)
       {
-	scale = scale << 10;
-	mantissa = mantissa >> 10;
+  scale = scale << 10;
+  mantissa = mantissa >> 10;
       }
       else
       {
-	scale = scale * 1000;
-	mantissa = mantissa / 1000;
+  scale = scale * 1000;
+  mantissa = mantissa / 1000;
       }
       i++;
     } while (i < 8);
@@ -3895,11 +3895,11 @@ char *scaleSizeToHuman(ELS_st_size val, int base)
       /* RESOLVE: do "B/b" misleadingly suggest "blocks"? */
       char *mag = (base == 2 ? "BKMGTPEZY" : "bkmgtpezy");
       if (i >= 0 && i <= 8)
-	strncat(buf, &mag[i], 1);
+  strncat(buf, &mag[i], 1);
       else
-	strcat(buf, "?");
+  strcat(buf, "?");
     }
-  }	      
+  }
   return(buf);
 }
 
@@ -3925,9 +3925,9 @@ char *rwm_col_age( char *buff, time_t ftime, Boole flag ) {
 
 #define ZERO_PAD_DEFAULT  FALSE
 char *G_print(char *buff,
-	      char *fmt,
-	      char *dname,
-	      Dir_Item *file)
+        char *fmt,
+        char *dname,
+        Dir_Item *file)
 {
   register char *bp;
   char icase;
@@ -3962,10 +3962,10 @@ char *G_print(char *buff,
       switch (icase)
       {
       default:
-	/* G_format currently has no modifiers(!): */
-	carrot_msg(NULL, "+G", G_format, "Unrecognized +G modifier", fmt-1);
-	exit(USAGE_ERROR);
-	break;
+  /* G_format currently has no modifiers(!): */
+  carrot_msg(NULL, "+G", G_format, "Unrecognized +G modifier", fmt-1);
+  exit(USAGE_ERROR);
+  break;
       }
       zero_pad = ZERO_PAD_DEFAULT;
       modifier = FALSE; /* reset for next time */
@@ -3976,152 +3976,152 @@ char *G_print(char *buff,
       {
       case '"':
       case '\'':
-	if (!quote_mode)
-	{
-	  quote_mode = TRUE;
-	  delimiter = icase;
-	}
-	else if (delimiter == icase)
-	{
-	  quote_mode = FALSE;
-	}
-	break;
+  if (!quote_mode)
+  {
+    quote_mode = TRUE;
+    delimiter = icase;
+  }
+  else if (delimiter == icase)
+  {
+    quote_mode = FALSE;
+  }
+  break;
 
       case '%':
-	if (*fmt == '%')
-	{
-	  as_is = TRUE;
-	  icase = *fmt++;
-	  bp = separate(bp, icase);
-	}
-	else
-	{
-	  Boole minus = FALSE;
-	  percent_specified = TRUE;
-	  if (*fmt == '0') {zero_pad = TRUE; fmt++;}
-	  if (*fmt == '_') {zero_pad = FALSE; fmt++;}
-	  if (*fmt == '+') {hard_width = TRUE; fmt++;}
-	  if (*fmt == '-') {minus = TRUE; fmt++;}
-	  width_specified = (isDigit(*fmt) != 0);
-	  if (width_specified)
-	  {
-	    width = (*fmt++ - '0');
-	    while (isDigit(*fmt))
-	      width = width * 10 + (*fmt++ - '0');
-	    if (width < 0 || width > F_MAX_WIDTH)
-	    {
-	      /* NB: width < 0 implies overflow! */
-	      carrot_msg(NULL, "+G", G_format, "Too big", fmt-1);
-	      exit(USAGE_ERROR);
-	    }
-	    if (minus)
-	    {
-	      width = -width;
-	      /* Make "%0*d",-9 behave like "%0-9d" for negative widths: */
-	      zero_pad = FALSE;
-	    }
-	  }
-	  else if (minus)
-	  {
-	    /* Make "%-d" mimic Linux's date +format: */
-	    width = 0;
-	    width_specified = TRUE;
-	  }
-	}
-	break;
+  if (*fmt == '%')
+  {
+    as_is = TRUE;
+    icase = *fmt++;
+    bp = separate(bp, icase);
+  }
+  else
+  {
+    Boole minus = FALSE;
+    percent_specified = TRUE;
+    if (*fmt == '0') {zero_pad = TRUE; fmt++;}
+    if (*fmt == '_') {zero_pad = FALSE; fmt++;}
+    if (*fmt == '+') {hard_width = TRUE; fmt++;}
+    if (*fmt == '-') {minus = TRUE; fmt++;}
+    width_specified = (isDigit(*fmt) != 0);
+    if (width_specified)
+    {
+      width = (*fmt++ - '0');
+      while (isDigit(*fmt))
+        width = width * 10 + (*fmt++ - '0');
+      if (width < 0 || width > F_MAX_WIDTH)
+      {
+        /* NB: width < 0 implies overflow! */
+        carrot_msg(NULL, "+G", G_format, "Too big", fmt-1);
+        exit(USAGE_ERROR);
+      }
+      if (minus)
+      {
+        width = -width;
+        /* Make "%0*d",-9 behave like "%0-9d" for negative widths: */
+        zero_pad = FALSE;
+      }
+    }
+    else if (minus)
+    {
+      /* Make "%-d" mimic Linux's date +format: */
+      width = 0;
+      width_specified = TRUE;
+    }
+  }
+  break;
 
       case '^':
-	if (*fmt == '^')
-	{
-	  as_is = TRUE;
-	  icase = *fmt++;
-	  bp = separate(bp, icase);
-	}
-	else
-	{
-	  modifier = TRUE;
-	}
-	break;
+  if (*fmt == '^')
+  {
+    as_is = TRUE;
+    icase = *fmt++;
+    bp = separate(bp, icase);
+  }
+  else
+  {
+    modifier = TRUE;
+  }
+  break;
 
       case '~':
-	ttoggle = !ttoggle;
-	if (ttoggle)
-	  squeeze_cnt++;
-	else
-	  squeeze_cnt--;
-	squeeze = (squeeze_cnt != 0);
-	if (!squeeze) bp = separate(bp, icase);
-	break;
+  ttoggle = !ttoggle;
+  if (ttoggle)
+    squeeze_cnt++;
+  else
+    squeeze_cnt--;
+  squeeze = (squeeze_cnt != 0);
+  if (!squeeze) bp = separate(bp, icase);
+  break;
 
       case '\\':
-	/* Print any character following the \quote as-is: */
-	as_is = TRUE;
-	if (*fmt != CNULL)
-	{
-	  icase = *fmt++;
-	  if      (icase == 'n') icase = '\n';
-	  else if (icase == 't') icase = '\t';
-	  else if (icase == 'r') icase = '\r';
-	  else if (icase == 'b') icase = '\b';
-	  else if (icase == 'f') icase = '\f';
-	  else if (icase == '0') icase = '\0';
-	  bp = separate(bp, icase);
-	}
-	break;
+  /* Print any character following the \quote as-is: */
+  as_is = TRUE;
+  if (*fmt != CNULL)
+  {
+    icase = *fmt++;
+    if      (icase == 'n') icase = '\n';
+    else if (icase == 't') icase = '\t';
+    else if (icase == 'r') icase = '\r';
+    else if (icase == 'b') icase = '\b';
+    else if (icase == 'f') icase = '\f';
+    else if (icase == '0') icase = '\0';
+    bp = separate(bp, icase);
+  }
+  break;
 
       default:
-	/* A character within quotes is a directive only when preceded by %: */
-	if (quote_mode && !percent_specified)
-	{
-	  as_is = TRUE;
-	  bp = separate(bp, icase);
-	  break;
-	}
+  /* A character within quotes is a directive only when preceded by %: */
+  if (quote_mode && !percent_specified)
+  {
+    as_is = TRUE;
+    bp = separate(bp, icase);
+    break;
+  }
 
-	/* Remove extraneous spacing if appropriate: */
-	if ((fielding || (squeeze && !hard_width)) &&
-	    (!zero_pad || width != 0))
-	{
-	  width = 0;
-	  width_specified = TRUE;
-	}
+  /* Remove extraneous spacing if appropriate: */
+  if ((fielding || (squeeze && !hard_width)) &&
+      (!zero_pad || width != 0))
+  {
+    width = 0;
+    width_specified = TRUE;
+  }
 
-	/* Process a directive: */
-	switch (icase)
-	{
-	case Gf_TYPE_IN_ALPHA:
-	  {
-	    char type;
-	    if      (ftype == S_IFREG)  /* Regular */
-	      type = symtype_REG; /* sic! */
-	    else if (ftype == S_IFDIR)  /* Directory */
-	      type = type_DIR;
-	    else if (ftype == S_IFCHR)  /* Char Special */
-	      type = type_CHR;
-	    else if (ftype == S_IFBLK)  /* Block Special */
-	      type = type_BLK;
+  /* Process a directive: */
+  switch (icase)
+  {
+  case Gf_TYPE_IN_ALPHA:
+    {
+      char type;
+      if      (ftype == S_IFREG)  /* Regular */
+        type = symtype_REG; /* sic! */
+      else if (ftype == S_IFDIR)  /* Directory */
+        type = type_DIR;
+      else if (ftype == S_IFCHR)  /* Char Special */
+        type = type_CHR;
+      else if (ftype == S_IFBLK)  /* Block Special */
+        type = type_BLK;
 #ifdef S_IFIFO
-	    else if (ftype == S_IFIFO)  /* Fifo */
-	      type = type_FIFO;
+      else if (ftype == S_IFIFO)  /* Fifo */
+        type = type_FIFO;
 #endif
 #ifdef S_IFLNK
-	    else if (ftype == S_IFLNK) {  /* Symbolic Link */
-	      type = type_LNK;
+      else if (ftype == S_IFLNK) {  /* Symbolic Link */
+        type = type_LNK;
               // RWM get info of actual file
               if ( sigSafe_stat(file->fname, &file->info) == 0 )
                 fmode = file->info.st_mode;
       }
 #endif
 #ifdef S_IFSOCK
-	    else if (ftype == S_IFSOCK) /* Socket */
-	      type = type_SOCK;
+      else if (ftype == S_IFSOCK) /* Socket */
+        type = type_SOCK;
 #endif
 #ifdef S_IFDOOR
-	    else if (ftype == S_IFDOOR) /* Door */
-	      type = type_DOOR;
+      else if (ftype == S_IFDOOR) /* Door */
+        type = type_DOOR;
 #endif
-	    else
-	      type = '?';
+      else
+        type = '?';
 
               if (!width_specified) width = 1;
 
@@ -4131,9 +4131,9 @@ char *G_print(char *buff,
               }
               sprintf(bp, "%*c",width, type);
             }
-	  break;
+    break;
 
-	  /* Add various flavorings: */
+    /* Add various flavorings: */
 
 #if defined(SUNOS4)
 /* SunOS4.x is known to not mark fifos. */
@@ -4160,257 +4160,257 @@ char *G_print(char *buff,
 #  define  S_OR_l     'S'
 #endif
 
-	case Gf_TYPE_IN_SYMBOLIC:
-	  {
-	    char type;
-	    if      (ftype == S_IFREG)  /* Regular */
-	      type = (fmode & (S_IXUSR|S_IXGRP|S_IXOTH) ? '*' : ' ');
-	    else if (ftype == S_IFDIR)  /* Directory */
-	      type = symtype_DIR;
-	    else if (ftype == S_IFCHR)  /* Char Special */
-	      type = ' ';
-	    else if (ftype == S_IFBLK)  /* Block Special */
-	      type = ' ';
+  case Gf_TYPE_IN_SYMBOLIC:
+    {
+      char type;
+      if      (ftype == S_IFREG)  /* Regular */
+        type = (fmode & (S_IXUSR|S_IXGRP|S_IXOTH) ? '*' : ' ');
+      else if (ftype == S_IFDIR)  /* Directory */
+        type = symtype_DIR;
+      else if (ftype == S_IFCHR)  /* Char Special */
+        type = ' ';
+      else if (ftype == S_IFBLK)  /* Block Special */
+        type = ' ';
 #ifdef S_IFIFO
-	    else if (ftype == S_IFIFO)  /* Fifo */
-	      type = FIFO_MARK;
+      else if (ftype == S_IFIFO)  /* Fifo */
+        type = FIFO_MARK;
 #endif
 #ifdef S_IFLNK
-	    else if (ftype == S_IFLNK)  /* Symbolic Link */
-	      type = symtype_LNK;
+      else if (ftype == S_IFLNK)  /* Symbolic Link */
+        type = symtype_LNK;
 #endif
 #ifdef S_IFSOCK
-	    else if (ftype == S_IFSOCK) /* Socket */
-	      type = symtype_SOCK;
+      else if (ftype == S_IFSOCK) /* Socket */
+        type = symtype_SOCK;
 #endif
 #ifdef S_IFDOOR
-	    else if (ftype == S_IFDOOR) /* Door */
-	      type = symtype_DOOR;
+      else if (ftype == S_IFDOOR) /* Door */
+        type = symtype_DOOR;
 #endif
-	    else
-	      type = '?';
+      else
+        type = '?';
 
-	    if (!width_specified) width = 1;
-	    sprintf(bp, "%*c",width, type);
-	  }
-	  break;
+      if (!width_specified) width = 1;
+      sprintf(bp, "%*c",width, type);
+    }
+    break;
 
 #ifdef Gf_TYPE_IN_NUMERIC
-	case Gf_TYPE_IN_NUMERIC:
-	  /* This is probably non-portable to some of the more obscure Unixes: */
-	  if (!width_specified) width = 2;
-	  sprintf(bp, "%*d",width, ftype >> 12);
-	  break;
+  case Gf_TYPE_IN_NUMERIC:
+    /* This is probably non-portable to some of the more obscure Unixes: */
+    if (!width_specified) width = 2;
+    sprintf(bp, "%*d",width, ftype >> 12);
+    break;
 #endif /*Gf_TYPE_IN_NUMERIC*/
 
-	case Gf_PERM_IN_ALPHA:
-	  {
-	    char perm[16], *pp;
-	    pp = perm;
-	    if (fmode & S_IRUSR)
-	      *pp++ = 'r';
-	    else
-	      *pp++ = '-';
+  case Gf_PERM_IN_ALPHA:
+    {
+      char perm[16], *pp;
+      pp = perm;
+      if (fmode & S_IRUSR)
+        *pp++ = 'r';
+      else
+        *pp++ = '-';
 
-	    if (fmode & S_IWUSR)
-	      *pp++ = 'w';
-	    else
-	      *pp++ = '-';
+      if (fmode & S_IWUSR)
+        *pp++ = 'w';
+      else
+        *pp++ = '-';
 
-	    if ((fmode & S_IXUSR) && (fmode & S_ISUID))
-	      *pp++ = 's';
-	    else if (fmode & S_ISUID)
-	      *pp++ = 'S';
-	    else if (fmode & S_IXUSR)
-	      *pp++ = 'x';
-	    else
-	      *pp++ = '-';
+      if ((fmode & S_IXUSR) && (fmode & S_ISUID))
+        *pp++ = 's';
+      else if (fmode & S_ISUID)
+        *pp++ = 'S';
+      else if (fmode & S_IXUSR)
+        *pp++ = 'x';
+      else
+        *pp++ = '-';
 
-	    if (fmode & S_IRGRP)
-	      *pp++ = 'r';
-	    else
-	      *pp++ = '-';
+      if (fmode & S_IRGRP)
+        *pp++ = 'r';
+      else
+        *pp++ = '-';
 
-	    if (fmode & S_IWGRP)
-	      *pp++ = 'w';
-	    else
-	      *pp++ = '-';
+      if (fmode & S_IWGRP)
+        *pp++ = 'w';
+      else
+        *pp++ = '-';
 
-	    if ((fmode & S_IXGRP) && (fmode & S_ISGID))
-	      *pp++ = 's';
-	    else if (fmode & S_ISGID)
-	      *pp++ = S_OR_l;
-	    else if (fmode & S_IXGRP)
-	      *pp++ = 'x';
-	    else
-	      *pp++ = '-';
+      if ((fmode & S_IXGRP) && (fmode & S_ISGID))
+        *pp++ = 's';
+      else if (fmode & S_ISGID)
+        *pp++ = S_OR_l;
+      else if (fmode & S_IXGRP)
+        *pp++ = 'x';
+      else
+        *pp++ = '-';
 
-	    if (fmode & S_IROTH)
-	      *pp++ = 'r';
-	    else
-	      *pp++ = '-';
+      if (fmode & S_IROTH)
+        *pp++ = 'r';
+      else
+        *pp++ = '-';
 
-	    if (fmode & S_IWOTH)
-	      *pp++ = 'w';
-	    else
-	      *pp++ = '-';
+      if (fmode & S_IWOTH)
+        *pp++ = 'w';
+      else
+        *pp++ = '-';
 
-	    if ((fmode & S_IXOTH) && (fmode & S_ISVTX))
-	      *pp++ = 't';
-	    else if (fmode & S_ISVTX)
-	      *pp++ = 'T';
-	    else if (fmode & S_IXOTH)
-	      *pp++ = 'x';
-	    else
-	      *pp++ = '-';
+      if ((fmode & S_IXOTH) && (fmode & S_ISVTX))
+        *pp++ = 't';
+      else if (fmode & S_ISVTX)
+        *pp++ = 'T';
+      else if (fmode & S_IXOTH)
+        *pp++ = 'x';
+      else
+        *pp++ = '-';
 
-	    *pp = CNULL;
+      *pp = CNULL;
 
-	    if (!width_specified) width = 9;
-	    sprintf(bp, "%*s",width, perm);
-	  }
-	  break;
+      if (!width_specified) width = 9;
+      sprintf(bp, "%*s",width, perm);
+    }
+    break;
 
-	case Gf_PERM_IN_NUMERIC:
-	  if (!width_specified || width < 4) width = 4;
-	  sprintf(bp, "%0*o",width, (fmode & 07777));
-	  break;
+  case Gf_PERM_IN_NUMERIC:
+    if (!width_specified || width < 4) width = 4;
+    sprintf(bp, "%0*o",width, (fmode & 07777));
+    break;
 
-	case Gf_PERM_IN_SYMBOLIC:
-	  {
-	    char perm[32], *pp;
-	    pp = perm;
-	    *pp++ = 'u'; *pp++ = '=';
-	    if (fmode & S_IRUSR) *pp++ = 'r';
-	    if (fmode & S_IWUSR) *pp++ = 'w';
-	    if (fmode & S_IXUSR) *pp++ = 'x';
-	    *pp++ = ','; *pp++ = 'g'; *pp++ = '=';
-	    if (fmode & S_IRGRP) *pp++ = 'r';
-	    if (fmode & S_IWGRP) *pp++ = 'w';
-	    if (fmode & S_IXGRP) *pp++ = 'x';
-	    *pp++ = ','; *pp++ = 'o'; *pp++ = '=';
-	    if (fmode & S_IROTH) *pp++ = 'r';
-	    if (fmode & S_IWOTH) *pp++ = 'w';
-	    if (fmode & S_IXOTH) *pp++ = 'x';
+  case Gf_PERM_IN_SYMBOLIC:
+    {
+      char perm[32], *pp;
+      pp = perm;
+      *pp++ = 'u'; *pp++ = '=';
+      if (fmode & S_IRUSR) *pp++ = 'r';
+      if (fmode & S_IWUSR) *pp++ = 'w';
+      if (fmode & S_IXUSR) *pp++ = 'x';
+      *pp++ = ','; *pp++ = 'g'; *pp++ = '=';
+      if (fmode & S_IRGRP) *pp++ = 'r';
+      if (fmode & S_IWGRP) *pp++ = 'w';
+      if (fmode & S_IXGRP) *pp++ = 'x';
+      *pp++ = ','; *pp++ = 'o'; *pp++ = '=';
+      if (fmode & S_IROTH) *pp++ = 'r';
+      if (fmode & S_IWOTH) *pp++ = 'w';
+      if (fmode & S_IXOTH) *pp++ = 'x';
 
-	    {
-	      /* Pre-SunOS5.9 chmod complains if "g+s" given to a directory
-		 already having "g-x,g+s"; this is fixed as of SunOS5.9:
+      {
+        /* Pre-SunOS5.9 chmod complains if "g+s" given to a directory
+     already having "g-x,g+s"; this is fixed as of SunOS5.9:
 
-		 mkdir -p test; chmod g=rwx,g+s test  # Starting condition
-		 chmod g=,g+s test	# SunOS5.7==FAILS, SunOS5.9==OK
-		 chmod g=,g-s,g+s test	# SunOS5.7==OK, SunOS5.9==OK
-		 chmod g=,g-s,+l test	# SunOS5.7==OK, SunOS5.9==OK
-		 chmod g=x,g+s test	# SunOS5.7==OK, SunOS5.9==OK
-		 chmod g-x test		# SunOS5.7==FAILS, SunOS5.9==OK
+     mkdir -p test; chmod g=rwx,g+s test  # Starting condition
+     chmod g=,g+s test  # SunOS5.7==FAILS, SunOS5.9==OK
+     chmod g=,g-s,g+s test  # SunOS5.7==OK, SunOS5.9==OK
+     chmod g=,g-s,+l test # SunOS5.7==OK, SunOS5.9==OK
+     chmod g=x,g+s test # SunOS5.7==OK, SunOS5.9==OK
+     chmod g-x test   # SunOS5.7==FAILS, SunOS5.9==OK
 
-		 Thus, the following two sequences work on all OS versions:
-		 chmod g=,g-s,+l test
-		 chmod g=,g-s,g+s test
+     Thus, the following two sequences work on all OS versions:
+     chmod g=,g-s,+l test
+     chmod g=,g-s,g+s test
 
-		 NB: All versions of SunOS5 have treated "g+s" the same as
-		 "+l" for directories, but "g+s" is more universal.
-		 */
+     NB: All versions of SunOS5 have treated "g+s" the same as
+     "+l" for directories, but "g+s" is more universal.
+     */
 #ifdef HAVE_MANDATORY_LOCKING
-	      Boole lock = (fmode & S_ISGID) &&
-		!(fmode & S_IXGRP) && (ftype != S_IFDIR);
-	      Boole setgid = (fmode & S_ISGID) &&
-		((fmode & S_IXGRP) || (ftype == S_IFDIR));
+        Boole lock = (fmode & S_ISGID) &&
+    !(fmode & S_IXGRP) && (ftype != S_IFDIR);
+        Boole setgid = (fmode & S_ISGID) &&
+    ((fmode & S_IXGRP) || (ftype == S_IFDIR));
 #else
-	      Boole lock = FALSE;
-	      Boole setgid = (fmode & S_ISGID) != 0;
+        Boole lock = FALSE;
+        Boole setgid = (fmode & S_ISGID) != 0;
 #endif
-	      Boole setuid = (fmode & S_ISUID) != 0;
-	      Boole sticky = (fmode & S_ISVTX) != 0;
+        Boole setuid = (fmode & S_ISUID) != 0;
+        Boole sticky = (fmode & S_ISVTX) != 0;
 
-	      /* SunOS (and possibly others) do not remove "s" on directories
-		 when "g=" or 700 modes specified, thus remove explicitly: */
-	      if (ftype == S_IFDIR && !(fmode & S_IXGRP))
-	      {
-		*pp++ = ','; *pp++ = 'g'; *pp++ = '-'; *pp++ = 's';
-	      }
+        /* SunOS (and possibly others) do not remove "s" on directories
+     when "g=" or 700 modes specified, thus remove explicitly: */
+        if (ftype == S_IFDIR && !(fmode & S_IXGRP))
+        {
+    *pp++ = ','; *pp++ = 'g'; *pp++ = '-'; *pp++ = 's';
+        }
 
-	      if (setuid || setgid)
-	      {
-		*pp++ = ',';
-		if (setuid)  *pp++ = 'u';
-		if (setgid)  *pp++ = 'g';
-		*pp++ = '+'; *pp++ = 's';
-	      }
+        if (setuid || setgid)
+        {
+    *pp++ = ',';
+    if (setuid)  *pp++ = 'u';
+    if (setgid)  *pp++ = 'g';
+    *pp++ = '+'; *pp++ = 's';
+        }
 
-	      if (lock || sticky)
-	      {
-		*pp++ = ','; *pp++ = '+';
-		if (lock)    *pp++ = 'l';
-		if (sticky)  *pp++ = 't';
-	      }
-	    }
+        if (lock || sticky)
+        {
+    *pp++ = ','; *pp++ = '+';
+    if (lock)    *pp++ = 'l';
+    if (sticky)  *pp++ = 't';
+        }
+      }
 
-	    *pp = CNULL;
+      *pp = CNULL;
 
-	    /* Worst cases: u=rwxs,g=rwxs,o=rwx,+t    (files) */
-	    /*              u=rwx,g=rwx,o=rwx,ug+s,+t (all) */
-	    /*              u=rwx,g=rw,o=rwx,u+s,+lt  (sunos5 files) */
-	    /*              u=rwx,g=rwx,o=rwx,u+s,g-s,+t (dir without g+s) */
-	    /*              1234567890123456789012345 */
-	    if (!width_specified) width = -25;
-	    sprintf(bp, "%*s",width, perm);
-	  }
-	  break;
+      /* Worst cases: u=rwxs,g=rwxs,o=rwx,+t    (files) */
+      /*              u=rwx,g=rwx,o=rwx,ug+s,+t (all) */
+      /*              u=rwx,g=rw,o=rwx,u+s,+lt  (sunos5 files) */
+      /*              u=rwx,g=rwx,o=rwx,u+s,g-s,+t (dir without g+s) */
+      /*              1234567890123456789012345 */
+      if (!width_specified) width = -25;
+      sprintf(bp, "%*s",width, perm);
+    }
+    break;
 
-	case Gf_ACL_INDICATOR:
-	  if (!width_specified) width = 1;
-	  sprintf(bp, "%*s",width,
-		  get_acl_count(file, full_name(dname, file->fname)) > 0 ?
-		  "+" : "");
-	  break;
+  case Gf_ACL_INDICATOR:
+    if (!width_specified) width = 1;
+    sprintf(bp, "%*s",width,
+      get_acl_count(file, full_name(dname, file->fname)) > 0 ?
+      "+" : "");
+    break;
 
-	case Gf_INODE:
-	  /* SYS5-R2 == 5
-	     SunOS4.1.3 == 6, SunOS5.0-5.5.1 == 5(!), SunOS5.6-5.8 == 10
-	     HPUX10.20 == 6
-	     Linux2.2 == 7 */
-	  /* Most modern UNIXes assume inodes take at least 6 places: */
-	  if (!width_specified) width = 6;
-	  sprintf(bp, F_st_ino(zero_pad,width, info->st_ino));
-	  break;
+  case Gf_INODE:
+    /* SYS5-R2 == 5
+       SunOS4.1.3 == 6, SunOS5.0-5.5.1 == 5(!), SunOS5.6-5.8 == 10
+       HPUX10.20 == 6
+       Linux2.2 == 7 */
+    /* Most modern UNIXes assume inodes take at least 6 places: */
+    if (!width_specified) width = 6;
+    sprintf(bp, F_st_ino(zero_pad,width, info->st_ino));
+    break;
 
-	case Gf_SIZE_HUMAN_2:
-	case Gf_SIZE_HUMAN_10:
-	case Gf_SIZE_IN_BYTES:
-	  if (!width_specified)
-	  {
-	    if (icase == Gf_SIZE_HUMAN_2 || icase == Gf_SIZE_HUMAN_10)
-	      width = 7;
-	    else
-	      width = (ANYBIT(Sem,SEM_BSD|SEM_GNU|SEM_ELS) ? 8 : 7);
-	  }
-	    
-	  if (file->isdev)
-	  {
-	    char major_dev[16], minor_dev[16], str[32];
-	    sprintf(major_dev, "%lu", (Ulong)major(info->st_rdev));
-	    sprintf(minor_dev, "%lu", (Ulong)minor(info->st_rdev));
-	    /* Leading spaces are added to the major field for device numbers
-	       less than 100 (unless squeeze or width specified) so as to mimic
-	       /bin/ls when the minor field exceeds 999 (or 9999 for BSD) thus
-	       keeping it from pushing its way into the major field.  If true
-	       mimicing of BSD's or SYS5's /bin/ls is desired when listing
-	       devices, then specify either +4l or +5l flags respectively. */
-	    sprintf(str, "%*s,%*s",
-		    (squeeze || width_specified ? 0 : 3),
-		    major_dev,
-		    (squeeze ? 0 : (ANYBIT(Sem,SEM_BSD|SEM_GNU|SEM_ELS) ? 4 : 3)),
-		    minor_dev);
-	    sprintf(bp, "%*s",width, str);
-	  }
-	  else if (icase == Gf_SIZE_HUMAN_2)
-	    sprintf(bp, "%*s",width, scaleSizeToHuman(info->st_size, 2));
-	  else if (icase == Gf_SIZE_HUMAN_10)
-	    sprintf(bp, "%*s",width, scaleSizeToHuman(info->st_size, 10));
-	  else {
-			if ( !rwm_docomma )
-	    sprintf(bp, F_st_size(zero_pad,width, info->st_size));
+  case Gf_SIZE_HUMAN_2:
+  case Gf_SIZE_HUMAN_10:
+  case Gf_SIZE_IN_BYTES:
+    if (!width_specified)
+    {
+      if (icase == Gf_SIZE_HUMAN_2 || icase == Gf_SIZE_HUMAN_10)
+        width = 7;
+      else
+        width = (ANYBIT(Sem,SEM_BSD|SEM_GNU|SEM_ELS) ? 8 : 7);
+    }
+
+    if (file->isdev)
+    {
+      char major_dev[16], minor_dev[16], str[32];
+      sprintf(major_dev, "%lu", (Ulong)major(info->st_rdev));
+      sprintf(minor_dev, "%lu", (Ulong)minor(info->st_rdev));
+      /* Leading spaces are added to the major field for device numbers
+         less than 100 (unless squeeze or width specified) so as to mimic
+         /bin/ls when the minor field exceeds 999 (or 9999 for BSD) thus
+         keeping it from pushing its way into the major field.  If true
+         mimicing of BSD's or SYS5's /bin/ls is desired when listing
+         devices, then specify either +4l or +5l flags respectively. */
+      sprintf(str, "%*s,%*s",
+        (squeeze || width_specified ? 0 : 3),
+        major_dev,
+        (squeeze ? 0 : (ANYBIT(Sem,SEM_BSD|SEM_GNU|SEM_ELS) ? 4 : 3)),
+        minor_dev);
+      sprintf(bp, "%*s",width, str);
+    }
+    else if (icase == Gf_SIZE_HUMAN_2)
+      sprintf(bp, "%*s",width, scaleSizeToHuman(info->st_size, 2));
+    else if (icase == Gf_SIZE_HUMAN_10)
+      sprintf(bp, "%*s",width, scaleSizeToHuman(info->st_size, 10));
+    else {
+      if ( !rwm_docomma )
+      sprintf(bp, F_st_size(zero_pad,width, info->st_size));
 //      sprintf(bp, F_st_size(zero_pad,width), info->st_size);
       else {
         char str[32];
@@ -4437,246 +4437,246 @@ char *G_print(char *buff,
 
       }
     }
-	  break;
+    break;
 
-	case Gf_SIZE_IN_BLOCKS:
-	  {
-	    ELS_st_blocks st_blocks;
-	    /* Emulate weirdo-cases where BSD's and SysV's sum commands return
-	       the filesize disguised to look like the real block count (i.e.
-	       indirect blocks are not included in sum's "block count"): */
-	    if (cksumming && !file->isdev && (cksum_type == CKSUM_BSD ||
-					      cksum_type == CKSUM_SYSV))
-	    {
-	      if (ANYBIT(Sem,SEM_BSD|SEM_GNU|SEM_ELS))
-		st_blocks = (info->st_size + 1023)/512; /* /2 occurs later! */
-	      else
-		st_blocks = (info->st_size + 511)/512;
-	    }
-	    else
-	      st_blocks = getStatBlocks(&file->info);
+  case Gf_SIZE_IN_BLOCKS:
+    {
+      ELS_st_blocks st_blocks;
+      /* Emulate weirdo-cases where BSD's and SysV's sum commands return
+         the filesize disguised to look like the real block count (i.e.
+         indirect blocks are not included in sum's "block count"): */
+      if (cksumming && !file->isdev && (cksum_type == CKSUM_BSD ||
+                cksum_type == CKSUM_SYSV))
+      {
+        if (ANYBIT(Sem,SEM_BSD|SEM_GNU|SEM_ELS))
+    st_blocks = (info->st_size + 1023)/512; /* /2 occurs later! */
+        else
+    st_blocks = (info->st_size + 511)/512;
+      }
+      else
+        st_blocks = getStatBlocks(&file->info);
 
-	    if (!width_specified) width = 4;
-	    sprintf(bp, FU_st_blocks(zero_pad,width,
-		    ANYBIT(Sem,SEM_BSD|SEM_GNU|SEM_ELS) ?
-		    st_blocks/2 : st_blocks));
-	  }
-	  break;
+      if (!width_specified) width = 4;
+      sprintf(bp, FU_st_blocks(zero_pad,width,
+        ANYBIT(Sem,SEM_BSD|SEM_GNU|SEM_ELS) ?
+        st_blocks/2 : st_blocks));
+    }
+    break;
 
-	case Gf_LINK_COUNT:
-	  /* ELS version > 1.45 always uses 3 for link count and reserves
-	     1 for possible ACL unless LS and BSD (i.e. +l4) specified.
-	     ELS version <= 1.45 uses 2 for link count except where support
-	     for ACLs exists or LS and not BSD (i.e. +l) specified. */
-	  if (!width_specified) width = (ALLBITS(Sem,SEM_BSD|SEM_LS) ? 2 : 3);
+  case Gf_LINK_COUNT:
+    /* ELS version > 1.45 always uses 3 for link count and reserves
+       1 for possible ACL unless LS and BSD (i.e. +l4) specified.
+       ELS version <= 1.45 uses 2 for link count except where support
+       for ACLs exists or LS and not BSD (i.e. +l) specified. */
+    if (!width_specified) width = (ALLBITS(Sem,SEM_BSD|SEM_LS) ? 2 : 3);
 # if !defined(HAVE_ACL)
-	  if (VersionLevel <= 145 && !width_specified)
-	    width = (ANYBIT(Sem,SEM_BSD|SEM_ELS) ? 2 : 3);
+    if (VersionLevel <= 145 && !width_specified)
+      width = (ANYBIT(Sem,SEM_BSD|SEM_ELS) ? 2 : 3);
 # endif
-	  sprintf(bp, F_st_nlink(zero_pad,width, info->st_nlink));
-	  break;
+    sprintf(bp, F_st_nlink(zero_pad,width, info->st_nlink));
+    break;
 
-	case Gf_TIME_MODIFIED:
-	case Gf_TIME_ACCESSED:
-	case Gf_TIME_MODE_CHANGED:
+  case Gf_TIME_MODIFIED:
+  case Gf_TIME_ACCESSED:
+  case Gf_TIME_MODE_CHANGED:
           if ( rwm_docolor && rwm_ftcnt )
             bp = rwm_col_age( bp, info->st_mtime, 1 );
-	  bp = T_print_width(bp, T_format,
-			     icase == Gf_TIME_MODIFIED ? info->st_mtime :
-			     icase == Gf_TIME_ACCESSED ? info->st_atime :
-			     /*icase == Gf_TIME_MODE_CHANGED ?*/ info->st_ctime,
-			     NULL, FALSE, FALSE, width);
+    bp = T_print_width(bp, T_format,
+           icase == Gf_TIME_MODIFIED ? info->st_mtime :
+           icase == Gf_TIME_ACCESSED ? info->st_atime :
+           /*icase == Gf_TIME_MODE_CHANGED ?*/ info->st_ctime,
+           NULL, FALSE, FALSE, width);
           if ( rwm_docolor && rwm_ftcnt )
             bp = rwm_col_age( bp, info->st_mtime, 0 );
-	  break;
+    break;
 
-	case Gf_UID_IN_ALPHA:
-	  {
-	    char *pw_name = uid2name(info->st_uid);
-	    int trunc = MAX_USER_GROUP_NAME;
-	    if (!width_specified) width = -10;     // 2019-03-17 RWM - was -8 (rwmitchell)
-	    if (TruncateName && width != 0)
-	      trunc = (width > 0 ? width : -width);
-	    if (pw_name != NULL)
-	      sprintf(bp, "%*.*s",width,trunc, pw_name);
-	    else
-	      /* No name, print the number instead: */
-	      sprintf(bp, FU_uid_t(zero_pad,width, uidMask(info->st_uid)));
-	  }
-	  break;
+  case Gf_UID_IN_ALPHA:
+    {
+      char *pw_name = uid2name(info->st_uid);
+      int trunc = MAX_USER_GROUP_NAME;
+      if (!width_specified) width = -10;     // 2019-03-17 RWM - was -8 (rwmitchell)
+      if (TruncateName && width != 0)
+        trunc = (width > 0 ? width : -width);
+      if (pw_name != NULL)
+        sprintf(bp, "%*.*s",width,trunc, pw_name);
+      else
+        /* No name, print the number instead: */
+        sprintf(bp, FU_uid_t(zero_pad,width, uidMask(info->st_uid)));
+    }
+    break;
 
-	case Gf_GID_IN_ALPHA:
-	  {
-	    char *gr_name = gid2name(info->st_gid);
-	    int trunc = MAX_USER_GROUP_NAME;
-	    if (!width_specified) width = -8;
-	    if (TruncateName && width != 0)
-	      trunc = (width > 0 ? width : -width);
-	    if (gr_name != NULL)
-	      sprintf(bp, "%*.*s",width,trunc, gr_name);
-	    else
-	      /* No name, print the number instead: */
-	      sprintf(bp, FU_gid_t(zero_pad,width, gidMask(info->st_gid)));
-	  }
-	  break;
+  case Gf_GID_IN_ALPHA:
+    {
+      char *gr_name = gid2name(info->st_gid);
+      int trunc = MAX_USER_GROUP_NAME;
+      if (!width_specified) width = -8;
+      if (TruncateName && width != 0)
+        trunc = (width > 0 ? width : -width);
+      if (gr_name != NULL)
+        sprintf(bp, "%*.*s",width,trunc, gr_name);
+      else
+        /* No name, print the number instead: */
+        sprintf(bp, FU_gid_t(zero_pad,width, gidMask(info->st_gid)));
+    }
+    break;
 
-	case Gf_UID_IN_NUMERIC:
-	  if (!width_specified) width = 5;
-	  sprintf(bp, FU_uid_t(zero_pad,width, uidMask(info->st_uid)));
-	  break;
+  case Gf_UID_IN_NUMERIC:
+    if (!width_specified) width = 5;
+    sprintf(bp, FU_uid_t(zero_pad,width, uidMask(info->st_uid)));
+    break;
 
-	case Gf_GID_IN_NUMERIC:
-	  if (!width_specified) width = 5;
-	  sprintf(bp, FU_gid_t(zero_pad,width, gidMask(info->st_gid)));
-	  break;
+  case Gf_GID_IN_NUMERIC:
+    if (!width_specified) width = 5;
+    sprintf(bp, FU_gid_t(zero_pad,width, gidMask(info->st_gid)));
+    break;
 
-	case Gf_OWNER_IN_ALPHA:
-	  {
-	    char tmp[2*MAX_USER_GROUP_NAME + 2];
-	    char *fmt = (GTarStyle || Tar5Style ? "%1u/%-g" : "%8u:%-g");
-	    if (!width_specified) width = -17;
-	    G_print(tmp, fmt, dname, file);
-	    sprintf(bp, "%*s",width, tmp);
-	    break;
-	  }
+  case Gf_OWNER_IN_ALPHA:
+    {
+      char tmp[2*MAX_USER_GROUP_NAME + 2];
+      char *fmt = (GTarStyle || Tar5Style ? "%1u/%-g" : "%8u:%-g");
+      if (!width_specified) width = -17;
+      G_print(tmp, fmt, dname, file);
+      sprintf(bp, "%*s",width, tmp);
+      break;
+    }
 
-	case Gf_OWNER_IN_NUMERIC:
-	  {
-	    char tmp[4*ELS_SIZEOF_uid_t + 4*ELS_SIZEOF_gid_t + 2];
-	    char *fmt = (GTarStyle || Tar5Style ? "%1U/%-G" : "%6U:%-G");
-	    if (!width_specified) width = -13;
-	    G_print(tmp, fmt, dname, file);
-	    sprintf(bp, "%*s",width, tmp);
-	    break;
-	  }
+  case Gf_OWNER_IN_NUMERIC:
+    {
+      char tmp[4*ELS_SIZEOF_uid_t + 4*ELS_SIZEOF_gid_t + 2];
+      char *fmt = (GTarStyle || Tar5Style ? "%1U/%-G" : "%6U:%-G");
+      if (!width_specified) width = -13;
+      G_print(tmp, fmt, dname, file);
+      sprintf(bp, "%*s",width, tmp);
+      break;
+    }
 
-	case Gf_CHECKSUM:
-	  /* Perform checksum on regular files and directories: */
-	  {
-	    Uint32 cksum = 0;
+  case Gf_CHECKSUM:
+    /* Perform checksum on regular files and directories: */
+    {
+      Uint32 cksum = 0;
 
-	    if (ftype == S_IFREG)
-	    {
-	      int save_errno = errno;
-	      char *path = full_name(dname, file->fname);
+      if (ftype == S_IFREG)
+      {
+        int save_errno = errno;
+        char *path = full_name(dname, file->fname);
 
-	      /* Perform checksum and record any errno generated by cksum: */
-	      errno = 0;
-	      cksum = cksumFile(path, cksum_type, NULL);
-	      if (errno != 0)
-	      {
-		cksum = cksumErrorCode(cksum_type);
-		file->stat_errno = errno;  /* Record errno */
-	      }
-	      else if (cksum_unaccess)
-	      {
-		/* "Attempt" to restore access time (ignore any errno): */
-		struct utimbuf tb;
-		tb.actime = info->st_atime;
-		tb.modtime = info->st_mtime;
-		utime(path, &tb);
-		/* ??? if (verboseLevel > 0 && errno != 0) then warn about
-		   access time being clobbered ??? */
-	      }
-	      errno = save_errno;
-	    }
+        /* Perform checksum and record any errno generated by cksum: */
+        errno = 0;
+        cksum = cksumFile(path, cksum_type, NULL);
+        if (errno != 0)
+        {
+    cksum = cksumErrorCode(cksum_type);
+    file->stat_errno = errno;  /* Record errno */
+        }
+        else if (cksum_unaccess)
+        {
+    /* "Attempt" to restore access time (ignore any errno): */
+    struct utimbuf tb;
+    tb.actime = info->st_atime;
+    tb.modtime = info->st_mtime;
+    utime(path, &tb);
+    /* ??? if (verboseLevel > 0 && errno != 0) then warn about
+       access time being clobbered ??? */
+        }
+        errno = save_errno;
+      }
 
-	    else if ((zero_st_mask & ZERO_CKSUM_NONREG) != 0)
-	    {
-	      /* Zero cksum of non-regular file as requested: */
-	      cksum = 0;
-	    }
+      else if ((zero_st_mask & ZERO_CKSUM_NONREG) != 0)
+      {
+        /* Zero cksum of non-regular file as requested: */
+        cksum = 0;
+      }
 
-	    else
-	    {
-	      /* Generate cksum ERROR for any file not handled above: */
-	      cksum = cksumErrorCode(cksum_type);
-	      file->info.st_size = 0;	/* FIXME: this mimics cksum!? */
-	    }
+      else
+      {
+        /* Generate cksum ERROR for any file not handled above: */
+        cksum = cksumErrorCode(cksum_type);
+        file->info.st_size = 0; /* FIXME: this mimics cksum!? */
+      }
 
-	    /* if CKSUM_BSD   then  zero_pad = TRUE, width = 5
-	       if CKSUM_SYSV  then  zero_pad = optional, width = 5
-	       if CKSUM_POSIX then  zero_pad = optional, width = 10
-	       if CKSUM_CRC32 then  zero_pad = optional, width = 10 */
-	    if (!width_specified) width = (cksum_size == 16 ? 5 : 10);
-	    if (cksum_type == CKSUM_BSD) zero_pad = TRUE;
-	    sprintf(bp, F_32U(zero_pad,width, cksum));
-	  }
-	  break;
+      /* if CKSUM_BSD   then  zero_pad = TRUE, width = 5
+         if CKSUM_SYSV  then  zero_pad = optional, width = 5
+         if CKSUM_POSIX then  zero_pad = optional, width = 10
+         if CKSUM_CRC32 then  zero_pad = optional, width = 10 */
+      if (!width_specified) width = (cksum_size == 16 ? 5 : 10);
+      if (cksum_type == CKSUM_BSD) zero_pad = TRUE;
+      sprintf(bp, F_32U(zero_pad,width, cksum));
+    }
+    break;
 
-	case Gf_NAME_FORMAT:
-	case Gf_FULL_NAME_FORMAT:
-	case Nf_FULL_NAME:
-	case Nf_DIR_NAME:
-	case Nf_FILE_NAME:
-	  {
-	    char *N_format_to_use;
-	    char N_format_case[2];
-	    if (icase == Gf_NAME_FORMAT || icase == Gf_FULL_NAME_FORMAT)
-	    {
-	      N_format_to_use = N_format;
-	    }
-	    else
-	    {
-	      N_format_case[0] = icase;
-	      N_format_case[1] = CNULL;
-	      N_format_to_use = N_format_case;
-	    }
+  case Gf_NAME_FORMAT:
+  case Gf_FULL_NAME_FORMAT:
+  case Nf_FULL_NAME:
+  case Nf_DIR_NAME:
+  case Nf_FILE_NAME:
+    {
+      char *N_format_to_use;
+      char N_format_case[2];
+      if (icase == Gf_NAME_FORMAT || icase == Gf_FULL_NAME_FORMAT)
+      {
+        N_format_to_use = N_format;
+      }
+      else
+      {
+        N_format_case[0] = icase;
+        N_format_case[1] = CNULL;
+        N_format_to_use = N_format_case;
+      }
 
-	    if (!width_specified)
-	      bp = N_print(bp, N_format_to_use, dname, file);
-	    else
-	    {
-	      char tmp[MAX_FULL_NAME];
-	      Void N_print(tmp, N_format_to_use, dname, file);
-	      sprintf(bp, "%*s",width, tmp);
-	    }
-	  }
-	  break;
+      if (!width_specified)
+        bp = N_print(bp, N_format_to_use, dname, file);
+      else
+      {
+        char tmp[MAX_FULL_NAME];
+        Void N_print(tmp, N_format_to_use, dname, file);
+        sprintf(bp, "%*s",width, tmp);
+      }
+    }
+    break;
 
-	case Nf_LINK_PTR_NAME:
+  case Nf_LINK_PTR_NAME:
 #     if defined(S_IFLNK)
-	  if (file->islink && !expand_symlink)
-	  {
-	    char *N_format_to_use;
-	    char N_format_case[2];
+    if (file->islink && !expand_symlink)
+    {
+      char *N_format_to_use;
+      char N_format_case[2];
 
-	    N_format_case[0] = icase;
-	    N_format_case[1] = CNULL;
-	    N_format_to_use = N_format_case;
+      N_format_case[0] = icase;
+      N_format_case[1] = CNULL;
+      N_format_to_use = N_format_case;
 
-	    if (!width_specified)
-	      bp = N_print(bp, N_format_to_use, dname, file);
-	    else
-	    {
-	      char tmp[MAX_FULL_NAME];
-	      Void N_print(tmp, N_format_to_use, dname, file);
-	      sprintf(bp, "%*s",width, tmp);
-	    }
-	  }
+      if (!width_specified)
+        bp = N_print(bp, N_format_to_use, dname, file);
+      else
+      {
+        char tmp[MAX_FULL_NAME];
+        Void N_print(tmp, N_format_to_use, dname, file);
+        sprintf(bp, "%*s",width, tmp);
+      }
+    }
 #     endif
-	  break;
+    break;
 
-	default:
-	  if (isAlnum(icase))
-	  {
-	    carrot_msg(NULL, "+G", G_format, "Unrecognized +G directive", fmt-1);
-	    exit(USAGE_ERROR);
-	  }
-	  else
-	    /* Output non-directive/non-alphanumeric as-is: */
-	    as_is = TRUE;
-	  break;
-	}
+  default:
+    if (isAlnum(icase))
+    {
+      carrot_msg(NULL, "+G", G_format, "Unrecognized +G directive", fmt-1);
+      exit(USAGE_ERROR);
+    }
+    else
+      /* Output non-directive/non-alphanumeric as-is: */
+      as_is = TRUE;
+    break;
+  }
 
-	percent_specified = FALSE;
-	zero_pad = ZERO_PAD_DEFAULT;
-	hard_width = FALSE;
-	width_specified = FALSE;
-	width = 0;
-	if (!as_is) directive_seen = TRUE;
-	bp = separate(bp, icase);
-	break;
+  percent_specified = FALSE;
+  zero_pad = ZERO_PAD_DEFAULT;
+  hard_width = FALSE;
+  width_specified = FALSE;
+  width = 0;
+  if (!as_is) directive_seen = TRUE;
+  bp = separate(bp, icase);
+  break;
       }
     }
   }
@@ -4754,7 +4754,7 @@ void rwm_col_ext( char *fn, int *b, int *f, int *s ) {
 
 #define ZERO_PAD_DEFAULT  FALSE
 char *N_print(char *buff, char *fmt,
-	      char *dname, Dir_Item *file)
+        char *dname, Dir_Item *file)
 {
   register char *bp;
   char icase;
@@ -4769,7 +4769,7 @@ char *N_print(char *buff, char *fmt,
   Boole modifier = FALSE;
   Boole ttoggle = FALSE;
   Boole use_quotes = plus_q;
-  char *fname = file->fname;	/* Use "fname" to avoid side-effects! */
+  char *fname = file->fname;  /* Use "fname" to avoid side-effects! */
   char *slash = NULL;
   Boole markable = FALSE;
 
@@ -4789,9 +4789,9 @@ char *N_print(char *buff, char *fmt,
     else if ((slash = strrchr(fname, '/')) != NULL)
     {
       if (slash == fname)
-	dname = "/";
+  dname = "/";
       else
-	dname = fname;
+  dname = fname;
       *slash = CNULL;
       fname = slash+1;
     }
@@ -4800,8 +4800,8 @@ char *N_print(char *buff, char *fmt,
       int last_dir_char = strlen(dname) - 1;
       if (last_dir_char > 0 && dname[last_dir_char] == '/')
       {
-	slash = &dname[last_dir_char];
-	*slash = CNULL;
+  slash = &dname[last_dir_char];
+  *slash = CNULL;
       }
     }
   }
@@ -4819,15 +4819,15 @@ char *N_print(char *buff, char *fmt,
       /* Modifiers generate no output: */
       switch (icase)
       {
-      case 'Q':		/* '+N^Q' is DEPRECATED, use '+N^q' instead */
+      case 'Q':   /* '+N^Q' is DEPRECATED, use '+N^q' instead */
       case Nf_QUOTE_NAME:
-	use_quotes = TRUE;
-	break;
+  use_quotes = TRUE;
+  break;
 
       default:
-	carrot_msg(NULL, "+N", N_format, "Unrecognized +N modifier", fmt-1);
-	exit(USAGE_ERROR);
-	break;
+  carrot_msg(NULL, "+N", N_format, "Unrecognized +N modifier", fmt-1);
+  exit(USAGE_ERROR);
+  break;
       }
       zero_pad = ZERO_PAD_DEFAULT;
       modifier = FALSE; /* reset for next time */
@@ -4838,136 +4838,136 @@ char *N_print(char *buff, char *fmt,
       {
       case '"':
       case '\'':
-	if (!quote_mode)
-	{
-	  quote_mode = TRUE;
-	  delimiter = icase;
-	}
-	else if (delimiter == icase)
-	{
-	  quote_mode = FALSE;
-	}
-	break;
+  if (!quote_mode)
+  {
+    quote_mode = TRUE;
+    delimiter = icase;
+  }
+  else if (delimiter == icase)
+  {
+    quote_mode = FALSE;
+  }
+  break;
 
       case '%':
-	if (*fmt == '%')
-	{
-	  as_is = TRUE;
-	  icase = *fmt++;
-	  bp = separate(bp, icase);
-	}
-	else
-	{
-	  Boole minus = FALSE;
-	  percent_specified = TRUE;
-	  if (*fmt == '0') {zero_pad = TRUE; fmt++;}
-	  if (*fmt == '_') {zero_pad = FALSE; fmt++;}
-	  if (*fmt == '+') {hard_width = TRUE; fmt++;}
-	  if (*fmt == '-') {minus = TRUE; fmt++;}
-	  width_specified = (isDigit(*fmt) != 0);
-	  if (width_specified)
-	  {
-	    width = (*fmt++ - '0');
-	    while (isDigit(*fmt))
-	      width = width * 10 + (*fmt++ - '0');
-	    if (width < 0 || width > F_MAX_WIDTH)
-	    {
-	      /* NB: width < 0 implies overflow! */
-	      carrot_msg(NULL, "+N", N_format, "Too big", fmt-1);
-	      exit(USAGE_ERROR);
-	    }
-	    if (minus)
-	    {
-	      width = -width;
-	      /* Make "%0*d",-9 behave like "%0-9d" for negative widths: */
-	      zero_pad = FALSE;
-	    }
-	  }
-	  else if (minus)
-	  {
-	    /* Make "%-d" mimic Linux's date +format: */
-	    width = 0;
-	    width_specified = TRUE;
-	  }
-	}
-	break;
+  if (*fmt == '%')
+  {
+    as_is = TRUE;
+    icase = *fmt++;
+    bp = separate(bp, icase);
+  }
+  else
+  {
+    Boole minus = FALSE;
+    percent_specified = TRUE;
+    if (*fmt == '0') {zero_pad = TRUE; fmt++;}
+    if (*fmt == '_') {zero_pad = FALSE; fmt++;}
+    if (*fmt == '+') {hard_width = TRUE; fmt++;}
+    if (*fmt == '-') {minus = TRUE; fmt++;}
+    width_specified = (isDigit(*fmt) != 0);
+    if (width_specified)
+    {
+      width = (*fmt++ - '0');
+      while (isDigit(*fmt))
+        width = width * 10 + (*fmt++ - '0');
+      if (width < 0 || width > F_MAX_WIDTH)
+      {
+        /* NB: width < 0 implies overflow! */
+        carrot_msg(NULL, "+N", N_format, "Too big", fmt-1);
+        exit(USAGE_ERROR);
+      }
+      if (minus)
+      {
+        width = -width;
+        /* Make "%0*d",-9 behave like "%0-9d" for negative widths: */
+        zero_pad = FALSE;
+      }
+    }
+    else if (minus)
+    {
+      /* Make "%-d" mimic Linux's date +format: */
+      width = 0;
+      width_specified = TRUE;
+    }
+  }
+  break;
 
       case '^':
-	if (*fmt == '^')
-	{
-	  as_is = TRUE;
-	  icase = *fmt++;
-	  bp = separate(bp, icase);
-	}
-	else
-	{
-	  modifier = TRUE;
-	}
-	break;
+  if (*fmt == '^')
+  {
+    as_is = TRUE;
+    icase = *fmt++;
+    bp = separate(bp, icase);
+  }
+  else
+  {
+    modifier = TRUE;
+  }
+  break;
 
       case '~':
-	ttoggle = !ttoggle;
-	if (ttoggle)
-	  squeeze_cnt++;
-	else
-	  squeeze_cnt--;
-	squeeze = (squeeze_cnt != 0);
-	if (!squeeze) bp = separate(bp, icase);
-	break;
+  ttoggle = !ttoggle;
+  if (ttoggle)
+    squeeze_cnt++;
+  else
+    squeeze_cnt--;
+  squeeze = (squeeze_cnt != 0);
+  if (!squeeze) bp = separate(bp, icase);
+  break;
 
       case '\\':
-	/* Print any character following the \quote as-is: */
-	as_is = TRUE;
-	if (*fmt != CNULL)
-	{
-	  icase = *fmt++;
-	  if      (icase == 'n') icase = '\n';
-	  else if (icase == 't') icase = '\t';
-	  else if (icase == 'r') icase = '\r';
-	  else if (icase == 'b') icase = '\b';
-	  else if (icase == 'f') icase = '\f';
-	  else if (icase == '0') icase = '\0';
-	  bp = separate(bp, icase);
-	}
-	break;
+  /* Print any character following the \quote as-is: */
+  as_is = TRUE;
+  if (*fmt != CNULL)
+  {
+    icase = *fmt++;
+    if      (icase == 'n') icase = '\n';
+    else if (icase == 't') icase = '\t';
+    else if (icase == 'r') icase = '\r';
+    else if (icase == 'b') icase = '\b';
+    else if (icase == 'f') icase = '\f';
+    else if (icase == '0') icase = '\0';
+    bp = separate(bp, icase);
+  }
+  break;
 
-      case 'Q':		/* '+NQ' is DEPRECATED, use '+N^q' instead */
-      case Nf_QUOTE_NAME:	/* '+Nq' is DEPRECATED, use '+N^q' instead */
-	if (quote_mode)
-	{
-	  /* Don't confuse a quoted alpha character for a legacy modifier
-	     (this bug exists in version 145 and earlier): */
-	  as_is = TRUE;
-	  bp = separate(bp, icase);
-	  break;
-	}
-	else
-	{
-	  /* Handle legacy modifiers before "^" was introduced by treating
-	     these as if they were prefaced by "^" by re-entering while-loop
-	     with "modifier" flag set TRUE and with fmt reset to original
-	     character: */
-	  modifier = TRUE;
-	  fmt--;
-	}
-	break;	/* modifiers generate no output */
+      case 'Q':   /* '+NQ' is DEPRECATED, use '+N^q' instead */
+      case Nf_QUOTE_NAME: /* '+Nq' is DEPRECATED, use '+N^q' instead */
+  if (quote_mode)
+  {
+    /* Don't confuse a quoted alpha character for a legacy modifier
+       (this bug exists in version 145 and earlier): */
+    as_is = TRUE;
+    bp = separate(bp, icase);
+    break;
+  }
+  else
+  {
+    /* Handle legacy modifiers before "^" was introduced by treating
+       these as if they were prefaced by "^" by re-entering while-loop
+       with "modifier" flag set TRUE and with fmt reset to original
+       character: */
+    modifier = TRUE;
+    fmt--;
+  }
+  break;  /* modifiers generate no output */
 
       default:
-	/* A character within quotes is a directive only when preceded by %: */
-	if (quote_mode && !percent_specified)
-	{
-	  as_is = TRUE;
-	  bp = separate(bp, icase);
-	  break;
-	}
+  /* A character within quotes is a directive only when preceded by %: */
+  if (quote_mode && !percent_specified)
+  {
+    as_is = TRUE;
+    bp = separate(bp, icase);
+    break;
+  }
 
-	/* Remove extraneous spacing if appropriate: */
-	if ((fielding || (squeeze && !hard_width)) &&
-	    (!zero_pad || width != 0))
-	{
-	  width = 0;
-	  width_specified = TRUE;
-	}
+  /* Remove extraneous spacing if appropriate: */
+  if ((fielding || (squeeze && !hard_width)) &&
+      (!zero_pad || width != 0))
+  {
+    width = 0;
+    width_specified = TRUE;
+  }
 
 
         char rwm_col[16];
@@ -4977,88 +4977,88 @@ char *N_print(char *buff, char *fmt,
           sprintf( rwm_col, "[%d;%d;%dm", rwm_b, rwm_f, rwm_s );
         } else rwm_col[0] = '\0';
 
-	/* Process a directive: */
-	switch (icase)
-	{
-	case Nf_FULL_NAME:
-	  {
-	    char *d, *s;
-	    if (strcmp(dname, "/") == 0)
-	    {
-	      d = ""; s = "/";
-	    }
-	    else if (dname[0] != CNULL && strcmp(dname, ".") != 0)
-	    {
-	      d = dname; s = "/";
-	    }
-	    else
-	    {
-	      d = ""; s = "";
-	    }
+  /* Process a directive: */
+  switch (icase)
+  {
+  case Nf_FULL_NAME:
+    {
+      char *d, *s;
+      if (strcmp(dname, "/") == 0)
+      {
+        d = ""; s = "/";
+      }
+      else if (dname[0] != CNULL && strcmp(dname, ".") != 0)
+      {
+        d = dname; s = "/";
+      }
+      else
+      {
+        d = ""; s = "";
+      }
 
-	    if (!width_specified)
-	    {
-	      sprintf(bp, "%s%s%s%s", d, s, rwm_col, fname);
-	      if ((d = quote_fname(bp, dash_b, dash_Q, use_quotes)) != NULL)
-		sprintf(bp, "%s", d);
-	    }
-	    else
-	    {
-	      char tmp[MAX_FULL_NAME];
-	      sprintf(tmp, "%s%s%s%s", d, s, rwm_col, fname);
-	      if ((d = quote_fname(tmp, dash_b, dash_Q, use_quotes)) != NULL)
-		sprintf(bp, "%*s",width, d);
-	      else
-		sprintf(bp, "%*s",width, tmp);
-	    }
-	    markable = TRUE;
-	  }
-	  break;
+      if (!width_specified)
+      {
+        sprintf(bp, "%s%s%s%s", d, s, rwm_col, fname);
+        if ((d = quote_fname(bp, dash_b, dash_Q, use_quotes)) != NULL)
+    sprintf(bp, "%s", d);
+      }
+      else
+      {
+        char tmp[MAX_FULL_NAME];
+        sprintf(tmp, "%s%s%s%s", d, s, rwm_col, fname);
+        if ((d = quote_fname(tmp, dash_b, dash_Q, use_quotes)) != NULL)
+    sprintf(bp, "%*s",width, d);
+        else
+    sprintf(bp, "%*s",width, tmp);
+      }
+      markable = TRUE;
+    }
+    break;
 
-	case Nf_DIR_NAME:
-	  {
-	    char *d;
-	    if (dname[0] == CNULL) dname = ".";
-	    if ((d = quote_fname(dname, dash_b, dash_Q, use_quotes)) != NULL)
-	      sprintf(bp, "%*s",width, d);
-	    else
-	      sprintf(bp, "%*s",width, dname);
-	    markable = TRUE;
-	  }
-	  break;
+  case Nf_DIR_NAME:
+    {
+      char *d;
+      if (dname[0] == CNULL) dname = ".";
+      if ((d = quote_fname(dname, dash_b, dash_Q, use_quotes)) != NULL)
+        sprintf(bp, "%*s",width, d);
+      else
+        sprintf(bp, "%*s",width, dname);
+      markable = TRUE;
+    }
+    break;
 
-	case Nf_FILE_NAME:
-	  {
-	    char *f;
-	    if ((f = quote_fname(fname, dash_b, dash_Q, use_quotes)) != NULL)
-	      sprintf(bp, "%s%*s",rwm_col, width, f);
-	    else
-	      sprintf(bp, "%s%*s",rwm_col, width, fname);
-	    markable = TRUE;
-	  }
-	  break;
+  case Nf_FILE_NAME:
+    {
+      char *f;
+      if ((f = quote_fname(fname, dash_b, dash_Q, use_quotes)) != NULL)
+        sprintf(bp, "%s%*s",rwm_col, width, f);
+      else
+        sprintf(bp, "%s%*s",rwm_col, width, fname);
+      markable = TRUE;
+    }
+    break;
 
-	case Nf_LINK_PTR_NAME:
-	case Nf_LINK_NAME:
+  case Nf_LINK_PTR_NAME:
+  case Nf_LINK_NAME:
 #     if defined(S_IFLNK)
-	  if (file->islink && !expand_symlink)
-	  {
-	    int i;
-	    char lname[MAX_FULL_NAME];
-	    char *fmt;
-	    i = readlink(full_name(dname, fname),
-			 lname, MAX_FULL_NAME);
-	    if (i < 0 || i >= MAX_FULL_NAME) i = 0;
-	    lname[i] = CNULL;
-	    if (fielding || icase == Nf_LINK_NAME)
-	      fmt = "%*s";
-	    else
-	      fmt = (squeeze ? "->%*s" : "-> %*s");
-	    {
-	      char *l;
-	      if ((l = quote_fname(lname, dash_b, dash_Q, plus_q)) != NULL)
-		sprintf(bp, fmt,width, l);
-	      else {
+    if (file->islink && !expand_symlink)
+    {
+      int i;
+      char lname[MAX_FULL_NAME];
+      char *fmt;
+      i = readlink(full_name(dname, fname),
+       lname, MAX_FULL_NAME);
+      if (i < 0 || i >= MAX_FULL_NAME) i = 0;
+      lname[i] = CNULL;
+      if (fielding || icase == Nf_LINK_NAME)
+        fmt = "%*s";
+      else
+        fmt = (squeeze ? "->%*s" : "-> %*s");
+      {
+        char *l;
+        if ((l = quote_fname(lname, dash_b, dash_Q, plus_q)) != NULL)
+    sprintf(bp, fmt,width, l);
+        else {
 
                 if ( rwm_docolor ) {         // XYZZY - fix symlink dest color
                   int b = 0, f = 0, s = 0;   // back, fore, and style
@@ -5070,89 +5070,89 @@ char *N_print(char *buff, char *fmt,
                   sprintf(bp, fmt,width, lname);
 
               }
-	    }
+      }
 
-#	ifdef OBSOLETE_BEHAVIOR
-	    /* This is how SunOS5.x, Linux 2.2.x, Linux 2.4.x, Linux 2.6.9
-	       mark symlinks via -F (-p is ignored): */
-	    if (mark_files || mark_dirs)
-	    {
-	      /* Mark file using info from actual file rather than link: */
-	      Dir_Item tmp;
-	      tmp = *file;
-	      if (sigSafe_stat(full_name(dname, tmp.fname), &tmp.info) == 0)
-	      {
-		bp += strlen(bp); /* Find where we are */
-		if (mark_files)
-		  bp = G_print(bp, "T", dname, &tmp);
-		else if (mark_dirs && S_ISDIR(tmp.info.st_mode))
-		{
-		  *bp++ = '/';
-		  *bp = CNULL;
-		}
-	      }
-	      markable = FALSE;
-	    }
-#	else
-	    /* This is how SunOS4.x and Linux 2.6.18 mark symlinks
-	       via -F and -p: */
-	    if (mark_files)
-	    {
-	      /* Mark file using info from actual file rather than link: */
-	      Dir_Item tmp;
-	      tmp = *file;
-	      if (sigSafe_stat(full_name(dname, tmp.fname), &tmp.info) == 0)
-	      {
-		bp += strlen(bp); /* Find where we are */
-		bp = G_print(bp, "T", dname, &tmp);
-	      }
-	      markable = FALSE;
-	    }
-	    /* Note: SunOS4.x has one small difference where non-long
-	       listings mark symlinks pointing to dir when using '-F' */
-#	endif
-	  }
+# ifdef OBSOLETE_BEHAVIOR
+      /* This is how SunOS5.x, Linux 2.2.x, Linux 2.4.x, Linux 2.6.9
+         mark symlinks via -F (-p is ignored): */
+      if (mark_files || mark_dirs)
+      {
+        /* Mark file using info from actual file rather than link: */
+        Dir_Item tmp;
+        tmp = *file;
+        if (sigSafe_stat(full_name(dname, tmp.fname), &tmp.info) == 0)
+        {
+    bp += strlen(bp); /* Find where we are */
+    if (mark_files)
+      bp = G_print(bp, "T", dname, &tmp);
+    else if (mark_dirs && S_ISDIR(tmp.info.st_mode))
+    {
+      *bp++ = '/';
+      *bp = CNULL;
+    }
+        }
+        markable = FALSE;
+      }
+# else
+      /* This is how SunOS4.x and Linux 2.6.18 mark symlinks
+         via -F and -p: */
+      if (mark_files)
+      {
+        /* Mark file using info from actual file rather than link: */
+        Dir_Item tmp;
+        tmp = *file;
+        if (sigSafe_stat(full_name(dname, tmp.fname), &tmp.info) == 0)
+        {
+    bp += strlen(bp); /* Find where we are */
+    bp = G_print(bp, "T", dname, &tmp);
+        }
+        markable = FALSE;
+      }
+      /* Note: SunOS4.x has one small difference where non-long
+         listings mark symlinks pointing to dir when using '-F' */
+# endif
+    }
 #     endif
-	  break;
+    break;
 
-	default:
-	  if (isAlnum(icase))
-	  {
-	    carrot_msg(NULL, "+N", N_format, "Unrecognized +N directive", fmt-1);
-	    exit(USAGE_ERROR);
-	  }
-	  else
-	    /* Output non-directive/non-alphanumeric as-is: */
-	    as_is = TRUE;
-	  break;
-	}
-	
-	if (markable)
-	{
-	  bp += strlen(bp); /* Find where we are */
-	  if (mark_files)
-	  {
-	    /* Short listings (i.e. not long) always mark files,
-	       long listings mark files unless a non-expanded symbolic link: */
-	    if (!list_long || !(file->islink && !expand_symlink))
-	      bp = G_print(bp, "T", dname, file);
-	  }
-	  else if (mark_dirs && file->isdir)
-	  {
-	    *bp++ = '/';
-	    *bp = CNULL;
-	  }
-	  markable = FALSE;
-	}
-	
-	percent_specified = FALSE;
-	zero_pad = ZERO_PAD_DEFAULT;
-	hard_width = FALSE;
-	width_specified = FALSE;
-	width = 0;
-	if (!as_is) directive_seen = TRUE;
-	bp = separate(bp, icase);
-	break;
+  default:
+    if (isAlnum(icase))
+    {
+      carrot_msg(NULL, "+N", N_format, "Unrecognized +N directive", fmt-1);
+      exit(USAGE_ERROR);
+    }
+    else
+      /* Output non-directive/non-alphanumeric as-is: */
+      as_is = TRUE;
+    break;
+  }
+
+  if (markable)
+  {
+    bp += strlen(bp); /* Find where we are */
+    if (mark_files)
+    {
+      /* Short listings (i.e. not long) always mark files,
+         long listings mark files unless a non-expanded symbolic link: */
+      if (!list_long || !(file->islink && !expand_symlink))
+        bp = G_print(bp, "T", dname, file);
+    }
+    else if (mark_dirs && file->isdir)
+    {
+      *bp++ = '/';
+      *bp = CNULL;
+    }
+    markable = FALSE;
+  }
+
+  percent_specified = FALSE;
+  zero_pad = ZERO_PAD_DEFAULT;
+  hard_width = FALSE;
+  width_specified = FALSE;
+  width = 0;
+  if (!as_is) directive_seen = TRUE;
+  bp = separate(bp, icase);
+  break;
       }
     }
   }
@@ -5170,9 +5170,9 @@ char *N_print(char *buff, char *fmt,
 
 
 #define ZERO_PAD_DEFAULT  (!tics)
-/*#define ZERO_PAD_DEFAULT  (!tics || !yoffset)	-- FIXME: I'm undecided */
+/*#define ZERO_PAD_DEFAULT  (!tics || !yoffset) -- FIXME: I'm undecided */
 char *T_print(char *buff, char *fmt, time_t ftime,
-	      struct tm *fdate, Boole gmt, Boole meridian)
+        struct tm *fdate, Boole gmt, Boole meridian)
 {
   register char *bp;
   char icase;
@@ -5192,7 +5192,7 @@ char *T_print(char *buff, char *fmt, time_t ftime,
   Boole yoffset = FALSE;
   Boole hex_output = FALSE;
   Boole ttoggle = FALSE;
-  time_t abs_ftime = ftime;	/* Avoid possible side-effects */
+  time_t abs_ftime = ftime; /* Avoid possible side-effects */
   static char *dow[] = {
     "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
   static char *moy[] = {
@@ -5214,79 +5214,79 @@ char *T_print(char *buff, char *fmt, time_t ftime,
       /* Make legacy_modifier substitution if needed: */
       if (legacy_modifier != CNULL)
       {
-	icase = legacy_modifier;
-	legacy_modifier = CNULL;
+  icase = legacy_modifier;
+  legacy_modifier = CNULL;
       }
       /* Modifiers generate no output: */
       switch (icase)
       {
       case Tf_ABS_TIME:
-	tics = TRUE;
-	numeric = FALSE;
-	yoffset = FALSE;
-	ftime = abs_ftime;
-	fdate = NULL; /* Recalculate fdate */
-	break;
+  tics = TRUE;
+  numeric = FALSE;
+  yoffset = FALSE;
+  ftime = abs_ftime;
+  fdate = NULL; /* Recalculate fdate */
+  break;
 
       case Tf_DELTA_TIME:
       case Tf_REL_TIME:
-	tics = TRUE;
-	numeric = FALSE;
-	yoffset = FALSE;
-	delta_time = (icase == Tf_DELTA_TIME);
-	if ((Ulong)The_Time < (Ulong)abs_ftime)
-	{
-	  future = TRUE;
-	  ftime = abs_ftime - The_Time;
-	}
-	else
-	{
-	  future = FALSE;
-	  ftime = The_Time - abs_ftime;
-	}
-	fdate = NULL; /* Recalculate fdate */
-	break;
+  tics = TRUE;
+  numeric = FALSE;
+  yoffset = FALSE;
+  delta_time = (icase == Tf_DELTA_TIME);
+  if ((Ulong)The_Time < (Ulong)abs_ftime)
+  {
+    future = TRUE;
+    ftime = abs_ftime - The_Time;
+  }
+  else
+  {
+    future = FALSE;
+    ftime = The_Time - abs_ftime;
+  }
+  fdate = NULL; /* Recalculate fdate */
+  break;
 
       case Tf_YOFFSET_TIME:
-	tics = FALSE;
-	numeric = FALSE;
-	yoffset = TRUE;
-	break;
+  tics = FALSE;
+  numeric = FALSE;
+  yoffset = TRUE;
+  break;
 
       case Tf_ALPHA_DATE:
-	tics = FALSE;
-	numeric = FALSE;
-	yoffset = FALSE;
-	break;
+  tics = FALSE;
+  numeric = FALSE;
+  yoffset = FALSE;
+  break;
 
       case Tf_NUM_DATE:
-	tics = FALSE;
-	numeric = TRUE;
-	yoffset = FALSE;
-	break;
+  tics = FALSE;
+  numeric = TRUE;
+  yoffset = FALSE;
+  break;
 
       case Tf_GMT_DATE:
-	gmt = TRUE;
-	fdate = NULL; /* Recalculate fdate */
-	break;
+  gmt = TRUE;
+  fdate = NULL; /* Recalculate fdate */
+  break;
 
       case Tf_LOCAL_DATE:
-	gmt = FALSE;
-	fdate = NULL; /* Recalculate fdate */
-	break;
+  gmt = FALSE;
+  fdate = NULL; /* Recalculate fdate */
+  break;
 
       case Tf_MERIDIAN_TIME:
-	meridian = TRUE;
-	break;
+  meridian = TRUE;
+  break;
 
       case Tf_HEX_OUTPUT:
-	hex_output = TRUE;
-	break;
+  hex_output = TRUE;
+  break;
 
       default:
-	carrot_msg(NULL, "+T", T_format, "Unrecognized +T modifier", fmt-1);
-	exit(USAGE_ERROR);
-	break;
+  carrot_msg(NULL, "+T", T_format, "Unrecognized +T modifier", fmt-1);
+  exit(USAGE_ERROR);
+  break;
       }
       zero_pad = ZERO_PAD_DEFAULT;
       modifier = FALSE; /* reset for next time */
@@ -5297,510 +5297,510 @@ char *T_print(char *buff, char *fmt, time_t ftime,
       {
       case '"':
       case '\'':
-	if (!quote_mode)
-	{
-	  quote_mode = TRUE;
-	  delimiter = icase;
-	}
-	else if (delimiter == icase)
-	{
-	  quote_mode = FALSE;
-	}
-	break;
+  if (!quote_mode)
+  {
+    quote_mode = TRUE;
+    delimiter = icase;
+  }
+  else if (delimiter == icase)
+  {
+    quote_mode = FALSE;
+  }
+  break;
 
       case '%':
-	if (*fmt == '%')
-	{
-	  as_is = TRUE;
-	  icase = *fmt++;
-	  bp = separate(bp, icase);
-	}
-	else
-	{
-	  Boole minus = FALSE;
-	  percent_specified = TRUE;
-	  if (*fmt == '0') {zero_pad = TRUE; fmt++;}
-	  if (*fmt == '_') {zero_pad = FALSE; fmt++;}
-	  if (*fmt == '+') {hard_width = TRUE; fmt++;}
-	  if (*fmt == '-') {minus = TRUE; fmt++;}
-	  width_specified = (isDigit(*fmt) != 0);
-	  if (width_specified)
-	  {
-	    width = (*fmt++ - '0');
-	    while (isDigit(*fmt))
-	      width = width * 10 + (*fmt++ - '0');
-	    if (width < 0 || width > F_MAX_WIDTH)
-	    {
-	      /* NB: width < 0 implies overflow! */
-	      carrot_msg(NULL, "+T", T_format, "Too big", fmt-1);
-	      exit(USAGE_ERROR);
-	    }
-	    if (minus)
-	    {
-	      width = -width;
-	      /* Make "%0*d",-9 behave like "%0-9d" for negative widths: */
-	      zero_pad = FALSE;
-	    }
-	  }
-	  else if (minus)
-	  {
-	    /* Make "%-d" mimic Linux's date +format: */
-	    width = 0;
-	    width_specified = TRUE;
-	  }
-	}
-	break;
+  if (*fmt == '%')
+  {
+    as_is = TRUE;
+    icase = *fmt++;
+    bp = separate(bp, icase);
+  }
+  else
+  {
+    Boole minus = FALSE;
+    percent_specified = TRUE;
+    if (*fmt == '0') {zero_pad = TRUE; fmt++;}
+    if (*fmt == '_') {zero_pad = FALSE; fmt++;}
+    if (*fmt == '+') {hard_width = TRUE; fmt++;}
+    if (*fmt == '-') {minus = TRUE; fmt++;}
+    width_specified = (isDigit(*fmt) != 0);
+    if (width_specified)
+    {
+      width = (*fmt++ - '0');
+      while (isDigit(*fmt))
+        width = width * 10 + (*fmt++ - '0');
+      if (width < 0 || width > F_MAX_WIDTH)
+      {
+        /* NB: width < 0 implies overflow! */
+        carrot_msg(NULL, "+T", T_format, "Too big", fmt-1);
+        exit(USAGE_ERROR);
+      }
+      if (minus)
+      {
+        width = -width;
+        /* Make "%0*d",-9 behave like "%0-9d" for negative widths: */
+        zero_pad = FALSE;
+      }
+    }
+    else if (minus)
+    {
+      /* Make "%-d" mimic Linux's date +format: */
+      width = 0;
+      width_specified = TRUE;
+    }
+  }
+  break;
 
       case '^':
-	if (*fmt == '^')
-	{
-	  as_is = TRUE;
-	  icase = *fmt++;
-	  bp = separate(bp, icase);
-	}
-	else
-	{
-	  modifier = TRUE;
-	}
-	break;
+  if (*fmt == '^')
+  {
+    as_is = TRUE;
+    icase = *fmt++;
+    bp = separate(bp, icase);
+  }
+  else
+  {
+    modifier = TRUE;
+  }
+  break;
 
       case '~':
-	ttoggle = !ttoggle;
-	if (ttoggle)
-	  squeeze_cnt++;
-	else
-	  squeeze_cnt--;
-	squeeze = (squeeze_cnt != 0);
-	if (!squeeze) bp = separate(bp, icase);
-	break;
+  ttoggle = !ttoggle;
+  if (ttoggle)
+    squeeze_cnt++;
+  else
+    squeeze_cnt--;
+  squeeze = (squeeze_cnt != 0);
+  if (!squeeze) bp = separate(bp, icase);
+  break;
 
       case '\\':
-	/* Print any character following the \quote as-is: */
-	as_is = TRUE;
-	if (*fmt != CNULL)
-	{
-	  icase = *fmt++;
-	  if      (icase == 'n') icase = '\n';
-	  else if (icase == 't') icase = '\t';
-	  else if (icase == 'r') icase = '\r';
-	  else if (icase == 'b') icase = '\b';
-	  else if (icase == 'f') icase = '\f';
-	  else if (icase == '0') icase = '\0';
-	  bp = separate(bp, icase);
-	}
-	break;
+  /* Print any character following the \quote as-is: */
+  as_is = TRUE;
+  if (*fmt != CNULL)
+  {
+    icase = *fmt++;
+    if      (icase == 'n') icase = '\n';
+    else if (icase == 't') icase = '\t';
+    else if (icase == 'r') icase = '\r';
+    else if (icase == 'b') icase = '\b';
+    else if (icase == 'f') icase = '\f';
+    else if (icase == '0') icase = '\0';
+    bp = separate(bp, icase);
+  }
+  break;
 
-      case 'A':			/* '+TA' is DEPRECATED, use '+T^a' instead */
-      case 'R':			/* '+TR' is DEPRECATED, use '+T^r' instead */
-      case Tf_NUM_DATE:		/* '+TN' is DEPRECATED, use '+T^N' instead */
-      case Tf_GMT_DATE:		/* '+TG' is DEPRECATED, use '+T^G' instead */
-      case Tf_LOCAL_DATE:	/* '+TL' is DEPRECATED, use '+T^L' instead */
-	if (quote_mode)
-	{
-	  /* Don't confuse a quoted alpha character for a legacy modifier
-	     (this bug exists in version 145 and earlier): */
-	  as_is = TRUE;
-	  bp = separate(bp, icase);
-	  break;
-	}
-	else
-	{
-	  /* Handle legacy modifiers before "^" was introduced by treating
-	     these as if they were prefaced by "^" by re-entering while-loop
-	     with "modifier" flag set TRUE and with fmt reset to original
-	     character: */
-	  modifier = TRUE;
-	  fmt--;
-	  /* Special case: substitute +TA, +TR  with  +T^a, +T^r */
-	  if (icase == 'A') legacy_modifier = 'a';
-	  if (icase == 'R') legacy_modifier = 'r';
-	  /* No other legacy modifiers need substitution. */
-	}
-	break;	/* modifiers generate no output */
+      case 'A':     /* '+TA' is DEPRECATED, use '+T^a' instead */
+      case 'R':     /* '+TR' is DEPRECATED, use '+T^r' instead */
+      case Tf_NUM_DATE:   /* '+TN' is DEPRECATED, use '+T^N' instead */
+      case Tf_GMT_DATE:   /* '+TG' is DEPRECATED, use '+T^G' instead */
+      case Tf_LOCAL_DATE: /* '+TL' is DEPRECATED, use '+T^L' instead */
+  if (quote_mode)
+  {
+    /* Don't confuse a quoted alpha character for a legacy modifier
+       (this bug exists in version 145 and earlier): */
+    as_is = TRUE;
+    bp = separate(bp, icase);
+    break;
+  }
+  else
+  {
+    /* Handle legacy modifiers before "^" was introduced by treating
+       these as if they were prefaced by "^" by re-entering while-loop
+       with "modifier" flag set TRUE and with fmt reset to original
+       character: */
+    modifier = TRUE;
+    fmt--;
+    /* Special case: substitute +TA, +TR  with  +T^a, +T^r */
+    if (icase == 'A') legacy_modifier = 'a';
+    if (icase == 'R') legacy_modifier = 'r';
+    /* No other legacy modifiers need substitution. */
+  }
+  break;  /* modifiers generate no output */
 
       default:
-	/* A character within quotes is a directive only when preceded by %: */
-	if (quote_mode && !percent_specified)
-	{
-	  as_is = TRUE;
-	  bp = separate(bp, icase);
-	  break;
-	}
+  /* A character within quotes is a directive only when preceded by %: */
+  if (quote_mode && !percent_specified)
+  {
+    as_is = TRUE;
+    bp = separate(bp, icase);
+    break;
+  }
 
-	/* Remove extraneous spacing if appropriate: */
-	if ((fielding || (squeeze && !hard_width)) &&
-	    (!zero_pad || width != 0))
-	{
-	  if (icase == Tf_MINS || icase == Tf_SECS || icase == Tf_YEARS_MOD_100)
-	    /* Tf_MINS, Tf_SECS, Tf_YEARS_MOD_100 should never have a width
-	       less than 2 so as to allow zero_pad: */
-	    width = 2;
-	  else
-	    width = 0;
-	  width_specified = TRUE;
-	}
+  /* Remove extraneous spacing if appropriate: */
+  if ((fielding || (squeeze && !hard_width)) &&
+      (!zero_pad || width != 0))
+  {
+    if (icase == Tf_MINS || icase == Tf_SECS || icase == Tf_YEARS_MOD_100)
+      /* Tf_MINS, Tf_SECS, Tf_YEARS_MOD_100 should never have a width
+         less than 2 so as to allow zero_pad: */
+      width = 2;
+    else
+      width = 0;
+    width_specified = TRUE;
+  }
 
-	/* Determine file's date using local time (if needed): */
-	if (fdate == NULL)
-	{
-	  if (gmt)
-	    fdate = gmtime32(&ftime);
-	  else
-	    fdate = localtime32(&ftime);
-	}
+  /* Determine file's date using local time (if needed): */
+  if (fdate == NULL)
+  {
+    if (gmt)
+      fdate = gmtime32(&ftime);
+    else
+      fdate = localtime32(&ftime);
+  }
 
-	/* Process a directive: */
-	switch (icase)
-	{
-	case Tf_FLOATING_POINT_DATE:
-	case Tf_ISO8601_DATE:
-	  if (ftime == 0 && (zero_st_info || munge > 0 ||
-			     (stamping && VersionLevel >= 154)))
-	  {
-	    /* Special case where zeroes used instead of whatever the zero
-	       date translates to in the local time zone: */
-	    /* NB: This section REMOVED in edate. */
-	    if (!width_specified) width = 0;
-	    sprintf(bp, "%*s",width, "00000000.000000");
-	  }
-	  else
-	    bp = T_print_width(bp, "^N~YMD.hms~", ftime, fdate,
-			       gmt, meridian, width);
-	  break;
+  /* Process a directive: */
+  switch (icase)
+  {
+  case Tf_FLOATING_POINT_DATE:
+  case Tf_ISO8601_DATE:
+    if (ftime == 0 && (zero_st_info || munge > 0 ||
+           (stamping && VersionLevel >= 154)))
+    {
+      /* Special case where zeroes used instead of whatever the zero
+         date translates to in the local time zone: */
+      /* NB: This section REMOVED in edate. */
+      if (!width_specified) width = 0;
+      sprintf(bp, "%*s",width, "00000000.000000");
+    }
+    else
+      bp = T_print_width(bp, "^N~YMD.hms~", ftime, fdate,
+             gmt, meridian, width);
+    break;
 
-	case Tf_FLOATING_POINT_DAY:
-	case Tf_ISO8601_DAY:
-	  if (ftime == 0 && (zero_st_info || munge > 0 ||
-			     (stamping && VersionLevel >= 154)))
-	  {
-	    /* Special case where zeroes used instead of whatever the zero
-	       date translates to in the local time zone: */
-	    /* NB: This section REMOVED in edate. */
-	    if (!width_specified) width = 0;
-	    sprintf(bp, "%*s",width, "00000000");
-	  }
-	  else
-	    bp = T_print_width(bp, "^N~YMD~", ftime, fdate,
-			       gmt, meridian, width);
-	  break;
+  case Tf_FLOATING_POINT_DAY:
+  case Tf_ISO8601_DAY:
+    if (ftime == 0 && (zero_st_info || munge > 0 ||
+           (stamping && VersionLevel >= 154)))
+    {
+      /* Special case where zeroes used instead of whatever the zero
+         date translates to in the local time zone: */
+      /* NB: This section REMOVED in edate. */
+      if (!width_specified) width = 0;
+      sprintf(bp, "%*s",width, "00000000");
+    }
+    else
+      bp = T_print_width(bp, "^N~YMD~", ftime, fdate,
+             gmt, meridian, width);
+    break;
 
-	case Tf_ELS_DATE:
-	  bp = T_print_width(bp, "M%_DYt", ftime, fdate, gmt, meridian, width);
-	  break;
+  case Tf_ELS_DATE:
+    bp = T_print_width(bp, "M%_DYt", ftime, fdate, gmt, meridian, width);
+    break;
 
-	case Tf_LS_DATE:
-	  bp = T_print_width(bp, "M%_DQ", ftime, fdate, gmt, meridian, width);
-	  break;
+  case Tf_LS_DATE:
+    bp = T_print_width(bp, "M%_DQ", ftime, fdate, gmt, meridian, width);
+    break;
 
-	case Tf_DOS_DATE:
-	  bp = T_print_width(bp, "^N%_M-D-y^M%_h:~mp~",
-			     ftime, fdate, gmt, meridian, width);
-	  break;
+  case Tf_DOS_DATE:
+    bp = T_print_width(bp, "^N%_M-D-y^M%_h:~mp~",
+           ftime, fdate, gmt, meridian, width);
+    break;
 
-	case Tf_WINDOWS_DATE:
-	  bp = T_print_width(bp, "^N%_M/D/y^M%_tP'M'",
-			     ftime, fdate, gmt, meridian, width);
-	  break;
+  case Tf_WINDOWS_DATE:
+    bp = T_print_width(bp, "^N%_M/D/y^M%_tP'M'",
+           ftime, fdate, gmt, meridian, width);
+    break;
 
-	case Tf_VERBOSE_DATE:
-	  bp = T_print_width(bp, "WM%_DTZY",
-			     ftime, fdate, gmt, meridian, width);
-	  break;
+  case Tf_VERBOSE_DATE:
+    bp = T_print_width(bp, "WM%_DTZY",
+           ftime, fdate, gmt, meridian, width);
+    break;
 
-	case Tf_ELAPSED_TIME:
-	  /* Elapsed time only works for gmt==TRUE */
-	  bp = T_print_width(bp, "~^aD+^Nh:m:s~",
-			     ftime, fdate, TRUE, meridian, width);
-	  break;
+  case Tf_ELAPSED_TIME:
+    /* Elapsed time only works for gmt==TRUE */
+    bp = T_print_width(bp, "~^aD+^Nh:m:s~",
+           ftime, fdate, TRUE, meridian, width);
+    break;
 
-	case Tf_TIME_OR_YEAR:
+  case Tf_TIME_OR_YEAR:
 #       define HALF_A_YEAR  (SECS_PER_YEAR/2)
-	  if ((Ulong)The_Time - (Ulong)ftime < (Ulong)HALF_A_YEAR)
-	    bp = T_print_width(bp, zero_pad ? "%0t" : "%_t",
-			       ftime, fdate, gmt, meridian, width);
-	  else
-	  {
-	    if (!width_specified && !(fielding || squeeze)) width = 5;
-	    bp = T_print_width(bp, "Y", ftime, fdate, gmt, meridian, width);
-	  }
-	  break;
+    if ((Ulong)The_Time - (Ulong)ftime < (Ulong)HALF_A_YEAR)
+      bp = T_print_width(bp, zero_pad ? "%0t" : "%_t",
+             ftime, fdate, gmt, meridian, width);
+    else
+    {
+      if (!width_specified && !(fielding || squeeze)) width = 5;
+      bp = T_print_width(bp, "Y", ftime, fdate, gmt, meridian, width);
+    }
+    break;
 
-	case Tf_YEARS:
-	case Tf_YEARS_MOD_100:
-	  if (tics)
-	  {
-	    long r_years = ftime / SECS_PER_YEAR;
-	    if (BOOLE_XOR(future, delta_time)) r_years = -r_years;
-	    if (!width_specified) width = 2;
-	    sprintf(bp, F_LD(zero_pad,width, r_years));
-	  }
-	  else
-	  {
-	    int year = fdate->tm_year;
-	    if (icase == Tf_YEARS)
-	    {
-	      year += 1900;
-	      if (!width_specified) width = 4;
-	    }
-	    else
-	    {
-	      year %= 100;
-	      if (!width_specified) width = 2;
-	    }
-	    sprintf(bp, F_D(zero_pad,width, year));
-	  }
-	  break;
+  case Tf_YEARS:
+  case Tf_YEARS_MOD_100:
+    if (tics)
+    {
+      long r_years = ftime / SECS_PER_YEAR;
+      if (BOOLE_XOR(future, delta_time)) r_years = -r_years;
+      if (!width_specified) width = 2;
+      sprintf(bp, F_LD(zero_pad,width, r_years));
+    }
+    else
+    {
+      int year = fdate->tm_year;
+      if (icase == Tf_YEARS)
+      {
+        year += 1900;
+        if (!width_specified) width = 4;
+      }
+      else
+      {
+        year %= 100;
+        if (!width_specified) width = 2;
+      }
+      sprintf(bp, F_D(zero_pad,width, year));
+    }
+    break;
 
-	case Tf_MONTHS:
-	  if (tics)
-	  {
-	    long r_months = ftime / SECS_PER_MONTH;
-	    if (BOOLE_XOR(future, delta_time)) r_months = -r_months;
-	    if (!width_specified) width = 3;
-	    sprintf(bp, F_LD(zero_pad,width, r_months));
-	  }
-	  else if (numeric || yoffset)
-	  {
-	    if (!width_specified) width = 2;
-	    sprintf(bp, F_D(zero_pad,width, fdate->tm_mon + 1));
-	  }
-	  else
-	  {
-	    if (!width_specified) width = 3;
-#	  ifdef HAVE_LOCALE
-	    if (useLcTime)
-	    {
-	      char month[32];
-	      strftime32(month, 32, "%b", fdate);
-	      sprintf(bp, "%*s",width, month);
-	    }
-	    else
-#	  endif
-	      sprintf(bp, "%*s",width, moy[fdate->tm_mon]);
-	  }
-	  break;
+  case Tf_MONTHS:
+    if (tics)
+    {
+      long r_months = ftime / SECS_PER_MONTH;
+      if (BOOLE_XOR(future, delta_time)) r_months = -r_months;
+      if (!width_specified) width = 3;
+      sprintf(bp, F_LD(zero_pad,width, r_months));
+    }
+    else if (numeric || yoffset)
+    {
+      if (!width_specified) width = 2;
+      sprintf(bp, F_D(zero_pad,width, fdate->tm_mon + 1));
+    }
+    else
+    {
+      if (!width_specified) width = 3;
+#   ifdef HAVE_LOCALE
+      if (useLcTime)
+      {
+        char month[32];
+        strftime32(month, 32, "%b", fdate);
+        sprintf(bp, "%*s",width, month);
+      }
+      else
+#   endif
+        sprintf(bp, "%*s",width, moy[fdate->tm_mon]);
+    }
+    break;
 
-	case Tf_WEEKS:
-	  if (tics)
-	  {
-	    long r_weeks = ftime / SECS_PER_WEEK;
-	    if (BOOLE_XOR(future, delta_time)) r_weeks = -r_weeks;
-	    if (!width_specified) width = 4;
-	    sprintf(bp, F_LD(zero_pad,width, r_weeks));
-	  }
-	  else if (numeric)
-	  {
-	    if (!width_specified) width = 2;
-	    sprintf(bp, F_D(zero_pad,width, fdate->tm_wday + 1));
-	  }
-	  else if (yoffset)
-	  {
-	    char str[5];
-	    int week_num;
-	    strftime32(str, 4, "%W", fdate);
-	    sscanf(str, "%d", &week_num);
-	    if (!width_specified) width = 2;
-	    sprintf(bp, F_D(zero_pad,width, week_num));
-	  }
-	  else
-	  {
-	    if (!width_specified) width = 3;
-#	  ifdef HAVE_LOCALE
-	    if (useLcTime)
-	    {
-	      char wday[32];
-	      strftime32(wday, 32, "%a", fdate);
-	      sprintf(bp, "%*s",width, wday);
-	    }
-	    else
-#	  endif
-	      sprintf(bp, "%*s",width, dow[fdate->tm_wday]);
-	  }
-	  break;
+  case Tf_WEEKS:
+    if (tics)
+    {
+      long r_weeks = ftime / SECS_PER_WEEK;
+      if (BOOLE_XOR(future, delta_time)) r_weeks = -r_weeks;
+      if (!width_specified) width = 4;
+      sprintf(bp, F_LD(zero_pad,width, r_weeks));
+    }
+    else if (numeric)
+    {
+      if (!width_specified) width = 2;
+      sprintf(bp, F_D(zero_pad,width, fdate->tm_wday + 1));
+    }
+    else if (yoffset)
+    {
+      char str[5];
+      int week_num;
+      strftime32(str, 4, "%W", fdate);
+      sscanf(str, "%d", &week_num);
+      if (!width_specified) width = 2;
+      sprintf(bp, F_D(zero_pad,width, week_num));
+    }
+    else
+    {
+      if (!width_specified) width = 3;
+#   ifdef HAVE_LOCALE
+      if (useLcTime)
+      {
+        char wday[32];
+        strftime32(wday, 32, "%a", fdate);
+        sprintf(bp, "%*s",width, wday);
+      }
+      else
+#   endif
+        sprintf(bp, "%*s",width, dow[fdate->tm_wday]);
+    }
+    break;
 
-	case Tf_DAYS:
-	  if (tics)
-	  {
-	    long r_days = ftime / SECS_PER_DAY;
-	    if (BOOLE_XOR(future, delta_time)) r_days = -r_days;
-	    if (!width_specified) width = 5;
-	    sprintf(bp, F_LD(zero_pad,width, r_days));
-	  }
-	  else if (yoffset)
-	  {
-	    if (!width_specified) width = 3;
-	    sprintf(bp, F_D(zero_pad,width, fdate->tm_yday + 1));
-	  }
-	  else
-	  {
-	    if (!width_specified) width = 2;
-	    sprintf(bp, F_D(zero_pad,width, fdate->tm_mday));
-	  }
-	  break;
+  case Tf_DAYS:
+    if (tics)
+    {
+      long r_days = ftime / SECS_PER_DAY;
+      if (BOOLE_XOR(future, delta_time)) r_days = -r_days;
+      if (!width_specified) width = 5;
+      sprintf(bp, F_LD(zero_pad,width, r_days));
+    }
+    else if (yoffset)
+    {
+      if (!width_specified) width = 3;
+      sprintf(bp, F_D(zero_pad,width, fdate->tm_yday + 1));
+    }
+    else
+    {
+      if (!width_specified) width = 2;
+      sprintf(bp, F_D(zero_pad,width, fdate->tm_mday));
+    }
+    break;
 
-	case Tf_HOURS:
-	  if (tics)
-	  {
-	    long r_hours = ftime / SECS_PER_HOUR;
-	    if (BOOLE_XOR(future, delta_time)) r_hours = -r_hours;
-	    if (!width_specified) width = 6;
-	    sprintf(bp, F_LD(zero_pad,width, r_hours));
-	  }
-	  else if (yoffset)
-	  {
-#	    define YOFFSET_HOURS (fdate->tm_yday * 24 + fdate->tm_hour)
-#	    define YOFFSET_MINS  (YOFFSET_HOURS * 60 + fdate->tm_min)
-#	    define YOFFSET_SECS  (YOFFSET_MINS * 60 + fdate->tm_sec)
-	    if (!width_specified) width = 4;
-	    sprintf(bp, F_D(zero_pad,width, YOFFSET_HOURS));
-	  }
-	  else
-	  {
-	    int hour = fdate->tm_hour;
-	    if (meridian)
-	    {
-	      if (hour > 12)
-		hour -= 12;
-	      else if (hour == 0)
-		hour  = 12;
-	    }
-	    if (!width_specified) width = 2;
-	    sprintf(bp, F_D(zero_pad,width, hour));
-	  }
-	  break;
+  case Tf_HOURS:
+    if (tics)
+    {
+      long r_hours = ftime / SECS_PER_HOUR;
+      if (BOOLE_XOR(future, delta_time)) r_hours = -r_hours;
+      if (!width_specified) width = 6;
+      sprintf(bp, F_LD(zero_pad,width, r_hours));
+    }
+    else if (yoffset)
+    {
+#     define YOFFSET_HOURS (fdate->tm_yday * 24 + fdate->tm_hour)
+#     define YOFFSET_MINS  (YOFFSET_HOURS * 60 + fdate->tm_min)
+#     define YOFFSET_SECS  (YOFFSET_MINS * 60 + fdate->tm_sec)
+      if (!width_specified) width = 4;
+      sprintf(bp, F_D(zero_pad,width, YOFFSET_HOURS));
+    }
+    else
+    {
+      int hour = fdate->tm_hour;
+      if (meridian)
+      {
+        if (hour > 12)
+    hour -= 12;
+        else if (hour == 0)
+    hour  = 12;
+      }
+      if (!width_specified) width = 2;
+      sprintf(bp, F_D(zero_pad,width, hour));
+    }
+    break;
 
-	case 'p':
-	case 'P':
-	  if (! meridian)
-	  {
-	    carrot_msg(NULL, "+T", T_format,
-		       "Must first specify meridian modifier", fmt-1);
-	    exit(USAGE_ERROR);
-	  }
-	  else
-	  {
-	    char ap;
-	    if (icase == 'p')
-	      ap = (fdate->tm_hour < 12 ? 'a' : 'p');
-	    else
-	      ap = (fdate->tm_hour < 12 ? 'A' : 'P');
-	    if (!width_specified) width = 1;
-	    sprintf(bp, "%*c",width, ap);
-	  }
-	  break;
+  case 'p':
+  case 'P':
+    if (! meridian)
+    {
+      carrot_msg(NULL, "+T", T_format,
+           "Must first specify meridian modifier", fmt-1);
+      exit(USAGE_ERROR);
+    }
+    else
+    {
+      char ap;
+      if (icase == 'p')
+        ap = (fdate->tm_hour < 12 ? 'a' : 'p');
+      else
+        ap = (fdate->tm_hour < 12 ? 'A' : 'P');
+      if (!width_specified) width = 1;
+      sprintf(bp, "%*c",width, ap);
+    }
+    break;
 
-	case Tf_MINS:
-	  if (tics)
-	  {
-	    long r_mins = ftime / SECS_PER_MIN;
-	    if (BOOLE_XOR(future, delta_time)) r_mins = -r_mins;
-	    if (!width_specified) width = 8;
-	    sprintf(bp, F_LD(zero_pad,width, r_mins));
-	  }
-	  else if (yoffset)
-	  {
-	    if (!width_specified) width = 6;
-	    sprintf(bp, F_D(zero_pad,width, YOFFSET_MINS));
-	  }
-	  else
-	  {
-	    if (!width_specified) width = 2;
-	    sprintf(bp, F_D(zero_pad,width, fdate->tm_min));
-	  }
-	  break;
+  case Tf_MINS:
+    if (tics)
+    {
+      long r_mins = ftime / SECS_PER_MIN;
+      if (BOOLE_XOR(future, delta_time)) r_mins = -r_mins;
+      if (!width_specified) width = 8;
+      sprintf(bp, F_LD(zero_pad,width, r_mins));
+    }
+    else if (yoffset)
+    {
+      if (!width_specified) width = 6;
+      sprintf(bp, F_D(zero_pad,width, YOFFSET_MINS));
+    }
+    else
+    {
+      if (!width_specified) width = 2;
+      sprintf(bp, F_D(zero_pad,width, fdate->tm_min));
+    }
+    break;
 
-	case Tf_SECS:
-	  if (tics)
-	  {
-	    char *rsp, r_secs[32];
-	    rsp = r_secs;
-	    /* This cruft avoids using "long long": */
-	    if (BOOLE_XOR(future, delta_time)) *rsp++ = '-';
-	    if (!width_specified) width = 10;
-	    if (hex_output)
-	      sprintf(rsp, FX_time_t(FALSE,0, ftime));
-	    else
-	    {
-#	    if defined(HAVE_LONG_LONG_TIME)
-	      /* Use default format as this uses signed 64-bits: */
-	      sprintf(rsp, F_time_t(FALSE,0, ftime));
-#	    else
-	      /* Use "unsigned" format as this value may use all 32-bits: */
-	      sprintf(rsp, FU_time_t(FALSE,0, ftime));
-#	    endif
-	    }
-	    sprintf(bp, "%*s",width, r_secs);
-	  }
-	  else if (yoffset)
-	  {
-	    if (!width_specified) width = 8;
-	    sprintf(bp, F_D(zero_pad,width, YOFFSET_SECS));
-	  }
-	  else
-	  {
-	    if (!width_specified) width = 2;
-	    sprintf(bp, F_D(zero_pad,width, fdate->tm_sec));
-	  }
-	  break;
+  case Tf_SECS:
+    if (tics)
+    {
+      char *rsp, r_secs[32];
+      rsp = r_secs;
+      /* This cruft avoids using "long long": */
+      if (BOOLE_XOR(future, delta_time)) *rsp++ = '-';
+      if (!width_specified) width = 10;
+      if (hex_output)
+        sprintf(rsp, FX_time_t(FALSE,0, ftime));
+      else
+      {
+#     if defined(HAVE_LONG_LONG_TIME)
+        /* Use default format as this uses signed 64-bits: */
+        sprintf(rsp, F_time_t(FALSE,0, ftime));
+#     else
+        /* Use "unsigned" format as this value may use all 32-bits: */
+        sprintf(rsp, FU_time_t(FALSE,0, ftime));
+#     endif
+      }
+      sprintf(bp, "%*s",width, r_secs);
+    }
+    else if (yoffset)
+    {
+      if (!width_specified) width = 8;
+      sprintf(bp, F_D(zero_pad,width, YOFFSET_SECS));
+    }
+    else
+    {
+      if (!width_specified) width = 2;
+      sprintf(bp, F_D(zero_pad,width, fdate->tm_sec));
+    }
+    break;
 
-	case Tf_CLOCK:
-	  {
-	    char clk_fmt[32];
-	    sprintf(clk_fmt, "%s^as", hex_output ? "^x" : "");
-	    bp = T_print_width(bp, clk_fmt,
-			       ftime, fdate, gmt, meridian, width);
-	  }
-	  break;
+  case Tf_CLOCK:
+    {
+      char clk_fmt[32];
+      sprintf(clk_fmt, "%s^as", hex_output ? "^x" : "");
+      bp = T_print_width(bp, clk_fmt,
+             ftime, fdate, gmt, meridian, width);
+    }
+    break;
 
-	case '2': /* '+T2' is DEPRECATED, use '+Tt' instead */
-	case Tf_TIME_2:
-	  bp = T_print_width(bp, zero_pad ? "%0h:m" : "%_h:m",
-			     ftime, fdate, gmt, meridian, width);
-	  break;
+  case '2': /* '+T2' is DEPRECATED, use '+Tt' instead */
+  case Tf_TIME_2:
+    bp = T_print_width(bp, zero_pad ? "%0h:m" : "%_h:m",
+           ftime, fdate, gmt, meridian, width);
+    break;
 
-	case '3': /* '+T3' is DEPRECATED, use '+TT' instead */
-	case Tf_TIME_3:
-	  bp = T_print_width(bp, zero_pad ? "%0h:m:s" : "%_h:m:s",
-			     ftime, fdate, gmt, meridian, width);
-	  break;
+  case '3': /* '+T3' is DEPRECATED, use '+TT' instead */
+  case Tf_TIME_3:
+    bp = T_print_width(bp, zero_pad ? "%0h:m:s" : "%_h:m:s",
+           ftime, fdate, gmt, meridian, width);
+    break;
 
-	case Tf_ZONE_NAME:
-	  if (!width_specified) width = 3;
+  case Tf_ZONE_NAME:
+    if (!width_specified) width = 3;
 #ifdef HAVE_TM_ZONE
-	  /* tm_zone is right no matter what: */
-	  sprintf(bp, "%*s",width, fdate->tm_zone);
+    /* tm_zone is right no matter what: */
+    sprintf(bp, "%*s",width, fdate->tm_zone);
 #else
-	  /* tzname is not always what we want: */
-	  if (gmt)
-	    sprintf(bp, "%*s",width, "GMT");
-	  else
-	  {
-	    extern char *tzname[2];
-	    sprintf(bp, "%*s",width, tzname[fdate->tm_isdst]);
-	  }
+    /* tzname is not always what we want: */
+    if (gmt)
+      sprintf(bp, "%*s",width, "GMT");
+    else
+    {
+      extern char *tzname[2];
+      sprintf(bp, "%*s",width, tzname[fdate->tm_isdst]);
+    }
 #endif
-	  break;
+    break;
 
-	default:
-	  if (isAlnum(icase))
-	  {
-	    carrot_msg(NULL, "+T", T_format, "Unrecognized +T directive", fmt-1);
-	    exit(USAGE_ERROR);
-	  }
-	  else
-	    /* Output non-directive/non-alphanumeric as-is: */
-	    as_is = TRUE;
-	  break;
-	}
+  default:
+    if (isAlnum(icase))
+    {
+      carrot_msg(NULL, "+T", T_format, "Unrecognized +T directive", fmt-1);
+      exit(USAGE_ERROR);
+    }
+    else
+      /* Output non-directive/non-alphanumeric as-is: */
+      as_is = TRUE;
+    break;
+  }
 
-	percent_specified = FALSE;
-	zero_pad = ZERO_PAD_DEFAULT;
-	hard_width = FALSE;
-	width_specified = FALSE;
-	width = 0;
-	if (!as_is) directive_seen = TRUE;
-	bp = separate(bp, icase);
-	break;
+  percent_specified = FALSE;
+  zero_pad = ZERO_PAD_DEFAULT;
+  hard_width = FALSE;
+  width_specified = FALSE;
+  width = 0;
+  if (!as_is) directive_seen = TRUE;
+  bp = separate(bp, icase);
+  break;
       }
     }
   }
@@ -5815,7 +5815,7 @@ char *T_print(char *buff, char *fmt, time_t ftime,
 
 
 char *T_print_width(char *buff, char *fmt, time_t ftime,
-		    struct tm *fdate, Boole gmt, Boole meridian, int width)
+        struct tm *fdate, Boole gmt, Boole meridian, int width)
 {
   if (width == 0)
     buff = T_print(buff, fmt, ftime, fdate, gmt, meridian);
@@ -5834,14 +5834,14 @@ char *separate(char *bp, char icase)
 {
   bp += strlen(bp); /* Find where we are */
   if (as_is)
-  {      
+  {
     /* Remove separation when it precedes an "as-is" character: */
     if (separated)
     {
       bp--;
       separated = FALSE;
     }
-    
+
     /* Add the character as-is: */
     *bp++ = icase;  *bp = CNULL;
     as_is = FALSE;
@@ -5876,11 +5876,11 @@ char *finish(char *bp)
 
 
 char *full_name(char *dname,
-		char *fname)
+    char *fname)
 {
   /* Be careful that the return value doesn't get overworked! */
   static char full_name[MAX_FULL_NAME];
-  
+
   /* Gather any information on this parameter */
   if (dname[0] == CNULL || strcmp(dname, ".") == 0)
   {
@@ -5923,7 +5923,7 @@ void dirItemFree(Dir_Item *file)
     dir_item_list.head = file;
   else
     dir_item_list.tail->next = file;
-    
+
   dir_item_list.tail = file;
   file->next = NULL;
   dirItemAllocInUse--;
@@ -5934,7 +5934,7 @@ void dirItemFree(Dir_Item *file)
 void dirItemShow(FILE *out)
 {
   fprintf(out, "\rdirItemAlloc: Avail, InUse: %lu %lu\n",
-	  dirItemAllocAvail, dirItemAllocInUse);
+    dirItemAllocAvail, dirItemAllocInUse);
   return;
 }
 
