@@ -135,6 +135,9 @@ char *LSCOLOR = NULL,      // rwm - from LS_COLORS
 // export ELS_FT_COLORS="86400=0;32;1:6480000=0;32:7121234=0;32;2:31557600=1;33;2:-1=0;31;1:"
 char *FTCOLOR = NULL,      // rwm - ELS_FT_COLORS - file ages and colors
      *rwm_cols[32];
+const
+char *inv = "[7m",       // invert foreground/background colors
+     *rinv= "[27m";      // reset invert
 Ulong rwm_ages[32];        // rwm - 32 date colors should be enough for anyone
 int   rwm_ftcnt=0;
 uid_t Whoami;
@@ -734,9 +737,9 @@ void do_getenv(void)
   }
 
   if ( rwm_docolor ) {
-    LSCOLOR = getenv( "LS_COLORS"     );
-    FSCOLOR = getenv( "ELS_FS_COLOR"  );
-    FTCOLOR = getenv( "ELS_FT_COLORS" );
+    LSCOLOR = getenv( "LS_COLORS"     );       // color by extension
+    FSCOLOR = getenv( "ELS_FS_COLOR"  );       // color by file size
+    FTCOLOR = getenv( "ELS_FT_COLORS" );       // color by file time/age
 
     if ( FTCOLOR)
       rwm_ftcnt = rwm_env2ft( FTCOLOR, ':', rwm_ages, rwm_cols );
@@ -744,7 +747,7 @@ void do_getenv(void)
     printf("rwm_ftcnt: %d\n", rwm_ftcnt );
 
     for (int i=0; i<rwm_ftcnt; ++i )
-      printf("%2d: #[%sm%20lu[m#  %-8s\n", i, rwm_cols[i], rwm_ages[i], rwm_cols[i] );
+      printf("%2d: #[%sm%20lu[39m#  %-8s\n", i, rwm_cols[i], rwm_ages[i], rwm_cols[i] );
     printf("----\n");
 #endif
   }
@@ -3725,11 +3728,11 @@ Boole list_item(Dir_Item *file,
       char *bp = G_print(output_buff, G_format, dname, file);
       if ( !rwm_dospace ) {
         if ( rwm_docolor ) {
-          strcat( bp, "[m" );
+          strcat( bp, "[m" );  // Reset all color settings at EOL
           rwm_type = 0;
           rwm_mode = 0;
         }
-        strcat(bp, "\n");
+        strcat(bp, "\n");        // XYZZY - end of line output
       }
     }
   }
@@ -3783,12 +3786,16 @@ Boole list_item(Dir_Item *file,
   }
       }
       else {
+        if ( rwm_docolor
+           && !file->isdir
+           && file->info.st_nlink > 1 ) fputs( inv, stdout );    // Invert FG/BG
   fputs(output_buff, stdout);
   if ( rwm_dospace ) fprintf(stdout, "%c", '\0');
       }
       item_listed = TRUE;
       output_nlines++;
     }
+        if ( rwm_docolor && file->info.st_nlink > 1 ) fputs(rinv, stdout );    // Revert FG/BG
   }
 
   if (QuitOnError && listingError)
@@ -3917,7 +3924,7 @@ char *rwm_col_age( char *buff, time_t ftime, Boole flag ) {
 
     if ( i<rwm_ftcnt ) sprintf(buff, "[%sm%s", rwm_cols[i], tmp );
   } else                        // end   of date string
-      sprintf(buff, "%s[m", tmp);
+      sprintf(buff, "%s[39m", tmp);   // reset foreground color
 
   buff += strlen(buff);
   return ( buff );
@@ -4434,7 +4441,7 @@ char *G_print(char *buff,
           tmp1 -= (tmp2 * x);
         }
         if ( !FSCOLOR ) Void sprintf(bp, "%*s", width, str);
-        else            Void sprintf(bp, "[%sm%*s[m", FSCOLOR, width, str);
+        else            Void sprintf(bp, "[%sm%*s[39m", FSCOLOR, width, str);
 
       }
     }
@@ -4970,9 +4977,8 @@ char *N_print(char *buff, char *fmt,
     width_specified = TRUE;
   }
 
-
         char rwm_col[16];
-        int rwm_b = 0, rwm_f = 0, rwm_s;   // back, fore, and style
+        int rwm_b = 49, rwm_f = 39, rwm_s=29;   // back, fore, and style
         if ( rwm_docolor ) {
           rwm_col_ext( fname, &rwm_b, &rwm_f, &rwm_s );
           sprintf( rwm_col, "[%d;%d;%dm", rwm_b, rwm_f, rwm_s );
@@ -4997,20 +5003,17 @@ char *N_print(char *buff, char *fmt,
         d = ""; s = "";
       }
 
-      if (!width_specified)
-      {
+      if (!width_specified) {
         sprintf(bp, "%s%s%s%s", d, s, rwm_col, fname);
         if ((d = quote_fname(bp, dash_b, dash_Q, use_quotes)) != NULL)
-    sprintf(bp, "%s", d);
-      }
-      else
-      {
+          sprintf(bp, "%s", d);
+      } else {
         char tmp[MAX_FULL_NAME];
         sprintf(tmp, "%s%s%s%s", d, s, rwm_col, fname);
         if ((d = quote_fname(tmp, dash_b, dash_Q, use_quotes)) != NULL)
-    sprintf(bp, "%*s",width, d);
+          sprintf(bp, "%*s",width, d);
         else
-    sprintf(bp, "%*s",width, tmp);
+          sprintf(bp, "%*s",width, tmp);
       }
       markable = TRUE;
     }
@@ -5061,11 +5064,14 @@ char *N_print(char *buff, char *fmt,
     sprintf(bp, fmt,width, l);
         else {
 
-                if ( rwm_docolor ) {         // XYZZY - fix symlink dest color
-                  int b = 0, f = 0, s = 0;   // back, fore, and style
+                // 49 is default BG color
+                // 39 is default FG color
+                // 29 might be default style
+                if ( rwm_docolor ) {            // XYZZY - fix symlink dest color
+                  int b = 49, f = 39, s = 29;   // back, fore, and style
                   char tname[MAX_FULL_NAME];
                   rwm_col_ext( lname, &b, &f, &s );
-                  sprintf( tname, "[%d;%d;%dm%s[m", b, f, s, lname );
+                  sprintf( tname, "[%d;%d;%dm%s[39;49m", b, f, s, lname );
                   sprintf(bp, fmt,width, tname);
                 } else
                   sprintf(bp, fmt,width, lname);
