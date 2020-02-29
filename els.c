@@ -131,7 +131,8 @@ char **Argv;
 char *Progname;
 const
 char *LSCOLOR = NULL,      // rwm - from LS_COLORS
-     *FSCOLOR = NULL;      // rwm - ELS_FS_COLOR  - file size
+     *FSCOLOR = NULL,      // rwm - ELS_FS_COLOR  - file size
+     *SZWIDTH = NULL;
 // export ELS_FT_COLORS="86400=0;32;1:6480000=0;32:7121234=0;32;2:31557600=1;33;2:-1=0;31;1:"
 char *FTCOLOR = NULL,      // rwm - ELS_FT_COLORS - file ages and colors
      *rwm_cols[32];
@@ -139,7 +140,8 @@ const
 char *inv = "[7m",       // invert foreground/background colors
      *rinv= "[27m";      // reset invert
 Ulong rwm_ages[32];        // rwm - 32 date colors should be enough for anyone
-int   rwm_ftcnt=0;
+int   rwm_ftcnt=0,
+      rwm_szwdth=0;
 uid_t Whoami;
 time_t The_Time;
 time_t The_Time_in_an_hour;
@@ -736,6 +738,8 @@ void do_getenv(void)
     if (debug != NULL) Debug = strtoul(debug, NULL, 0);
   }
 
+  SZWIDTH = getenv( "ELS_SZ_WIDTH" );  // Set additional width padding
+  if ( SZWIDTH ) rwm_szwdth = strtol( SZWIDTH, NULL, 10 );
   if ( rwm_docolor ) {
     LSCOLOR = getenv( "LS_COLORS"     );       // color by extension
     FSCOLOR = getenv( "ELS_FS_COLOR"  );       // color by file size
@@ -2456,6 +2460,11 @@ Enhanced LS -- ENVIRONMEMT:\n\
   Time locale determined as follows:\n\
      Use ELS_LC_TIME if defined, else use LC_ALL if defined,\n\
      else use LC_TIME if defined, else use 'C' locale.\n\
+\n\
+  ELS_TRUNCATE_NAME=1   - truncate annoyingly long user/group names\n\
+  ELS_FS_COLOR=35;1     - show size in red\n\
+  ELS_FT_COLORS=86400=32;1:6480000=32:15724800=33:3155760=33;2:-1=31;1:\n\
+  ELS_SZ_WIDTH=1        - minimize size width, increase for more width\n\
 \n\
 ");
   }
@@ -4425,6 +4434,7 @@ char *G_print(char *buff,
         int i, sz, firstblock = 1;
         unsigned long long x, tmp1, tmp2;
 
+        width = rwm_szwdth ? rwm_szwdth : width;
         width += 7;           // 2019-03-17 RWM - was 7, seemed excessive
         tmp1 = info->st_size;
         sz = (tmp1 != 0) ? (int) log10( (double) info->st_size) : 0;
