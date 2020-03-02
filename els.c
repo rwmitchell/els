@@ -132,7 +132,7 @@ char *Progname;
 const
 char *LSCOLOR = NULL,      // rwm - from LS_COLORS
      *FSCOLOR = NULL,      // rwm - ELS_FS_COLOR  - file size
-     *SZWIDTH = NULL;
+     *FSWIDTH = NULL;
 // export ELS_FT_COLORS="86400=0;32;1:6480000=0;32:7121234=0;32;2:31557600=1;33;2:-1=0;31;1:"
 char *FTCOLOR = NULL,      // rwm - ELS_FT_COLORS - file ages and colors
      *rwm_cols[32];
@@ -738,8 +738,8 @@ void do_getenv(void)
     if (debug != NULL) Debug = strtoul(debug, NULL, 0);
   }
 
-  SZWIDTH = getenv( "ELS_SZ_WIDTH" );  // Set additional width padding
-  if ( SZWIDTH ) rwm_szwdth = strtol( SZWIDTH, NULL, 10 );
+  FSWIDTH = getenv( "ELS_FS_WIDTH" );  // Set additional width padding
+  if ( FSWIDTH ) rwm_szwdth = strtol( FSWIDTH, NULL, 10 );
   if ( rwm_docolor ) {
     LSCOLOR = getenv( "LS_COLORS"     );       // color by extension
     FSCOLOR = getenv( "ELS_FS_COLOR"  );       // color by file size
@@ -2464,7 +2464,7 @@ Enhanced LS -- ENVIRONMEMT:\n\
   ELS_TRUNCATE_NAME=1   - truncate annoyingly long user/group names\n\
   ELS_FS_COLOR=35;1     - show size in red\n\
   ELS_FT_COLORS=86400=32;1:6480000=32:15724800=33:3155760=33;2:-1=31;1:\n\
-  ELS_SZ_WIDTH=1        - minimize size width, increase for more width\n\
+  ELS_FS_WIDTH=1        - minimize size width, increase for more width\n\
 \n\
 ");
   }
