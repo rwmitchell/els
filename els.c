@@ -141,7 +141,8 @@ char *inv = "[7m",       // invert foreground/background colors
      *rinv= "[27m";      // reset invert
 Ulong rwm_ages[32];        // rwm - 32 date colors should be enough for anyone
 int   rwm_ftcnt=0,
-      rwm_szwdth=0;
+      rwm_szwdth=0,
+      rwm_fxwdth=0;
 uid_t Whoami;
 time_t The_Time;
 time_t The_Time_in_an_hour;
@@ -671,6 +672,8 @@ int main(int argc, char *argv[])
     free_dir(&dlist);
   }
   /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+  if ( rwm_fxwdth ) fprintf( stderr, "Use: ELS_FS_WIDTH=%d\n", rwm_fxwdth );
 
   finishExit();
 
@@ -2464,7 +2467,7 @@ Enhanced LS -- ENVIRONMEMT:\n\
   ELS_TRUNCATE_NAME=1   - truncate annoyingly long user/group names\n\
   ELS_FS_COLOR=35;1     - show size in red\n\
   ELS_FT_COLORS=86400=32;1:6480000=32:15724800=33:3155760=33;2:-1=31;1:\n\
-  ELS_FS_WIDTH=1        - minimize size width, increase for more width\n\
+  ELS_FS_WIDTH=7        .- minimize size width, increase for more width\n\
 \n\
 ");
   }
@@ -4434,8 +4437,7 @@ char *G_print(char *buff,
         int i, sz, firstblock = 1;
         unsigned long long x, tmp1, tmp2;
 
-        width = rwm_szwdth ? rwm_szwdth : width;
-        width += 7;           // 2019-03-17 RWM - was 7, seemed excessive
+        width = rwm_szwdth ? rwm_szwdth : width+7;
         tmp1 = info->st_size;
         sz = (tmp1 != 0) ? (int) log10( (double) info->st_size) : 0;
         i= 3 * (int) (sz/3);
@@ -4450,6 +4452,8 @@ char *G_print(char *buff,
             Void sprintf(str, "%s%0*llu%s", str, 3, tmp2, i==0 ? "" : "," );
           tmp1 -= (tmp2 * x);
         }
+        if ( width < (int) strlen( str ) )
+          rwm_fxwdth = MAX( rwm_fxwdth, (int) strlen( str ) );
         if ( !FSCOLOR ) Void sprintf(bp, "%*s", width, str);
         else            Void sprintf(bp, "[%sm%*s[39m", FSCOLOR, width, str);
 
