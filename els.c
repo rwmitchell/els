@@ -137,8 +137,8 @@ char *LSCOLOR = NULL,      // rwm - from LS_COLORS
 char *FTCOLOR = NULL,      // rwm - ELS_FT_COLORS - file ages and colors
      *rwm_cols[32];
 const
-char *inv = "[7m",       // invert foreground/background colors
-     *rinv= "[27m";      // reset invert
+char *inv = "[7;0m",     // invert foreground/background colors
+     *rinv= "[27;0m";    // reset invert
 Ulong rwm_ages[32];        // rwm - 32 date colors should be enough for anyone
 int   rwm_ftcnt=0,
       rwm_szwdth=0,
@@ -3740,7 +3740,7 @@ Boole list_item(Dir_Item *file,
       char *bp = G_print(output_buff, G_format, dname, file);
       if ( !rwm_dospace ) {
         if ( rwm_docolor ) {
-          strcat( bp, "[m" );  // Reset all color settings at EOL
+          strcat( bp, "[;0m" );  // Reset all color settings at EOL
           rwm_type = 0;
           rwm_mode = 0;
         }
@@ -3936,7 +3936,7 @@ char *rwm_col_age( char *buff, time_t ftime, Boole flag ) {
 
     if ( i<rwm_ftcnt ) sprintf(buff, "[%sm%s", rwm_cols[i], tmp );
   } else                        // end   of date string
-      sprintf(buff, "%s[39m", tmp);   // reset foreground color
+      sprintf(buff, "%s[39;0m", tmp);   // reset foreground color
 
   buff += strlen(buff);
   return ( buff );
