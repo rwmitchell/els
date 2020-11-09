@@ -46,6 +46,8 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <math.h>     // rwm
+#include <wchar.h>    // rwm
+#define HAVE_LOCALE
 #ifdef HAVE_LOCALE
 #include <locale.h>
 #endif
@@ -4719,16 +4721,26 @@ char *G_print(char *buff,
 }
 #undef  ZERO_PAD_DEFAULT
 
-Boole rwm_get_cs( char *pat, int *b, int *f, int *s ) {   // background, foreground, style
+Boole rwm_get_cs( char *pat, int *b, int *f, int *s, int *i ) { // background, foreground, style, icon
   char *mat = NULL;
+  int d = 0, e = 0;   // distance
 
   mat = strstr( LSCOLOR, pat );
   if ( mat ) mat = strchr( mat, '=');
-  if ( mat ) sscanf( mat, "=%d;%d;%d", b, f, s );
+  if ( mat ) {
+    d=sscanf( mat, "=%d;%d;%d", b, f, s );
+    for ( int ii=32; ii>0 && mat; --ii, ++mat )
+      switch ( *mat ) {
+        case 'm': e=sscanf( mat, "m%lc:", i ); ii=0; break;
+        case ':': e=-1; ii=0; break;
+      }
+//  printf( "MAT: <%.10s>\n", mat );
+  }
+//printf( "BUG %d|%d: %d:%d:%d|%x|\n", d, e, *b, *f, *s, *i );
   if ( *s == 0 ) *s = 8;                                  // 0 turns color off, 8 is normal
   return ( mat != NULL );
 }
-Boole rwm_col_type( int *b, int *f, int *s ) {
+Boole rwm_col_type( int *b, int *f, int *s, int *i ) {
   Boole rc = TRUE;
   char *pat=NULL;
 
@@ -4757,19 +4769,19 @@ Boole rwm_col_type( int *b, int *f, int *s ) {
     default: rc = FALSE; break;
   }
   rwm_type = 0;         // initialize it before called for symlink
-  if ( pat ) rc = rwm_get_cs( pat, b, f, s );
+  if ( pat ) rc = rwm_get_cs( pat, b, f, s, i );
 
   return( rc );
 }
-void rwm_col_ext( char *fn, int *b, int *f, int *s ) {
+void rwm_col_ext( char *fn, int *b, int *f, int *s, int *i ) {
   char *ext = NULL,
         pat[16];
   *b = *f = *s = 0;
-  if ( rwm_col_type( b, f, s ) == FALSE ) {
+  if ( rwm_col_type( b, f, s, i ) == FALSE ) {
     ext = strrchr( fn, '.' );
     if ( ext ) {
       sprintf( pat, "*%.13s=", ext );
-      rwm_get_cs( pat, b, f, s );
+      rwm_get_cs( pat, b, f, s, i );
     }
   }
 }
@@ -4993,9 +5005,14 @@ char *N_print(char *buff, char *fmt,
 
         char rwm_col[16];
         int rwm_b = 49, rwm_f = 39, rwm_s=29;   // back, fore, and style
+        wchar_t rwm_i = ' ';   // 0xf118;   // happy face
         if ( rwm_docolor ) {
-          rwm_col_ext( fname, &rwm_b, &rwm_f, &rwm_s );
-          sprintf( rwm_col, "[%d;%d;%dm", rwm_b, rwm_f, rwm_s );
+//        printf( "START: %lc:%lc:\n", 0x42, 0xf118 );
+//        printf( "rwm_i: %0x:%lc:\n", rwm_i, rwm_i );
+          rwm_col_ext( fname, &rwm_b, &rwm_f, &rwm_s, &rwm_i );
+//        printf( "rwm_I: %0x:%lc:\n", rwm_i, rwm_i );
+          sprintf( rwm_col, "[%d;%d;%dm%lc ", rwm_b, rwm_f, rwm_s, rwm_i );
+//        printf( "END\n" );
         } else rwm_col[0] = '\0';
 
   /* Process a directive: */
@@ -5083,8 +5100,9 @@ char *N_print(char *buff, char *fmt,
                 // 29 might be default style
                 if ( rwm_docolor ) {            // XYZZY - fix symlink dest color
                   int b = 49, f = 39, s = 29;   // back, fore, and style
+                  int icon=' ';
                   char tname[MAX_FULL_NAME];
-                  rwm_col_ext( lname, &b, &f, &s );
+                  rwm_col_ext( lname, &b, &f, &s, &icon );
                   sprintf( tname, "[%d;%d;%dm%s[39;49m", b, f, s, lname );
                   sprintf(bp, fmt,width, tname);
                 } else
