@@ -133,6 +133,7 @@ char **Argv;
 char *Progname;
 const
 char *LSCOLOR = NULL,      // rwm - from LS_COLORS
+     *LSICONS = NULL,      // rwm - from LS_ICONS
      *FSCOLOR = NULL,      // rwm - ELS_FS_COLOR  - file size
      *FSWIDTH = NULL;
 // export ELS_FT_COLORS="86400=0;32;1:6480000=0;32:7121234=0;32;2:31557600=1;33;2:-1=0;31;1:"
@@ -381,6 +382,7 @@ Boole rwm_filtering = FALSE,
       rwm_ifsock    = FALSE, // Socket
       rwm_ifunk     = FALSE, // unkown
       rwm_docolor   = TRUE,  // colorize output
+      rwm_doicons   = FALSE, // add icons
       rwm_docomma   = TRUE,
       rwm_dospace   = FALSE; // similar to find -print0
 Local int rwm_type,          // copy of file "type"
@@ -747,6 +749,7 @@ void do_getenv(void)
   if ( FSWIDTH ) rwm_szwdth = strtol( FSWIDTH, NULL, 10 );
   if ( rwm_docolor ) {
     LSCOLOR = getenv( "LS_COLORS"     );       // color by extension
+    LSICONS = getenv( "LS_ICONS"      );       // file icons
     FSCOLOR = getenv( "ELS_FS_COLOR"  );       // color by file size
     FTCOLOR = getenv( "ELS_FT_COLORS" );       // color by file time/age
 
@@ -761,6 +764,7 @@ void do_getenv(void)
 #endif
   }
   if ( ! LSCOLOR ) rwm_docolor = FALSE;
+  if (   LSICONS ) rwm_doicons = TRUE;
 
   /* Enable behavior of earlier ELS releases if so requested: */
   MaxVersionLevel = VersionLevel;
@@ -4725,19 +4729,24 @@ Boole rwm_get_cs( char *pat, int *b, int *f, int *s, int *i ) { // background, f
   char *mat = NULL;
   int d = 0, e = 0;   // distance
 
-  mat = strstr( LSCOLOR, pat );
+  mat = strstr( LSCOLOR, pat );       // use LSCOLOR for colors
   if ( mat ) mat = strchr( mat, '=');
-  if ( mat ) {
-    d=sscanf( mat, "=%d;%d;%d", b, f, s );
-    for ( int ii=32; ii>0 && mat; --ii, ++mat )
-      switch ( *mat ) {
-        case 'm': e=sscanf( mat, "m%lc:", i ); ii=0; break;
-        case ':': e=-1; ii=0; break;
-      }
-//  printf( "MAT: <%.10s>\n", mat );
-  }
-//printf( "BUG %d|%d: %d:%d:%d|%x|\n", d, e, *b, *f, *s, *i );
+  if ( mat ) d=sscanf( mat, "=%d;%d;%d", b, f, s );
   if ( *s == 0 ) *s = 8;                                  // 0 turns color off, 8 is normal
+
+  if ( rwm_doicons ) {
+    mat = strstr( LSICONS, pat );     // use LSICONS only for icons
+    if ( mat ) mat = strchr( mat, '=' );
+    if ( mat ) {
+      for ( int ii=32; ii>0 && mat; --ii, ++mat ) {
+        switch ( *mat ) {
+          case 'm': e=sscanf( mat, "m%lc:", i ); ii=0; break;
+          case ':': e=-1; ii=0; break;
+        }
+      }
+    }
+  }
+
   return ( mat != NULL );
 }
 Boole rwm_col_type( int *b, int *f, int *s, int *i ) {
@@ -5011,7 +5020,10 @@ char *N_print(char *buff, char *fmt,
 //        printf( "rwm_i: %0x:%lc:\n", rwm_i, rwm_i );
           rwm_col_ext( fname, &rwm_b, &rwm_f, &rwm_s, &rwm_i );
 //        printf( "rwm_I: %0x:%lc:\n", rwm_i, rwm_i );
-          sprintf( rwm_col, "[%d;%d;%dm%lc ", rwm_b, rwm_f, rwm_s, rwm_i );
+          if ( rwm_doicons )
+            sprintf( rwm_col, "[%d;%d;%dm%lc ", rwm_b, rwm_f, rwm_s, rwm_i );
+          else
+            sprintf( rwm_col, "[%d;%d;%dm", rwm_b, rwm_f, rwm_s );
 //        printf( "END\n" );
         } else rwm_col[0] = '\0';
 
