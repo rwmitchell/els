@@ -4791,6 +4791,13 @@ void rwm_col_ext( char *fn, int *b, int *f, int *s, int *i ) {
     if ( ext ) {
       sprintf( pat, "*%.13s=", ext );
       rwm_get_cs( pat, b, f, s, i );
+    } else {
+      // 2020-11-08 truncing filename fixes finding match on whole filenames,
+      // such as CHANGE_LOG, INSTALL, Makefile
+      ext = strrchr( fn, '/' );
+      if ( !ext ) ext=fn;
+      sprintf( pat, "*%s=", ext );
+      rwm_get_cs( pat, b, f, s, i );
     }
   }
 }
