@@ -4133,10 +4133,13 @@ char *G_print(char *buff,
 #ifdef S_IFLNK
       else if (ftype == S_IFLNK) {  /* Symbolic Link */
         struct stat tinfo;
+        int sts;
         type = type_LNK;
         // RWM get info of actual file
-        if ( sigSafe_stat(file->fname, &tinfo) == 0 )
+        char *path = full_name(dname, file->fname);
+        if ( (sts=sigSafe_stat(path, &tinfo)) == 0 )
           fmode = tinfo.st_mode;
+        else type = type_ORPH;
       }
 #endif
 #ifdef S_IFSOCK
@@ -4786,7 +4789,7 @@ Boole rwm_col_type( int *b, int *f, int *s, int *i ) {
       case    type_LNK :  pat="LINK=";     break;
       case    type_SOCK:  pat="SOCKET=";   break;
       case    type_DOOR:  pat="DOOR=";     break;
-  //  case    type_orph:  pat="ORPHAN="; break;  // symlink orphan, no type?
+      case    type_ORPH:  pat="ORPHAN="; break;  // symlink orphan, no type?
       case    type_REG :  pat="FILE=";     printf("\n\nREGULAR\n\n"); break;   // never happens
       case type_SPECIAL:  pat="or=";       break;  // special - no LS_COLOR attribute?
 

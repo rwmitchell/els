@@ -135,6 +135,7 @@ extern Boole IncludeSS;
 #define type_BLK	'b'
 #define type_FIFO	'p'
 #define type_LNK	'l'
+#define type_ORPH	'X'
 #define type_SOCK	's'
 #define type_DOOR	'D'
 #define type_SPECIAL	'S'	/* c:b */
