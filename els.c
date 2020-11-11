@@ -4815,7 +4815,7 @@ Boole rwm_col_type( int *b, int *f, int *s, int *i ) {
 }
 void rwm_col_ext( char *fn, int *b, int *f, int *s, int *i ) {
   char *ext = NULL,
-        pat[16];
+        pat[256];
   *b = *f = *s = 0;
   if ( rwm_col_type( b, f, s, i ) == FALSE ) {
     ext = strrchr( fn, '.' );
