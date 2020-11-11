@@ -4752,30 +4752,59 @@ Boole rwm_col_type( int *b, int *f, int *s, int *i ) {
   Boole rc = TRUE;
   char *pat=NULL;
 
-  switch( rwm_type ) {
-    case    type_DIR :  pat="di="; break;
-    case    type_CHR :  pat="cd="; break;  // character device
-    case    type_BLK :  pat="bd="; break;  // block     device
-    case    type_FIFO:  pat="pi="; break;  // pipe
-    case    type_LNK :  pat="ln="; break;
-    case    type_SOCK:  pat="so="; break;
-    case    type_DOOR:  pat="do="; break;
-//  case    type_orph:  pat="or="; break;  // symlink orphan, no type?
-    case type_SPECIAL:  pat="or="; break;  // special - no LS_COLOR attribute?
+  if ( !rwm_doicons ) {
+    switch( rwm_type ) {
+      case    type_DIR :  pat="di="; break;
+      case    type_CHR :  pat="cd="; break;  // character device
+      case    type_BLK :  pat="bd="; break;  // block     device
+      case    type_FIFO:  pat="pi="; break;  // pipe
+      case    type_LNK :  pat="ln="; break;
+      case    type_SOCK:  pat="so="; break;
+      case    type_DOOR:  pat="do="; break;
+  //  case    type_orph:  pat="or="; break;  // symlink orphan, no type?
+      case type_SPECIAL:  pat="or="; break;  // special - no LS_COLOR attribute?
 
-    case symtype_REG :
-                        if ( rwm_mode & (S_IXUSR|S_IXGRP|S_IXOTH)) pat="ex=";
-                        if ( rwm_mode & S_ISUID )                  pat="su=";
-                        if ( !pat ) rc = FALSE;
-                        break;
-    case symtype_DIR :
-    case symtype_FIFO:
-    case symtype_LNK :
-    case symtype_SOCK:
-    case symtype_DOOR:
-    case    type_REG :
-    default: rc = FALSE; break;
+      case symtype_REG :
+                          if ( rwm_mode & (S_IXUSR|S_IXGRP|S_IXOTH)) pat="ex=";
+                          if ( rwm_mode & S_ISUID )                  pat="su=";
+                          if ( !pat ) rc = FALSE;
+                          break;
+      case symtype_DIR :
+      case symtype_FIFO:
+      case symtype_LNK :
+      case symtype_SOCK:
+      case symtype_DOOR:
+      case    type_REG :
+      default: rc = FALSE; break;
+    }
+  } else {
+    switch( rwm_type ) {
+      case    type_DIR :  pat="DIRECTORY=";break;
+      case    type_CHR :  pat="CHARDEV=";  break;  // character device
+      case    type_BLK :  pat="BLOCKDEV="; break;  // block     device
+      case    type_FIFO:  pat="PIPE=";     break;  // pipe
+      case    type_LNK :  pat="LINK=";     break;
+      case    type_SOCK:  pat="SOCKET=";   break;
+      case    type_DOOR:  pat="DOOR=";     break;
+  //  case    type_orph:  pat="ORPHAN="; break;  // symlink orphan, no type?
+      case    type_REG :  pat="FILE=";     printf("\n\nREGULAR\n\n"); break;   // never happens
+      case type_SPECIAL:  pat="or=";       break;  // special - no LS_COLOR attribute?
+
+      case symtype_REG :
+                          if ( rwm_mode & (S_IXUSR|S_IXGRP|S_IXOTH)) pat="EXEC=";
+                          if ( rwm_mode & S_ISUID )                  pat="SETUID=";
+                          if ( !pat ) rc = FALSE;
+                          break;
+      case symtype_DIR :
+      case symtype_FIFO:
+      case symtype_LNK :
+      case symtype_SOCK:
+      case symtype_DOOR:
+      default: rc = FALSE; break;
+    }
+
   }
+
   rwm_type = 0;         // initialize it before called for symlink
   if ( pat ) rc = rwm_get_cs( pat, b, f, s, i );
 
@@ -4795,9 +4824,10 @@ void rwm_col_ext( char *fn, int *b, int *f, int *s, int *i ) {
       // such as CHANGE_LOG, INSTALL, Makefile
       ext = strrchr( fn, '/' );
       if ( !ext ) ext=fn;
-      sprintf( pat, "*%s=", ext );
+      sprintf( pat, "%s=", ext );
       rwm_get_cs( pat, b, f, s, i );
     }
+    if ( *i == ' ' ) rwm_get_cs( "FILE=", b, f, s, i );
   }
 }
 
