@@ -141,7 +141,8 @@ char *FTCOLOR = NULL,      // rwm - ELS_FT_COLORS - file ages and colors
      *rwm_cols[32];
 const
 char *inv = "[7;0m",     // invert foreground/background colors
-     *rinv= "[27;0m";    // reset invert
+     *rinv= "[27;0m",    // reset invert
+     *cs  = "[0m";       // clear ansii codes
 Ulong rwm_ages[32];        // rwm - 32 date colors should be enough for anyone
 int   rwm_ftcnt=0,
       rwm_szwdth=0,
@@ -3746,7 +3747,7 @@ Boole list_item(Dir_Item *file,
       char *bp = G_print(output_buff, G_format, dname, file);
       if ( !rwm_dospace ) {
         if ( rwm_docolor ) {
-          strcat( bp, "[;0m" );  // Reset all color settings at EOL
+          strcat( bp, cs );    // "[;0m" );  // Reset all color settings at EOL
           rwm_type = 0;
           rwm_mode = 0;
         }
@@ -4727,24 +4728,22 @@ char *G_print(char *buff,
 
 Boole rwm_get_cs( char *pat, int *b, int *f, int *s, int *i ) { // background, foreground, style, icon
   char *mat = NULL;
-  int d = 0, e = 0;   // distance
+  int d = 0;                          // distance
 
-  mat = strstr( LSCOLOR, pat );       // use LSCOLOR for colors
-  if ( mat ) mat = strchr( mat, '=');
-  if ( mat ) d=sscanf( mat, "=%d;%d;%d", b, f, s );
-  if ( *s == 0 ) *s = 8;                                  // 0 turns color off, 8 is normal
-
-  if ( rwm_doicons ) {
+  if ( !rwm_doicons ) {
+    mat = strstr( LSCOLOR, pat );     // use LSCOLOR for colors
+    if ( mat ) mat = strchr( mat, '=');
+    if ( mat ) d=sscanf( mat, "=%d;%d;%d", b, f, s );
+    if ( *s == 0 ) *s = 8;            // 0 turns color off, 8 is normal 2020-11-10 true?
+  } else {
+    *f =  7;
+    *s =  0;
     mat = strstr( LSICONS, pat );     // use LSICONS only for icons
     if ( mat ) mat = strchr( mat, '=' );
     if ( mat ) {
-      for ( int ii=32; ii>0 && mat; --ii, ++mat ) {
-        switch ( *mat ) {
-          case 'm': e=sscanf( mat, "m%lc:", i ); ii=0; break;
-          case ':': e=-1; ii=0; break;
-        }
-      }
+      d=sscanf( mat, "=%d;%d;%d;%lc:", f, b, s, i );  // f / b order reversed
     }
+//    printf( "\nB: %3d F: %3d S: %2d : < %lc >\n", *b, *f, *s, *i );
   }
 
   return ( mat != NULL );
@@ -4789,7 +4788,7 @@ void rwm_col_ext( char *fn, int *b, int *f, int *s, int *i ) {
   if ( rwm_col_type( b, f, s, i ) == FALSE ) {
     ext = strrchr( fn, '.' );
     if ( ext ) {
-      sprintf( pat, "*%.13s=", ext );
+      sprintf( pat, "%.13s=", ext );     // 2020-11-10 removed leading asterick '*'
       rwm_get_cs( pat, b, f, s, i );
     } else {
       // 2020-11-08 truncing filename fixes finding match on whole filenames,
@@ -5019,7 +5018,9 @@ char *N_print(char *buff, char *fmt,
     width_specified = TRUE;
   }
 
-        char rwm_col[16];
+        char rwm_col[128],
+             rwm_bg[32],
+             rwm_gl[ 8];
         int rwm_b = 49, rwm_f = 39, rwm_s=29;   // back, fore, and style
         wchar_t rwm_i = ' ';   // 0xf118;   // happy face
         if ( rwm_docolor ) {
@@ -5027,10 +5028,20 @@ char *N_print(char *buff, char *fmt,
 //        printf( "rwm_i: %0x:%lc:\n", rwm_i, rwm_i );
           rwm_col_ext( fname, &rwm_b, &rwm_f, &rwm_s, &rwm_i );
 //        printf( "rwm_I: %0x:%lc:\n", rwm_i, rwm_i );
-          if ( rwm_doicons )
-            sprintf( rwm_col, "[%d;%d;%dm%lc ", rwm_b, rwm_f, rwm_s, rwm_i );
-          else
-            sprintf( rwm_col, "[%d;%d;%dm", rwm_b, rwm_f, rwm_s );
+          if ( rwm_doicons ) {
+            // Foreground color
+            rwm_bg[0] = '\0';
+            rwm_gl[0] = '\0';
+            sprintf ( rwm_gl, "%lc ", rwm_i );
+//          if ( rwm_s <= 0 ) sprintf( rwm_col, "%s[38;5;%dm%lc%s",    cs, rwm_f, rwm_i, cs );
+
+            if ( rwm_s <= 0 ) sprintf( rwm_col, "%s[38;5;%dm",    cs, rwm_f );
+            else              sprintf( rwm_col, "%s[38;5;%d;%dm", cs, rwm_f, rwm_s );
+            if ( rwm_b >  0 ) sprintf( rwm_bg,    "[48;5;%dm",        rwm_b );
+            strcat( rwm_col, rwm_bg );
+            strcat( rwm_col, rwm_gl );
+          } else
+            sprintf( rwm_col, "[%d;%d;%dm", rwm_b, rwm_f, rwm_s );   // No icon/glyph
 //        printf( "END\n" );
         } else rwm_col[0] = '\0';
 
