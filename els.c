@@ -5065,14 +5065,14 @@ char *N_print(char *buff, char *fmt,
             // Foreground color
             rwm_bg[0] = '\0';
             rwm_gl[0] = '\0';
-            sprintf ( rwm_gl, "%lc ", rwm_i );
+            sprintf ( rwm_gl, "%lc  ", rwm_i );
 //          if ( rwm_s <= 0 ) sprintf( rwm_col, "%s[38;5;%dm%lc%s",    cs, rwm_f, rwm_i, cs );
 
             if ( rwm_s <= 0 ) sprintf( rwm_col, "%s[38;5;%dm",    cs, rwm_f );
             else              sprintf( rwm_col, "%s[38;5;%d;%dm", cs, rwm_f, rwm_s );
             if ( rwm_b >  0 ) sprintf( rwm_bg,    "[48;5;%dm",        rwm_b );
             strcat( rwm_col, rwm_bg );
-            strcat( rwm_col, rwm_gl );
+//          strcat( rwm_col, rwm_gl );
           } else
             sprintf( rwm_col, "[%d;%d;%dm", rwm_b, rwm_f, rwm_s );   // No icon/glyph
 //        printf( "END\n" );
@@ -5098,12 +5098,12 @@ char *N_print(char *buff, char *fmt,
       }
 
       if (!width_specified) {
-        sprintf(bp, "%s%s%s%s", d, s, rwm_col, fname);
+        sprintf(bp, "%s%s%s%s%s%s%s", rwm_col, rwm_gl, cs, d, s, rwm_col, fname);
         if ((d = quote_fname(bp, dash_b, dash_Q, use_quotes)) != NULL)
           sprintf(bp, "%s", d);
       } else {
         char tmp[MAX_FULL_NAME];
-        sprintf(tmp, "%s%s%s%s", d, s, rwm_col, fname);
+        sprintf(tmp, "%s%s%s%s%s%s%s", rwm_col, rwm_gl, cs, d, s, rwm_col, fname);
         if ((d = quote_fname(tmp, dash_b, dash_Q, use_quotes)) != NULL)
           sprintf(bp, "%*s",width, d);
         else
