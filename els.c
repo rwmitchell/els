@@ -131,9 +131,9 @@ int  Iarg;
 int  Argc;
 char **Argv;
 char *Progname;
+char *LSICONS = NULL;      // rwm - from LS_ICONS
 const
 char *LSCOLOR = NULL,      // rwm - from LS_COLORS
-     *LSICONS = NULL,      // rwm - from LS_ICONS
      *FSCOLOR = NULL,      // rwm - ELS_FS_COLOR  - file size
      *FSWIDTH = NULL;
 // export ELS_FT_COLORS="86400=0;32;1:6480000=0;32:7121234=0;32;2:31557600=1;33;2:-1=0;31;1:"
@@ -766,6 +766,11 @@ void do_getenv(void)
   }
   if ( ! LSCOLOR ) rwm_docolor = FALSE;
   if (   LSICONS ) rwm_doicons = TRUE;
+
+  if ( LSICONS) {
+    char *ps =LSICONS;
+    while ( *ps != '\0' ) { *ps = toupper( *ps ); ++ps; }
+  }
 
   /* Enable behavior of earlier ELS releases if so requested: */
   MaxVersionLevel = VersionLevel;
@@ -4821,13 +4826,21 @@ void rwm_col_ext( char *fn, int *b, int *f, int *s, int *i ) {
     ext = strrchr( fn, '.' );
     if ( ext ) {
       sprintf( pat, "%.13s=", ext );     // 2020-11-10 removed leading asterick '*'
+      char *ps = pat;
+      while ( *ps != '\0' ) { *ps = toupper( *ps ); ++ps; }
       rwm_get_cs( pat, b, f, s, i );
     } else {
       // 2020-11-08 truncing filename fixes finding match on whole filenames,
       // such as CHANGE_LOG, INSTALL, Makefile
-      ext = strrchr( fn, '/' );
-      if ( !ext ) ext=fn;
-      sprintf( pat, "%s=", ext );
+//    ext = strrchr( fn, '/' );
+//    if ( !ext ) ext=fn;
+//    printf( "EXT: |%s|(%s)\n", ext, fn );
+//    else ext++;
+
+      sprintf( pat, "%s=", fn );
+      char *ps = pat;
+      while ( *ps != '\0' ) { *ps = toupper( *ps ); ++ps; }
+//    printf("PAT: |%s|\n", pat);
       rwm_get_cs( pat, b, f, s, i );
     }
     if ( *i == ' ' ) rwm_get_cs( "FILE=", b, f, s, i );
