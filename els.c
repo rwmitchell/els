@@ -4850,12 +4850,63 @@ Boole rwm_col_name( char *fn, int *b, int *f, int *s, int *i ) {
   rc = rwm_get_cs( pat, b, f, s, i );
   return( rc );
 }
+Boole rwm_col_wild( char *fn, int *b, int *f, int *s, int *i ) {
+  const
+  char *pls = NULL,
+       *ps;
+  char  pat[32],
+       *pt,
+       *tfn = strdup( fn );
+  int   d = 0;
+  Boole done = FALSE;
+
+  // reverse search method
+  //   find '*' in LSCOLOR/LSICON,
+  //   get associated pattern
+  //   find pattern _inside_ filename
+  //   assume format of:   :*PAT=
+
+  pt = tfn;
+  while ( *pt != '\0' ) { *pt = toupper( *pt ); ++pt; }
+
+  pls = rwm_doicons ? LSICONS : LSCOLOR;
+
+  while ( !done ) {
+    pls = strchr( pls, '*' );
+    if ( pls ) {
+      pls++;      // move past '*'
+
+//    sscanf( pls, "%31s=", pat );    // sscanf() does NOT stop at =
+      ps = pls;
+      pt = pat;
+      int l=31;
+      while ( *ps != '=' ) { *pt++ = *ps++; l--; }
+      *pt = '\0';
+
+//    printf( "Wild: |%s| [%s]\n", tfn, pat );
+      if ( strstr( tfn, pat )) {      // found pat in filename
+        pls = strchr( pls, '=' );
+        if ( pls ) {
+          if ( ! rwm_doicons )
+            d=sscanf( pls, "=%d;%d;%d", b, f, s );
+          else
+            d=sscanf( pls, "=%d;%d;%d;%lc:", f, b, s, i );  // f / b order reversed
+          done = ( d >= 2 ) ? TRUE : FALSE;
+        }
+      }
+    } else done = TRUE;
+  }
+  free( tfn );
+
+  return( d > 0 );
+}
 void rwm_get_col( char *fn, int *b, int *f, int *s, int *i ) {
   *b = *f = *s = 0;
 
   if      ( rwm_col_type(     b, f, s, i ) );    // DIR, SOCKET, SUID, etc
   else if ( rwm_col_ext ( fn, b, f, s, i ) );    // file extension
   else if ( rwm_col_name( fn, b, f, s, i ) );    // entire name
+  else if ( rwm_col_wild( fn, b, f, s, i ) );    // find pat in name
   else      rwm_get_cs  ( "FILE=", b, f, s, i ); // default
 }
 
