@@ -4787,7 +4787,7 @@ Boole rwm_col_type( int *b, int *f, int *s, int *i ) {
     }
   } else {
     switch( rwm_type ) {
-      case    type_DIR :  pat="DIRECTORY=";break;
+      case    type_DIR : pat="DIRECTORY="; break;
       case    type_CHR :  pat="CHARDEV=";  break;  // character device
       case    type_BLK :  pat="BLOCKDEV="; break;  // block     device
       case    type_FIFO:  pat="PIPE=";     break;  // pipe
@@ -4850,7 +4850,7 @@ Boole rwm_col_name( char *fn, int *b, int *f, int *s, int *i ) {
   rc = rwm_get_cs( pat, b, f, s, i );
   return( rc );
 }
-Boole rwm_col_wild( char *fn, int *b, int *f, int *s, int *i ) {
+Boole rwm_col_wild( char *fn, char y, int *b, int *f, int *s, int *i ) {
   const
   char *pls = NULL,
        *ps;
@@ -4872,9 +4872,9 @@ Boole rwm_col_wild( char *fn, int *b, int *f, int *s, int *i ) {
   pls = rwm_doicons ? LSICONS : LSCOLOR;
 
   while ( !done ) {
-    pls = strchr( pls, '*' );
+    pls = strchr( pls, y );           // y='*', ''
     if ( pls ) {
-      pls++;      // move past '*'
+      pls++;      // move past 'y' or pattern type char
 
 //    sscanf( pls, "%31s=", pat );    // sscanf() does NOT stop at =
       ps = pls;
@@ -4902,11 +4902,15 @@ Boole rwm_col_wild( char *fn, int *b, int *f, int *s, int *i ) {
 }
 void rwm_get_col( char *fn, int *b, int *f, int *s, int *i ) {
   *b = *f = *s = 0;
+  Boole rc = FALSE;
 
-  if      ( rwm_col_type(     b, f, s, i ) );    // DIR, SOCKET, SUID, etc
-  else if ( rwm_col_ext ( fn, b, f, s, i ) );    // file extension
-  else if ( rwm_col_name( fn, b, f, s, i ) );    // entire name
-  else if ( rwm_col_wild( fn, b, f, s, i ) );    // find pat in name
+  if ( rwm_type == type_DIR )
+     rc = ( rwm_col_wild( fn, '^', b, f, s, i ) );
+  if      ( rc );
+  else if ( rwm_col_type(          b, f, s, i ) );    // DIR, SOCKET, SUID, etc
+  else if ( rwm_col_ext ( fn,      b, f, s, i ) );    // file extension
+  else if ( rwm_col_name( fn,      b, f, s, i ) );    // entire name
+  else if ( rwm_col_wild( fn, '*', b, f, s, i ) );    // find pat in name
   else      rwm_get_cs  ( "FILE=", b, f, s, i ); // default
 }
 
