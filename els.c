@@ -4818,33 +4818,45 @@ Boole rwm_col_type( int *b, int *f, int *s, int *i ) {
 
   return( rc );
 }
-void rwm_col_ext( char *fn, int *b, int *f, int *s, int *i ) {
+Boole rwm_col_ext ( char *fn, int *b, int *f, int *s, int *i ) {
   char *ext = NULL,
         pat[256];
-  *b = *f = *s = 0;
-  if ( rwm_col_type( b, f, s, i ) == FALSE ) {
-    ext = strrchr( fn, '.' );
-    if ( ext ) {
-      sprintf( pat, "%.13s=", ext );     // 2020-11-10 removed leading asterick '*'
-      char *ps = pat;
-      while ( *ps != '\0' ) { *ps = toupper( *ps ); ++ps; }
-      rwm_get_cs( pat, b, f, s, i );
-    } else {
-      // 2020-11-08 truncing filename fixes finding match on whole filenames,
-      // such as CHANGE_LOG, INSTALL, Makefile
+  Boole rc = FALSE;
+
+  ext = strrchr( fn, '.' );
+  if ( ext ) {
+    sprintf( pat, "%.13s=", ext );     // 2020-11-10 removed leading asterick '*'
+    char *ps = pat;
+    while ( *ps != '\0' ) { *ps = toupper( *ps ); ++ps; }
+    rc = rwm_get_cs( pat, b, f, s, i );
+  }
+  return( rc );
+}
+Boole rwm_col_name( char *fn, int *b, int *f, int *s, int *i ) {
+  char  pat[256];
+  Boole rc = FALSE;
+
+  // 2020-11-08 truncing filename fixes finding match on whole filenames,
+  // such as CHANGE_LOG, INSTALL, Makefile
 //    ext = strrchr( fn, '/' );
 //    if ( !ext ) ext=fn;
 //    printf( "EXT: |%s|(%s)\n", ext, fn );
 //    else ext++;
 
-      sprintf( pat, "%s=", fn );
-      char *ps = pat;
-      while ( *ps != '\0' ) { *ps = toupper( *ps ); ++ps; }
-//    printf("PAT: |%s|\n", pat);
-      rwm_get_cs( pat, b, f, s, i );
-    }
-    if ( *i == ' ' ) rwm_get_cs( "FILE=", b, f, s, i );
-  }
+  sprintf( pat, "%s=", fn );
+  char *ps = pat;
+  while ( *ps != '\0' ) { *ps = toupper( *ps ); ++ps; }
+//printf("PAT: |%s|\n", pat);
+  rc = rwm_get_cs( pat, b, f, s, i );
+  return( rc );
+}
+void rwm_get_col( char *fn, int *b, int *f, int *s, int *i ) {
+  *b = *f = *s = 0;
+
+  if      ( rwm_col_type(     b, f, s, i ) );    // DIR, SOCKET, SUID, etc
+  else if ( rwm_col_ext ( fn, b, f, s, i ) );    // file extension
+  else if ( rwm_col_name( fn, b, f, s, i ) );    // entire name
+  else      rwm_get_cs  ( "FILE=", b, f, s, i ); // default
 }
 
 #define ZERO_PAD_DEFAULT  FALSE
@@ -5072,7 +5084,7 @@ char *N_print(char *buff, char *fmt,
         if ( rwm_docolor ) {
 //        printf( "START: %lc:%lc:\n", 0x42, 0xf118 );
 //        printf( "rwm_i: %0x:%lc:\n", rwm_i, rwm_i );
-          rwm_col_ext( fname, &rwm_b, &rwm_f, &rwm_s, &rwm_i );
+          rwm_get_col( fname, &rwm_b, &rwm_f, &rwm_s, &rwm_i );
 //        printf( "rwm_I: %0x:%lc:\n", rwm_i, rwm_i );
           if ( rwm_doicons ) {
             // Foreground color
@@ -5178,7 +5190,7 @@ char *N_print(char *buff, char *fmt,
                   int b = 49, f = 39, s = 29;   // back, fore, and style
                   int icon=' ';
                   char tname[MAX_FULL_NAME];
-                  rwm_col_ext( lname, &b, &f, &s, &icon );
+                  rwm_get_col( lname, &b, &f, &s, &icon );
                   sprintf( tname, "[%d;%d;%dm%s[39;49m", b, f, s, lname );
                   sprintf(bp, fmt,width, tname);
                 } else
