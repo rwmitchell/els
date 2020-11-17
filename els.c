@@ -4818,18 +4818,59 @@ Boole rwm_col_type( int *b, int *f, int *s, int *i ) {
 
   return( rc );
 }
-Boole rwm_col_ext ( char *fn, int *b, int *f, int *s, int *i ) {
+Boole rwm_col_ext1( char *fn, int *b, int *f, int *s, int *i ) {
+  // show .ORIG extension icon (with .sssssssss added )
   char *ext = NULL,
-        pat[256];
+        pat[256],
+        vs[32];
   Boole rc = FALSE;
+  int v=0;
 
   ext = strrchr( fn, '.' );
   if ( ext ) {
+    sscanf( (ext+1), "%d", &v );
+    sprintf(vs, ".%d", v);
+    if ( strncmp( ext, vs, strlen( vs )) == 0 ) {
+      rc = rwm_get_cs( ".ORIG", b, f, s, i );
+    } else {
+      sprintf( pat, "%.13s=", ext );     // 2020-11-10 removed leading asterick '*'
+      ext = strchr( pat, '.' );
+      char *ps = pat;
+      if ( ext != pat ) *ext = '\0';
+      while ( *ps != '\0' ) { *ps = toupper( *ps ); ++ps; }
+      rc = rwm_get_cs( pat, b, f, s, i );
+    }
+  }
+  return( rc );
+}
+Boole rwm_col_ext2( char *fn, int *b, int *f, int *s, int *i ) {
+  // show original extension icon (with .sssssssss added )
+  char *ext = NULL,
+       *tfn = strdup( fn ),
+        pat[256],
+        vs[32];
+  Boole rc = FALSE;
+  int v=0;
+
+  ext = strrchr( tfn, '.' );
+  if ( ext ) {
+    sscanf( (ext+1), "%d", &v );
+    sprintf(vs, ".%d", v);
+    if ( strncmp( ext, vs, strlen( vs )) == 0 ) {
+      *ext='\0';
+      ext--;
+      ext = strrchr( tfn, '.' );
+    }
+  }
+  if ( ext ) {
     sprintf( pat, "%.13s=", ext );     // 2020-11-10 removed leading asterick '*'
+    ext = strchr( pat, '.' );
     char *ps = pat;
+    if ( ext != pat ) { *ext = '\0'; printf( "NEW: %s\n", pat ); }
     while ( *ps != '\0' ) { *ps = toupper( *ps ); ++ps; }
     rc = rwm_get_cs( pat, b, f, s, i );
   }
+  free( tfn  );
   return( rc );
 }
 Boole rwm_col_name( char *fn, int *b, int *f, int *s, int *i ) {
@@ -4908,7 +4949,7 @@ void rwm_get_col( char *fn, int *b, int *f, int *s, int *i ) {
      rc = ( rwm_col_wild( fn, '^', b, f, s, i ) );
   if      ( rc );
   else if ( rwm_col_type(          b, f, s, i ) );    // DIR, SOCKET, SUID, etc
-  else if ( rwm_col_ext ( fn,      b, f, s, i ) );    // file extension
+  else if ( rwm_col_ext1( fn,      b, f, s, i ) );    // file extension
   else if ( rwm_col_name( fn,      b, f, s, i ) );    // entire name
   else if ( rwm_col_wild( fn, '*', b, f, s, i ) );    // find pat in name
   else      rwm_get_cs  ( "FILE=", b, f, s, i ); // default
