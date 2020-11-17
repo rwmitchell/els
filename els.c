@@ -4830,7 +4830,7 @@ Boole rwm_col_ext1( char *fn, int *b, int *f, int *s, int *i ) {
   if ( ext ) {
     sscanf( (ext+1), "%d", &v );
     sprintf(vs, ".%d", v);
-    if ( strncmp( ext, vs, strlen( vs )) == 0 ) {
+    if ( v > 100 && strncmp( ext, vs, strlen( vs )) == 0 ) {
       rc = rwm_get_cs( ".ORIG", b, f, s, i );
     } else {
       sprintf( pat, "%.13s=", ext );     // 2020-11-10 removed leading asterick '*'
@@ -4856,7 +4856,7 @@ Boole rwm_col_ext2( char *fn, int *b, int *f, int *s, int *i ) {
   if ( ext ) {
     sscanf( (ext+1), "%d", &v );
     sprintf(vs, ".%d", v);
-    if ( strncmp( ext, vs, strlen( vs )) == 0 ) {
+    if ( v > 100 && strncmp( ext, vs, strlen( vs )) == 0 ) {
       *ext='\0';
       ext--;
       ext = strrchr( tfn, '.' );
