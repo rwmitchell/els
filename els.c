@@ -370,6 +370,11 @@ const Local char *NON_NEGATABLE = "Non-negatable option";
 const Local char *MISSING_FILTER = "Missing filter";
 const Local char *TOO_MANY_FILTERS = "Too many filters specified";
 
+Boole (*rwm_col_ext)();
+Boole rwm_col_ext1( char *fn, int *b, int *f, int *s, int *i );
+Boole rwm_col_ext2( char *fn, int *b, int *f, int *s, int *i );
+Boole rwm_col_ext3( char *fn, int *b, int *f, int *s, int *i );
+
 Boole rwm_filtering = FALSE,
       rwm_ifreg     = FALSE, // Regular
       rwm_ifexe     = FALSE, // Executable
@@ -387,7 +392,8 @@ Boole rwm_filtering = FALSE,
       rwm_docomma   = TRUE,
       rwm_dospace   = FALSE; // similar to find -print0
 Local int rwm_type,          // copy of file "type"
-          rwm_mode;          // copy of file "mode"
+          rwm_mode,          // copy of file "mode"
+          rwm_ext_mode=3;    // rwm_col_extN mode
 
 Local ELS_st_blocks dir_block_total;
 Local int dir_file_count;
@@ -997,10 +1003,22 @@ void do_options_minus(char *options)
       }
       break;
 
+    case 'x': rwm_ext_mode = strtol( options, NULL, 10 );
+              if ( rwm_ext_mode == 0 ) rwm_ext_mode = 3;
+              else options++;
+//            printf( "ext mode: %dX\n", rwm_ext_mode );
+              break;
+
     default: /* Give error message and usage, then exit: */
       opt_error_msg("Unrecognized '-' option", options);
       break;
     }
+  }
+
+  switch( rwm_ext_mode ) {
+    case  1: rwm_col_ext = &rwm_col_ext1; break;
+    case  2: rwm_col_ext = &rwm_col_ext2; break;
+    default: rwm_col_ext = &rwm_col_ext3; break;
   }
 
   return;
@@ -4973,7 +4991,7 @@ void rwm_get_col( char *fn, int *b, int *f, int *s, int *i ) {
      rc = ( rwm_col_wild( fn, '^', b, f, s, i ) );
   if      ( rc );
   else if ( rwm_col_type(          b, f, s, i ) );    // DIR, SOCKET, SUID, etc
-  else if ( rwm_col_ext3( fn,      b, f, s, i ) );    // file extension
+  else if ( rwm_col_ext ( fn,      b, f, s, i ) );    // file extension
   else if ( rwm_col_name( fn,      b, f, s, i ) );    // entire name
   else if ( rwm_col_wild( fn, '*', b, f, s, i ) );    // find pat in name
   else      rwm_get_cs  ( "FILE=", b, f, s, i ); // default
