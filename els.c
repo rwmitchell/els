@@ -1015,12 +1015,6 @@ void do_options_minus(char *options)
     }
   }
 
-  switch( rwm_ext_mode ) {
-    case  1: rwm_col_ext = &rwm_col_ext1; break;
-    case  2: rwm_col_ext = &rwm_col_ext2; break;
-    default: rwm_col_ext = &rwm_col_ext3; break;
-  }
-
   return;
 }
 
@@ -3004,6 +2998,12 @@ void analyze_options()
     if (listed) fprintf(stderr, "\n");
   }
 
+  switch( rwm_ext_mode ) {
+    case  1: rwm_col_ext = &rwm_col_ext1; break;
+    case  2: rwm_col_ext = &rwm_col_ext2; break;
+    default: rwm_col_ext = &rwm_col_ext3; break;
+  }
+
   return;
 }
 
@@ -4894,8 +4894,9 @@ Boole rwm_col_ext2( char *fn, int *b, int *f, int *s, int *i ) {
 Boole rwm_col_ext3( char *fn, int *b, int *f, int *s, int *i ) {
   // keep searching for a match, ie: file.tar.baz  - match on .tar
   char *ext = NULL,
+       *ps  = NULL,
        *tfn = strdup( fn ),
-        pat[256];
+        pat[32];
   Boole rc   = FALSE,
         done = FALSE;
 
@@ -4905,7 +4906,7 @@ Boole rwm_col_ext3( char *fn, int *b, int *f, int *s, int *i ) {
 
     if ( ext ) {
       sprintf( pat, "%.13s=", ext );     // 2020-11-10 removed leading asterick '*'
-      char *ps = pat;
+      ps = pat;
       while ( *ps != '\0' ) { *ps = toupper( *ps ); ++ps; }
       done = rc = rwm_get_cs( pat, b, f, s, i );
       if ( ! done ) *ext = '\0';
@@ -4994,7 +4995,7 @@ void rwm_get_col( char *fn, int *b, int *f, int *s, int *i ) {
   else if ( rwm_col_ext ( fn,      b, f, s, i ) );    // file extension
   else if ( rwm_col_name( fn,      b, f, s, i ) );    // entire name
   else if ( rwm_col_wild( fn, '*', b, f, s, i ) );    // find pat in name
-  else      rwm_get_cs  ( "FILE=", b, f, s, i ); // default
+  else      rwm_get_cs  ( "FILE=", b, f, s, i );      // default
 }
 
 #define ZERO_PAD_DEFAULT  FALSE
