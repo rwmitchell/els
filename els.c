@@ -4988,6 +4988,7 @@ void rwm_get_col( char *fn, int *b, int *f, int *s, int *i ) {
   *b = *f = *s = 0;
   Boole rc = FALSE;
 
+//printf( "COL: %d: %s\n", rwm_type == type_DIR, fn );
   if ( rwm_type == type_DIR )
      rc = ( rwm_col_wild( fn, '^', b, f, s, i ) );
   if      ( rc );
@@ -5010,17 +5011,17 @@ char *rwm_dir_col( char *dnam ) {
   Boole done = FALSE;
 
 //printf( "rwm_dir_col: >%s<\n", tn);
-  rwm_type = type_DIR;
   memset( dcol, '\0', 255 );
   while ( ! done ) {
     pe = strchr( pe, '/' );
     if ( pe ) *pe = '\0';
     else done = TRUE;
 
-//  printf( "coloring: >%s<\n", ps );
+    rwm_type = type_DIR;     // something resets rwm_type in this loop
+//  printf( "coloring: %d >%s<\n", rwm_type == type_DIR, ps );
 
     rwm_get_col( ps, &rwm_b, &rwm_f, &rwm_s, &rwm_i );
-//    printf( "Coloring: >%s<\n", ps );
+//    printf( "Coloring: >%s< %d\n", ps, rwm_f );
 
       if ( rwm_b >  0  ) sprintf( rwm_bg,    "[48;5;%dm",        rwm_b );
       else               rwm_bg[0] = '\0';
@@ -5309,7 +5310,7 @@ char *N_print(char *buff, char *fmt,
           if ( dname ) dlast = strdup( dname );
 
           dcolr = rwm_dir_col( dlast );
-//        printf ("Dir: >%s<\n", dcolr );
+//        printf ("Dir: >%s%s< [%s] : %d\n", dcolr, cs, fname, rwm_f );
         }
           d = dcolr;
 
