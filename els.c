@@ -4997,6 +4997,50 @@ void rwm_get_col( char *fn, int *b, int *f, int *s, int *i ) {
   else if ( rwm_col_wild( fn, '*', b, f, s, i ) );    // find pat in name
   else      rwm_get_cs  ( "FILE=", b, f, s, i );      // default
 }
+char *rwm_dir_col( char *dnam ) {
+  static char dcol[255];    // MAXNAMLEN
+  int  rwm_b, rwm_f, rwm_s, rwm_i,
+       type = rwm_type;
+  char rwm_col[128],
+       rwm_tmp[ 32],
+       rwm_bg [ 32],
+      *tn = strdup( dnam ),
+      *ps = tn,
+      *pe = tn+1;
+  Boole done = FALSE;
+
+//printf( "rwm_dir_col: >%s<\n", tn);
+  rwm_type = type_DIR;
+  memset( dcol, '\0', 255 );
+  while ( ! done ) {
+    pe = strchr( pe, '/' );
+    if ( pe ) *pe = '\0';
+    else done = TRUE;
+
+//  printf( "coloring: >%s<\n", ps );
+
+    rwm_get_col( ps, &rwm_b, &rwm_f, &rwm_s, &rwm_i );
+//    printf( "Coloring: >%s<\n", ps );
+
+      if ( rwm_b >  0  ) sprintf( rwm_bg,    "[48;5;%dm",        rwm_b );
+      else               rwm_bg[0] = '\0';
+
+      // Foreground color
+      if ( rwm_s <= 0 ) sprintf( rwm_col, "%s[38;5;%dm",    cs, rwm_f );
+      else              sprintf( rwm_col, "%s[38;5;%d;%dm", cs, rwm_f, rwm_s );
+      strcat( rwm_col, rwm_bg );
+
+      sprintf(rwm_tmp, "%s%s%s%c", rwm_col, ps, cs, pe ? '/' : '\0' );
+      strcat( dcol, rwm_tmp );
+
+    ps = ++pe;
+  }
+//printf( "rwm_dir_col: >%s< | <%s>\n", tn, dcol );
+  rwm_type = type;
+
+  if ( tn ) free( tn );
+  return( dcol );
+}
 
 #define ZERO_PAD_DEFAULT  FALSE
 char *N_print(char *buff, char *fmt,
@@ -5216,30 +5260,28 @@ char *N_print(char *buff, char *fmt,
   }
 
         char rwm_col[128],
-             rwm_bg[32],
-             rwm_gl[ 8];
+             rwm_bg [ 32],
+             rwm_gl [  8];
         int rwm_b = 49, rwm_f = 39, rwm_s=29;   // back, fore, and style
         wchar_t rwm_i = ' ';   // 0xf118;   // happy face
         if ( rwm_docolor ) {
 //        printf( "START: %lc:%lc:\n", 0x42, 0xf118 );
 //        printf( "rwm_i: %0x:%lc:\n", rwm_i, rwm_i );
-          rwm_get_col( fname, &rwm_b, &rwm_f, &rwm_s, &rwm_i );
-//        printf( "rwm_I: %0x:%lc:\n", rwm_i, rwm_i );
-          if ( rwm_doicons ) {
-            // Foreground color
-            rwm_bg[0] = '\0';
-            rwm_gl[0] = '\0';
-            sprintf ( rwm_gl, "%lc  ", rwm_i );
-//          if ( rwm_s <= 0 ) sprintf( rwm_col, "%s[38;5;%dm%lc%s",    cs, rwm_f, rwm_i, cs );
 
-            if ( rwm_s <= 0 ) sprintf( rwm_col, "%s[38;5;%dm",    cs, rwm_f );
-            else              sprintf( rwm_col, "%s[38;5;%d;%dm", cs, rwm_f, rwm_s );
-            if ( rwm_b >  0 ) sprintf( rwm_bg,    "[48;5;%dm",        rwm_b );
-            strcat( rwm_col, rwm_bg );
-//          strcat( rwm_col, rwm_gl );
-          } else
-            sprintf( rwm_col, "[%d;%d;%dm", rwm_b, rwm_f, rwm_s );   // No icon/glyph
-//        printf( "END\n" );
+          rwm_get_col( fname, &rwm_b, &rwm_f, &rwm_s, &rwm_i );
+
+//        printf( "rwm_I: %0x:%lc:\n", rwm_i, rwm_i );
+          if ( rwm_doicons ) sprintf ( rwm_gl, "%lc  ", rwm_i );
+          else               rwm_gl[0] = '\0';
+
+          // Background color
+          if ( rwm_b >  0  ) sprintf( rwm_bg,    "[48;5;%dm",        rwm_b );
+          else               rwm_bg[0] = '\0';
+
+          // Foreground color
+          if ( rwm_s <= 0 ) sprintf( rwm_col, "%s[38;5;%dm",    cs, rwm_f );
+          else              sprintf( rwm_col, "%s[38;5;%d;%dm", cs, rwm_f, rwm_s );
+          strcat( rwm_col, rwm_bg );
         } else rwm_col[0] = '\0';
 
   /* Process a directive: */
@@ -5247,7 +5289,10 @@ char *N_print(char *buff, char *fmt,
   {
   case Nf_FULL_NAME:
     {
+      static char *dlast = NULL,
+                  *dcolr = NULL;
       char *d, *s;
+
       if (strcmp(dname, "/") == 0)
       {
         d = ""; s = "/";
@@ -5255,6 +5300,19 @@ char *N_print(char *buff, char *fmt,
       else if (dname[0] != CNULL && strcmp(dname, ".") != 0)
       {
         d = dname; s = "/";
+//      printf( "DNAME: %s\n", d );
+
+//      printf( "Pre: >%s< | <%s>\n", dname, dlast );
+        if ( !dlast || strcmp( dname, dlast) ) {     // has dname changed?
+//        printf( "Start\n");
+          if ( dlast ) free( dlast );
+          if ( dname ) dlast = strdup( dname );
+
+          dcolr = rwm_dir_col( dlast );
+//        printf ("Dir: >%s<\n", dcolr );
+        }
+          d = dcolr;
+
       }
       else
       {
