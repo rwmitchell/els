@@ -4999,7 +4999,7 @@ void rwm_get_col( char *fn, int *b, int *f, int *s, int *i ) {
   else      rwm_get_cs  ( "FILE=", b, f, s, i );      // default
 }
 char *rwm_dir_col( char *dnam ) {
-  static char dcol[255];    // MAXNAMLEN
+  static char dcol[512];    // MAXNAMLEN
   int  rwm_b, rwm_f, rwm_s, rwm_i,
        type = rwm_type;
   char rwm_col[512],     // MAXNAMLEN plus cushion for escape codes
@@ -5011,7 +5011,7 @@ char *rwm_dir_col( char *dnam ) {
   Boole done = FALSE;
 
 //printf( "rwm_dir_col: >%s<\n", tn);
-  memset( dcol, '\0', 255 );
+  memset( dcol, '\0', 512 );
   while ( ! done ) {
     pe = strchr( pe, '/' );
     if ( pe ) *pe = '\0';
