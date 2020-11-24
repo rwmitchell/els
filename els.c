@@ -5002,8 +5002,8 @@ char *rwm_dir_col( char *dnam ) {
   static char dcol[255];    // MAXNAMLEN
   int  rwm_b, rwm_f, rwm_s, rwm_i,
        type = rwm_type;
-  char rwm_col[128],
-       rwm_tmp[ 32],
+  char rwm_col[512],     // MAXNAMLEN plus cushion for escape codes
+       rwm_tmp[512],
        rwm_bg [ 32],
       *tn = strdup( dnam ),
       *ps = tn,
