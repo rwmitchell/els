@@ -77,16 +77,17 @@ clean:
 	rm -f getdate32.o time32.o auxil.o elsFilter.o elsMisc.o
 	rm -f sysInfo.o sysdep.o phLib.o quotal.o format.o cksum.o
 	rm -f config.o config config.h
+	rm -r hg.o
 
 realclean: clean
 	rm -f els chdate edate els5
 
 els: els.o getdate32.o time32.o auxil.o \
 		elsFilter.o elsMisc.o sysInfo.o sysdep.o phLib.o quotal.o \
-		format.o cksum.o
+		format.o cksum.o hg.o
 	$(LD) $(LDFLAGS) els.o getdate32.o time32.o auxil.o \
 		elsFilter.o elsMisc.o sysInfo.o sysdep.o phLib.o quotal.o \
-		format.o cksum.o -o els
+		format.o cksum.o hg.o -o els
 
 chdate: chdate.o getdate32.o time32.o auxil.o sysInfo.o
 	$(LD) $(LDFLAGS) chdate.o getdate32.o time32.o auxil.o sysInfo.o \

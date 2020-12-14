@@ -79,6 +79,7 @@
 #include "quotal.h"
 #include "format.h"
 #include "cksum.h"
+#include "hg.h"
 
 char LGC = ' '; /* LGC default value used by convert_iso8601 */
 
@@ -175,6 +176,8 @@ Boole zero_file_args;
 Boole multiple_file_args;
 Boole using_full_names;
 Boole avoid_trimmings;
+char *hg_root = NULL,
+     *hg_stat = NULL;
 // Boole list_topdir;      // defined in elsVars.h
 char first_mac;
 int recursion_level = 0;
@@ -3608,6 +3611,11 @@ void list_dir(Dir_List *dlist,
   recursion_level++;
   sub_dlist.head = NULL;
 
+  hg_root = is_hg( fullpath( (char *) CwdPath ) );
+  if ( hg_root ) printf( "HG ROOT: %s\n", hg_root);
+  if ( hg_root ) hg_stat = load_hgstatus( hg_root );
+//if ( hg_stat ) printf( "---------%s-------\n", hg_stat );
+
   for (ptr = dlist->head; ptr != NULL; ptr = ptr->next)
   {
     if (OncePerDir && item_listed)
@@ -3701,6 +3709,24 @@ void list_dir(Dir_List *dlist,
     const
     char *saveCwdPath = CwdPath;
     CwdPath = cur_dname;
+
+#define WRONG_PLACE
+#ifdef  WRONG_PLACE
+    static Boole first = TRUE;
+    // 2020-12-13: XYZZY check here for hg repo
+    // if new contains old, don't redo hg
+
+    if ( first || strncmp( saveCwdPath, CwdPath, strlen( saveCwdPath ))) {
+      hg_root = is_hg( fullpath( (char *) CwdPath ) );
+//    printf( "%d Check HG: %s -> %s\n", First_listing, saveCwdPath, CwdPath );
+ //   if ( hg_root ) printf( "HG ROOT: %s\n", hg_root);
+      if ( hg_root ) hg_stat = load_hgstatus( hg_root );
+//    if ( hg_stat ) printf( "---------%s-------\n", hg_stat );
+
+      first=FALSE;
+    }
+#endif
+
     n = read_dir(&cur_dlist, cur_dname, dir);
     stat_dir(&cur_dlist, cur_dname);
     name_dir(&cur_dlist, cur_dname);
@@ -5011,7 +5037,19 @@ char *rwm_dir_col( char *dnam ) {
   Boole done = FALSE;
 
 //printf( "rwm_dir_col: >%s<\n", tn);
+
   memset( dcol, '\0', 512 );
+
+#define WRONG_PLACE_no
+#ifdef  WRONG_PLACE
+  char hg = '\0';
+  if ( hg_root ) {
+    hg =  get_hgstatus( dnam, hg_stat);
+    sprintf( dcol, "%c ", hg );
+    printf( "X %c %s\n", hg, dnam );
+  }
+#endif
+
   while ( ! done ) {
     pe = strchr( pe, '/' );
     if ( pe ) *pe = '\0';
@@ -5023,16 +5061,16 @@ char *rwm_dir_col( char *dnam ) {
     rwm_get_col( ps, &rwm_b, &rwm_f, &rwm_s, &rwm_i );
 //    printf( "Coloring: >%s< %d\n", ps, rwm_f );
 
-      if ( rwm_b >  0  ) sprintf( rwm_bg,    "[48;5;%dm",        rwm_b );
-      else               rwm_bg[0] = '\0';
+    if ( rwm_b >  0  ) sprintf( rwm_bg,    "[48;5;%dm",        rwm_b );
+    else               rwm_bg[0] = '\0';
 
-      // Foreground color
-      if ( rwm_s <= 0 ) sprintf( rwm_col, "%s[38;5;%dm",    cs, rwm_f );
-      else              sprintf( rwm_col, "%s[38;5;%d;%dm", cs, rwm_f, rwm_s );
-      strcat( rwm_col, rwm_bg );
+    // Foreground color
+    if ( rwm_s <= 0 ) sprintf( rwm_col, "%s[38;5;%dm",    cs, rwm_f );
+    else              sprintf( rwm_col, "%s[38;5;%d;%dm", cs, rwm_f, rwm_s );
+    strcat( rwm_col, rwm_bg );
 
-      sprintf(rwm_tmp, "%s%s%s%c", rwm_col, ps, cs, pe ? '/' : '\0' );
-      strcat( dcol, rwm_tmp );
+    sprintf(rwm_tmp, "%s%s%s%c", rwm_col, ps, cs, pe ? '/' : '\0' );
+    strcat( dcol, rwm_tmp );
 
     ps = ++pe;
   }
@@ -5265,6 +5303,10 @@ char *N_print(char *buff, char *fmt,
              rwm_gl [  8];
         int rwm_b = 49, rwm_f = 39, rwm_s=29;   // back, fore, and style
         wchar_t rwm_i = ' ';   // 0xf118;   // happy face
+
+        char hg = '\0';
+        if ( hg_root ) hg =  get_hgstatus( fname, hg_stat);
+
         if ( rwm_docolor ) {
 //        printf( "START: %lc:%lc:\n", 0x42, 0xf118 );
 //        printf( "rwm_i: %0x:%lc:\n", rwm_i, rwm_i );
@@ -5272,7 +5314,7 @@ char *N_print(char *buff, char *fmt,
           rwm_get_col( fname, &rwm_b, &rwm_f, &rwm_s, &rwm_i );
 
 //        printf( "rwm_I: %0x:%lc:\n", rwm_i, rwm_i );
-          if ( rwm_doicons ) sprintf ( rwm_gl, "%lc  ", rwm_i );
+          if ( rwm_doicons ) sprintf ( rwm_gl, "%c %lc  ", hg, rwm_i );
           else               rwm_gl[0] = '\0';
 
           // Background color
