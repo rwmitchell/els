@@ -123,11 +123,15 @@ char  get_hgstatus( char *dir, char *file, char *hgs ) {
   }
 
   bool done = false;
+  int len1, len2;
+  len1 = strlen( pf );
   do {
     pt1 = pt2;
     pt2 = strstr( pt1, pf );
     if ( pt2 ) {
-      if ( *(pt2-1) == ' ' ) {
+      len2 = strchr( pt2, '\n' ) - pt2;
+//    printf( "%5d %5d %s\n", len1, len2, file );
+      if ( len1 == len2 && *(pt2-1) == ' ' ) {
         done = true;
         pt2 -= 2;
         switch( *pt2 ) {
