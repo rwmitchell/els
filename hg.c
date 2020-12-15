@@ -53,6 +53,7 @@ char *loadpipe( const char *cmd, off_t *f_sz ) {
 }
 char *fullpath( char *path ) {
   if ( *path == '/' ) return ( path  );
+  if ( *path == '.' ) return ( getcwd( NULL, 0 ) );
 
   static
   char fpath[ MAX_DNAME ];
@@ -68,8 +69,6 @@ char *is_hg( char *dir ) {
        *po;
 
   bool  is_hg = false;
-
-  printf( "Check: %s\n", dir );
 
   if ( dir && RMisdir( dir ) ) pd = strcpy( cwd, dir );
   else return NULL;
@@ -87,54 +86,65 @@ char *is_hg( char *dir ) {
     } else *pd = '\0';
   }
 
-  if ( is_hg )
-  printf( "Found: %s\n", cwd );
-
   return( is_hg ? cwd : NULL );
 }
 char *load_hgstatus( const char *dir ) {
   off_t sz;
+  static
+  char *lst = NULL,
+       *hld = NULL;
   char *cmd = NULL,
        *hgc = "hg status -mardui";
-  cmd = malloc( strlen( dir ) + strlen( hgc ) + 4 );
-  sprintf( cmd, "%s %s", hgc, dir );
-  return ( loadpipe( cmd, &sz ) );
+
+  if ( !lst || strcmp( dir, lst ) ) {
+    if( lst ) free( lst );
+    lst = strdup( dir );
+    cmd = malloc( strlen( dir ) + strlen( hgc ) + 4 );
+    sprintf( cmd, "%s %s", hgc, dir );
+    return ( (hld=loadpipe( cmd, &sz )) );
+  } else return( hld );
 }
-char  get_hgstatus( char *file, char *hgs ) {
-  char *pt = NULL,
-        ch = ' ';
+char  get_hgstatus( char *dir, char *file, char *hgs ) {
+  char *pt1 = NULL,
+       *pt2 = NULL,
+       *pf  = NULL,
+        buf[MAX_DNAME],
+        ch  = ' ';
 
   if ( RMisdir( file ) ) return( ch );
 
-  pt = hgs;
+  pt1 = pt2 = hgs;
 
-#define TEST_no
-#ifdef  TEST
-  printf( "FILE: %sX\n", file );
-  pt = strstr( pt, file );
-  printf( ">%c<\n", *(pt-1) );
-//printf( "%s\n", pt );
-  exit( 0 );
-  return( 'x' );
-#endif
+  if ( ! strcmp( dir, "." ) ) {
+    pf = file;
+  } else {
+    sprintf( buf, "%s/%s", dir, file );
+    pf = buf;
+  }
 
+  bool done = false;
   do {
-    pt = strstr( pt, file );
-  } while ( *pt && *(pt-1) != ' ' );
-  printf( "CHECK >%c<\n", *(pt-2) );
+    pt1 = pt2;
+    pt2 = strstr( pt1, pf );
+    if ( pt2 ) {
+      if ( *(pt2-1) == ' ' ) done = true;
+      else pt2++;
+    } else done = true;
 
-//if ( (pt = strstr( pt, file )) ) {
-    pt -= 2;
-    switch( *pt ) {
+  } while ( !done );
+
+  if ( pt2 ) {
+    pt2 -= 2;
+    switch( *pt2 ) {
       case 'M': ch = 'M'; break;   // modified
       case 'A': ch = 'A'; break;   // added
       case 'R': ch = 'R'; break;   // removed
       case 'D': ch = 'D'; break;   // deleted/missing
       case '?': ch = '?'; break;   // unknown/not tracked
       case 'I': ch = 'I'; break;   // ignored
-      default : ch = 'E'; printf( ">%c: %s<\n", *pt, file ); break;   // error
+      default : ch = 'E'; printf( ">%c: %s<\n", *pt2, pf ); break;   // error
     }
-//}
+  }
 
   return( ch );
 }

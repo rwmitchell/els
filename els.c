@@ -3612,9 +3612,7 @@ void list_dir(Dir_List *dlist,
   sub_dlist.head = NULL;
 
   hg_root = is_hg( fullpath( (char *) CwdPath ) );
-  if ( hg_root ) printf( "HG ROOT: %s\n", hg_root);
   if ( hg_root ) hg_stat = load_hgstatus( hg_root );
-//if ( hg_stat ) printf( "---------%s-------\n", hg_stat );
 
   for (ptr = dlist->head; ptr != NULL; ptr = ptr->next)
   {
@@ -3710,22 +3708,16 @@ void list_dir(Dir_List *dlist,
     char *saveCwdPath = CwdPath;
     CwdPath = cur_dname;
 
-#define WRONG_PLACE
-#ifdef  WRONG_PLACE
     static Boole first = TRUE;
     // 2020-12-13: XYZZY check here for hg repo
     // if new contains old, don't redo hg
 
     if ( first || strncmp( saveCwdPath, CwdPath, strlen( saveCwdPath ))) {
       hg_root = is_hg( fullpath( (char *) CwdPath ) );
-//    printf( "%d Check HG: %s -> %s\n", First_listing, saveCwdPath, CwdPath );
- //   if ( hg_root ) printf( "HG ROOT: %s\n", hg_root);
       if ( hg_root ) hg_stat = load_hgstatus( hg_root );
-//    if ( hg_stat ) printf( "---------%s-------\n", hg_stat );
 
       first=FALSE;
     }
-#endif
 
     n = read_dir(&cur_dlist, cur_dname, dir);
     stat_dir(&cur_dlist, cur_dname);
@@ -3793,6 +3785,7 @@ Boole list_item(Dir_Item *file,
       Quotal(file);
     else
     {
+//    printf(  "# XYZZY %s | %s\n", dname, file->fname );      // XYZZY
       char *bp = G_print(output_buff, G_format, dname, file);
       if ( !rwm_dospace ) {
         if ( rwm_docolor ) {
@@ -5040,13 +5033,13 @@ char *rwm_dir_col( char *dnam ) {
 
   memset( dcol, '\0', 512 );
 
-#define WRONG_PLACE_no
-#ifdef  WRONG_PLACE
+#define THIS_WRONG_PLACE_no   // This is a directory, only mark files
+#ifdef  THIS_WRONG_PLACE
   char hg = '\0';
   if ( hg_root ) {
     hg =  get_hgstatus( dnam, hg_stat);
     sprintf( dcol, "%c ", hg );
-    printf( "X %c %s\n", hg, dnam );
+    printf( "Z %c %s\n", hg, dnam );
   }
 #endif
 
@@ -5305,7 +5298,7 @@ char *N_print(char *buff, char *fmt,
         wchar_t rwm_i = ' ';   // 0xf118;   // happy face
 
         char hg = '\0';
-        if ( hg_root ) hg =  get_hgstatus( fname, hg_stat);
+        if ( hg_root ) hg =  get_hgstatus( dname, fname, hg_stat);
 
         if ( rwm_docolor ) {
 //        printf( "START: %lc:%lc:\n", 0x42, 0xf118 );
