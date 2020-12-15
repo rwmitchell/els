@@ -127,24 +127,23 @@ char  get_hgstatus( char *dir, char *file, char *hgs ) {
     pt1 = pt2;
     pt2 = strstr( pt1, pf );
     if ( pt2 ) {
-      if ( *(pt2-1) == ' ' ) done = true;
+      if ( *(pt2-1) == ' ' ) {
+        done = true;
+        pt2 -= 2;
+        switch( *pt2 ) {
+          case 'M': ch = 'M'; break;   // modified
+          case 'A': ch = 'A'; break;   // added
+          case 'R': ch = 'R'; break;   // removed
+          case 'D': ch = 'D'; break;   // deleted/missing
+          case '?': ch = '?'; break;   // unknown/not tracked
+          case 'I': ch = 'I'; break;   // ignored
+          default : ch = 'E'; printf( ">%c: %s<\n", *pt2, pf ); break;   // error
+        }
+      }
       else pt2++;
     } else done = true;
 
   } while ( !done );
-
-  if ( pt2 ) {
-    pt2 -= 2;
-    switch( *pt2 ) {
-      case 'M': ch = 'M'; break;   // modified
-      case 'A': ch = 'A'; break;   // added
-      case 'R': ch = 'R'; break;   // removed
-      case 'D': ch = 'D'; break;   // deleted/missing
-      case '?': ch = '?'; break;   // unknown/not tracked
-      case 'I': ch = 'I'; break;   // ignored
-      default : ch = 'E'; printf( ">%c: %s<\n", *pt2, pf ); break;   // error
-    }
-  }
 
   return( ch );
 }
