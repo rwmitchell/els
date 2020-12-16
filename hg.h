@@ -1,5 +1,7 @@
 #ifndef HG_H
 #define HG_H
+#ident "$Id$"
+
 #include <sys/stat.h>
 
 /* hg.c */

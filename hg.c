@@ -1,4 +1,4 @@
-#ident "$Id"
+#ident "$Id$"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,6 +9,7 @@
 #include <sys/stat.h>   // struct stat
 #include "els.h"
 
+extern char *HGSTATS;
 
 // 2020-12-13 copying routines from mylib to keep this autonymous
 bool  RMisdir     ( const char *name ) {
@@ -94,7 +95,9 @@ char *load_hgstatus( const char *dir ) {
   char *lst = NULL,
        *hld = NULL;
   char *cmd = NULL,
-       *hgc = "hg status -mardui";
+       *hgc = HGSTATS;     // "hg status -mardui";
+
+  if ( ! hgc ) return( hld );  // return quickly if not set
 
   if ( !lst || strcmp( dir, lst ) ) {
     if( lst ) free( lst );
@@ -110,7 +113,6 @@ char  get_hgstatus( char *dir, char *file, char *hgs ) {
        *pf  = NULL,
         buf[MAX_DNAME],
         ch  = ' ';
-
   if ( RMisdir( file ) ) return( ch );
 
   pt1 = pt2 = hgs;

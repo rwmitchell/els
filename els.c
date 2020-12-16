@@ -136,7 +136,8 @@ char *LSICONS = NULL;      // rwm - from LS_ICONS
 const
 char *LSCOLOR = NULL,      // rwm - from LS_COLORS
      *FSCOLOR = NULL,      // rwm - ELS_FS_COLOR  - file size
-     *FSWIDTH = NULL;
+     *FSWIDTH = NULL,
+     *HGSTATS = NULL;
 // export ELS_FT_COLORS="86400=0;32;1:6480000=0;32:7121234=0;32;2:31557600=1;33;2:-1=0;31;1:"
 char *FTCOLOR = NULL,      // rwm - ELS_FT_COLORS - file ages and colors
      *rwm_cols[32];
@@ -762,6 +763,7 @@ void do_getenv(void)
     LSICONS = getenv( "LS_ICONS"      );       // file icons
     FSCOLOR = getenv( "ELS_FS_COLOR"  );       // color by file size
     FTCOLOR = getenv( "ELS_FT_COLORS" );       // color by file time/age
+    HGSTATS = getenv( "ELS_HG_STATUS" );
 
     if ( FTCOLOR)
       rwm_ftcnt = rwm_env2ft( FTCOLOR, ':', rwm_ages, rwm_cols );
@@ -2494,7 +2496,8 @@ Enhanced LS -- ENVIRONMEMT:\n\
   ELS_TRUNCATE_NAME=1   - truncate annoyingly long user/group names\n\
   ELS_FS_COLOR=35;1     - show size in red\n\
   ELS_FT_COLORS=86400=32;1:6480000=32:15724800=33:3155760=33;2:-1=31;1:\n\
-  ELS_FS_WIDTH=7        .- minimize size width, increase for more width\n\
+  ELS_FS_WIDTH=7        - minimize size width, increase for more width\n\
+  ELS_HG_STATUS='hg status -mardui'  - add hg status\n\
 \n\
 ");
   }
@@ -5033,16 +5036,6 @@ char *rwm_dir_col( char *dnam ) {
 
   memset( dcol, '\0', 512 );
 
-#define THIS_WRONG_PLACE_no   // This is a directory, only mark files
-#ifdef  THIS_WRONG_PLACE
-  char hg = '\0';
-  if ( hg_root ) {
-    hg =  get_hgstatus( dnam, hg_stat);
-    sprintf( dcol, "%c ", hg );
-    printf( "Z %c %s\n", hg, dnam );
-  }
-#endif
-
   while ( ! done ) {
     pe = strchr( pe, '/' );
     if ( pe ) *pe = '\0';
@@ -5298,7 +5291,7 @@ char *N_print(char *buff, char *fmt,
         wchar_t rwm_i = ' ';   // 0xf118;   // happy face
 
         char hg = '\0';
-        if ( hg_root ) hg =  get_hgstatus( dname, fname, hg_stat);
+        if ( hg_stat ) hg =  get_hgstatus( dname, fname, hg_stat);
 
         if ( rwm_docolor ) {
 //        printf( "START: %lc:%lc:\n", 0x42, 0xf118 );
