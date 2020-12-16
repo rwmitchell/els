@@ -5300,7 +5300,10 @@ char *N_print(char *buff, char *fmt,
           rwm_get_col( fname, &rwm_b, &rwm_f, &rwm_s, &rwm_i );
 
 //        printf( "rwm_I: %0x:%lc:\n", rwm_i, rwm_i );
-          if ( rwm_doicons ) sprintf ( rwm_gl, "%c %lc  ", hg, rwm_i );
+          if ( rwm_doicons ) {
+            if ( hg_stat ) sprintf ( rwm_gl, "%c %lc  ", hg, rwm_i );
+            else           sprintf ( rwm_gl, "%lc  ",        rwm_i );
+          }
           else               rwm_gl[0] = '\0';
 
           // Background color
