@@ -117,7 +117,7 @@ char  get_hgstatus( char *dir, char *file, char *hgs ) {
 
   pt1 = pt2 = hgs;
 
-  if ( ! strcmp( dir, "." ) ) {
+  if ( ! strcmp( dir, "." ) || *dir == '\0' ) {
     pf = file;
   } else {
     sprintf( buf, "%s/%s", dir, file );

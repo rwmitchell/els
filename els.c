@@ -3616,7 +3616,7 @@ void list_dir(Dir_List *dlist,
   recursion_level++;
   sub_dlist.head = NULL;
 
-  hg_root = is_hg( fullpath( (char *) CwdPath ) );
+  hg_root = is_hg( fullpath( (char *) dname ) );
   if ( hg_root ) hg_stat = load_hgstatus( hg_root );
 
   for (ptr = dlist->head; ptr != NULL; ptr = ptr->next)
