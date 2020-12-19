@@ -38,7 +38,7 @@ char *loadpipe( const char *cmd, off_t *f_sz ) {
 //    printf( "====\n%s\n===\n", buf );
       if ( sz + rc >= *f_sz ) {
         *f_sz += 2048;
-        data = realloc( data, *f_sz );
+        data = reallocf( data, *f_sz );
         if ( !data ) { printf( "realloc(%lld) failed on %s\n", *f_sz, cmd); exit(-1); }
       }
       strcat( data, buf );
