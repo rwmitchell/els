@@ -7,6 +7,7 @@ CFLAGS_DBUG = -g3 -DDEBUG_ALL
 CFLAGS_GENERIC = -O
 CFLAGS_GNU = -Wall
 CFLAGS = $(CFLAGS_GENERIC) $(CFLAGS_GNU) # $(CFLAGS_DBUG)
+# CFLAGS =                   $(CFLAGS_GNU)   $(CFLAGS_DBUG)
 LD = $(CC)
 LDFLAGS = -lm
 BINDIR = /usr/local/bin
