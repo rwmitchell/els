@@ -92,20 +92,23 @@ char *is_hg( char *dir ) {
 char *load_hgstatus( const char *dir ) {
   off_t sz;
   static
-  char *lst = NULL,
+  char *lst = NULL;
+  char
        *hld = NULL;
-  char *cmd = NULL,
+  char *cmd = NULL,        // 2020-12-20 issue is not cmd, fails without malloc
        *hgc = HGSTATS;     // "hg status -mardui";
 
-  if ( ! hgc ) return( hld );  // return quickly if not set
+  if ( ! hgc ) return( NULL );  // return quickly if not set
 
   if ( !lst || strcmp( dir, lst ) ) {
     if( lst ) free( lst );
     lst = strdup( dir );
     cmd = malloc( strlen( dir ) + strlen( hgc ) + 4 );
     sprintf( cmd, "%s %s", hgc, dir );
-    return ( (hld=loadpipe( cmd, &sz )) );
-  } else return( hld );
+    hld=loadpipe( cmd, &sz );
+    free   ( cmd );
+    return ( hld );
+  } else return( NULL );
 }
 char  get_hgstatus( char *dir, char *file, char *hgs ) {
   char *pt1 = NULL,
