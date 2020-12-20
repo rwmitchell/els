@@ -52,13 +52,20 @@ char *loadpipe( const char *cmd, off_t *f_sz ) {
   return( data );
 }
 char *fullpath( char *path ) {
-  if ( *path == '/' ) return ( path  );
-  if ( *path == '.' ) return ( getcwd( NULL, 0 ) );
-
   static
   char fpath[ MAX_DNAME ];
+  char *p = NULL;
 
-  sprintf( fpath, "%s/%s", getcwd( NULL, 0 ), path );
+  if ( *path == '/' ) return ( path  );
+  p = getcwd( NULL, 0 );
+  if ( *path == '.' ) {
+    sprintf( fpath, "%s", p );
+    free( p );
+    return( fpath );
+  }
+
+  sprintf( fpath, "%s/%s", p, path );
+  free( p );
   return( fpath  );
 }
 char *is_hg( char *dir ) {
