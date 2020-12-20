@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include <dirent.h>     // MAXNAMLEN
 #include <unistd.h>     // getcwd()
 #include <sys/stat.h>   // struct stat
 #include "els.h"
@@ -64,7 +63,7 @@ char *fullpath( char *path ) {
 }
 char *is_hg( char *dir ) {
   static
-  char  cwd[ MAXNAMLEN ];
+  char  cwd[ MAX_DNAME ];
   char *pd,
        *hg="/.hg",
        *po;
