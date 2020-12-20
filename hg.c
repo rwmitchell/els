@@ -98,13 +98,12 @@ char *is_hg( char *dir ) {
 char *load_hgstatus( const char *dir ) {
   off_t sz;
   static
-  char *lst = NULL;
-  char
+  char *lst = NULL,
        *hld = NULL;
   char *cmd = NULL,        // 2020-12-20 issue is not cmd, fails without malloc
        *hgc = HGSTATS;     // "hg status -mardui";
 
-  if ( ! hgc ) return( NULL );  // return quickly if not set
+  if ( ! hgc ) return( hld );  // return quickly if not set
 
   if ( !lst || strcmp( dir, lst ) ) {
     if( lst ) free( lst );
@@ -114,7 +113,7 @@ char *load_hgstatus( const char *dir ) {
     hld=loadpipe( cmd, &sz );
     free   ( cmd );
     return ( hld );
-  } else return( NULL );
+  } else return( hld );
 }
 char  get_hgstatus( char *dir, char *file, char *hgs ) {
   char *pt1 = NULL,
