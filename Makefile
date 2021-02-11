@@ -86,9 +86,9 @@ realclean: clean
 els: els.o getdate32.o time32.o auxil.o \
 		elsFilter.o elsMisc.o sysInfo.o sysdep.o phLib.o quotal.o \
 		format.o cksum.o hg.o
-	$(LD) $(LDFLAGS) els.o getdate32.o time32.o auxil.o \
+	$(LD) els.o getdate32.o time32.o auxil.o \
 		elsFilter.o elsMisc.o sysInfo.o sysdep.o phLib.o quotal.o \
-		format.o cksum.o hg.o -o els
+		format.o cksum.o hg.o $(LDFLAGS) -o els
 
 chdate: chdate.o getdate32.o time32.o auxil.o sysInfo.o
 	$(LD) $(LDFLAGS) chdate.o getdate32.o time32.o auxil.o sysInfo.o \

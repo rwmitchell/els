@@ -37,8 +37,13 @@ char *loadpipe( const char *cmd, off_t *f_sz ) {
 //    printf( "====\n%s\n===\n", buf );
       if ( sz + rc >= *f_sz ) {
         *f_sz += 2048;
+#ifdef __linux__
+        data = realloc ( data, *f_sz );
+        if ( !data ) { printf( "realloc(%ld) failed on %s\n", *f_sz, cmd); exit(-1); }
+#else
         data = reallocf( data, *f_sz );
         if ( !data ) { printf( "realloc(%lld) failed on %s\n", *f_sz, cmd); exit(-1); }
+#endif
       }
       strcat( data, buf );
       memset( buf, '\0', 1024 );
