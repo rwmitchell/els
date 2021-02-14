@@ -5006,7 +5006,15 @@ Boole rwm_col_wild( char *fn, char y, int *b, int *f, int *s, int *i ) {
       while ( *ps != '=' ) { *pt++ = *ps++; l--; }
       *pt = '\0';
 
-//    printf( "Wild: |%s| [%s]\n", tfn, pat );
+      // 2021-02-14 support wildcard at end of pattern
+      if ( *pat == '\0' ) {           // wildcard appears at end
+        while ( *ps != ':' ) ps--;    // rewind to start of pattern
+        ps++;                         // move past ':'
+        while ( *ps != y ) { *pt++ = *ps++; l--; }
+        *pt = '\0';
+      }
+
+//    printf( "Wild %c: |%s| [%s]\n", y, tfn, pat );
       if ( strstr( tfn, pat )) {      // found pat in filename
         pls = strchr( pls, '=' );
         if ( pls ) {
