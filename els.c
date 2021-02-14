@@ -5043,6 +5043,7 @@ void rwm_get_col( char *fn, int *b, int *f, int *s, int *i ) {
   else if ( rwm_col_ext ( fn,      b, f, s, i ) );    // file extension
   else if ( rwm_col_name( fn,      b, f, s, i ) );    // entire name
   else if ( rwm_col_wild( fn, '*', b, f, s, i ) );    // find pat in name
+  else if ( rwm_col_ext1( fn,      b, f, s, i ) );    // retry looking for cpbu files
   else      rwm_get_cs  ( "FILE=", b, f, s, i );      // default
 }
 char *rwm_dir_col( char *dnam ) {
