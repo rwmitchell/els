@@ -4981,7 +4981,8 @@ Boole rwm_col_wild( char *fn, char y, int *b, int *f, int *s, int *i ) {
        *pt,
        *tfn = strdup( fn );
   int   d = 0;
-  Boole done = FALSE;
+  Boole done = FALSE,
+        mtch = FALSE;
 
   // reverse search method
   //   find '*' in LSCOLOR/LSICON,
@@ -5015,7 +5016,13 @@ Boole rwm_col_wild( char *fn, char y, int *b, int *f, int *s, int *i ) {
       }
 
 //    printf( "Wild %c: |%s| [%s]\n", y, tfn, pat );
-      if ( strstr( tfn, pat )) {      // found pat in filename
+      pt = strstr( tfn, pat );
+#ifdef EXACT_MATCH    // breaks matching *rc for .zshrc-path
+      if ( pt && strlen( pt ) == strlen ( pat )) mtch = TRUE;
+#else
+      if ( pt ) mtch = TRUE;        // found pat in filename
+#endif
+      if ( mtch ) {
         pls = strchr( pls, '=' );
         if ( pls ) {
           if ( ! rwm_doicons )
