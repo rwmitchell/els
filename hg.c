@@ -26,18 +26,21 @@ char *loadpipe( const char *cmd, off_t *f_sz ) {
   FILE *pipe = NULL;
   static
   char *data = NULL;
+  static off_t of_sz = 0;
   char  buf[1024];
 
-  if ( data ) { free( data ); data = NULL; }
+  if ( data ) { memset( data,'\0', of_sz ); }
 
-  *f_sz = 0;
+  *f_sz = of_sz;
   if ( (pipe=popen( cmd, "r" )) > 0 ) {
+//  printf("cmd: %s : %ld\n", cmd, *f_sz );
     while (  (rc = fread( buf, 1, 1023, pipe )) > 0 ) {
 //    printf( "%8ld bytes read\n", rc );
 //    printf( "====\n%s\n===\n", buf );
-      if ( sz + rc >= *f_sz ) {
+      if ( sz + rc > *f_sz ) {
         *f_sz += 2048;
 #ifdef __linux__
+ //     printf( "loadpipe: realloc( %p, %ld ): %ld %ld\n", data, *f_sz, sz, rc );
         data = realloc ( data, *f_sz );
         if ( !data ) { printf( "realloc(%ld) failed on %s\n", *f_sz, cmd); exit(-1); }
 #else
@@ -54,6 +57,7 @@ char *loadpipe( const char *cmd, off_t *f_sz ) {
     fprintf(stderr, "Unable to open %s\n", cmd );
   }
 
+  of_sz = *f_sz;
   return( data );
 }
 char *fullpath( char *path ) {
