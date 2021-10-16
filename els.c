@@ -4552,7 +4552,20 @@ char *G_print(char *buff,
     if (VersionLevel <= 145 && !width_specified)
       width = (ANYBIT(Sem,SEM_BSD|SEM_ELS) ? 2 : 3);
 # endif
-    sprintf(bp, F_st_nlink(zero_pad,width, info->st_nlink));
+
+    // 2021-10-16 Modified to support color and show directory
+    // entries, not including . and .. (hence the -2)
+    // single original line
+//  sprintf(bp, F_st_nlink(zero_pad,width, info->st_nlink));
+
+    char str[32];
+    memset( str, '\0', 32 );
+    sprintf(str, F_st_nlink(zero_pad,width, info->st_nlink-2));
+
+    if ( !FSCOLOR ) Void sprintf(bp, "%*s", width, str);
+    else            Void sprintf(bp, "[%sm%*s[39m", FSCOLOR, width, str);
+    // End new code
+
     break;
 
   case Gf_TIME_MODIFIED:
