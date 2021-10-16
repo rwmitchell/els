@@ -4560,7 +4560,8 @@ char *G_print(char *buff,
 
     char str[32];
     memset( str, '\0', 32 );
-    sprintf(str, F_st_nlink(zero_pad,width, info->st_nlink-2));
+    sprintf(str, F_st_nlink(zero_pad,width,
+      info->st_nlink - ( file->isdir ? 2 : 0 )));
 
     if ( !FSCOLOR ) Void sprintf(bp, "%*s", width, str);
     else            Void sprintf(bp, "[%sm%*s[39m", FSCOLOR, width, str);
