@@ -72,7 +72,7 @@ void memFree(void *mem)
 }
 
 
-void *memRealloc( void *ptr, int osize, int asize ) {
+void *memRealloc( void *ptr, off_t osize, off_t asize ) {
   void *new = memAllocZero( osize + asize );
 
   if ( new == NULL ) {
@@ -82,7 +82,7 @@ void *memRealloc( void *ptr, int osize, int asize ) {
   }
   memcpy( new, ptr, osize );
   memFree( ptr );
-  ptr = new;
+  return( new );
 }
 
 void memShow(FILE *out)

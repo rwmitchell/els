@@ -27,7 +27,7 @@ extern void *memAlloc(int size);
 extern void *memAllocZero(int size);
 extern void memFree(void *mem);
 extern void memShow(FILE *out);
-extern void *memRealloc( void *ptr, int osize, int asize );
+extern void *memRealloc( void *ptr, off_t osize, off_t asize );
 
 extern char *strdup_ns(const char *str);
 extern int strcmp_ci(const char *s1, const char *s2);
