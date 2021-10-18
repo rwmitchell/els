@@ -7,6 +7,7 @@
 #include <unistd.h>     // getcwd()
 #include <sys/stat.h>   // struct stat
 #include "els.h"
+#include "auxil.h"
 
 extern char *HGSTATS;
 
@@ -41,7 +42,11 @@ char *loadpipe( const char *cmd, off_t *f_sz ) {
         *f_sz += 2048;
 #ifdef __linux__
  //     printf( "loadpipe: realloc( %p, %ld ): %ld %ld\n", data, *f_sz, sz, rc );
-        data = realloc ( data, *f_sz );
+        char *newdata = memAllocZero( *f_sz );
+        memcpy( newdata, data, (*f_sz-2048) );
+        memFree( (void *) data );
+        data = newdata;
+//      data = realloc ( data, *f_sz );
         if ( !data ) { printf( "realloc(%ld) failed on %s\n", *f_sz, cmd); exit(-1); }
 #else
         data = reallocf( data, *f_sz );
@@ -117,7 +122,7 @@ char *load_hgstatus( const char *dir ) {
   if ( !lst || strcmp( dir, lst ) ) {
     if( lst ) free( lst );
     lst = strdup( dir );
-    cmd = malloc( strlen( dir ) + strlen( hgc ) + 4 );
+    cmd = memAllocZero( strlen( dir ) + strlen( hgc ) + 4 );
     sprintf( cmd, "%s %s", hgc, dir );
     hld=loadpipe( cmd, &sz );
     free   ( cmd );
