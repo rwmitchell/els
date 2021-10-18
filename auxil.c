@@ -72,6 +72,19 @@ void memFree(void *mem)
 }
 
 
+void *memRealloc( void *ptr, int osize, int asize ) {
+  void *new = memAllocZero( osize + asize );
+
+  if ( new == NULL ) {
+    fprintf(stderr, "%s: Unable to allocate working memory\n",
+	    Progname);
+    exit(1);
+  }
+  memcpy( new, ptr, osize );
+  memFree( ptr );
+  ptr = new;
+}
+
 void memShow(FILE *out)
 {
   fprintf(out, "\rmemAlloc: Total, Alloc, Free, InUse: %lu %lu %lu %lu\n",

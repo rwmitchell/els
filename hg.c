@@ -39,8 +39,8 @@ char *loadpipe( const char *cmd, off_t *f_sz ) {
 //    printf( "%8ld bytes read\n", rc );
 //    printf( "====\n%s\n===\n", buf );
       if ( sz + rc > *f_sz ) {
+#ifdef OLDMETHOD // __linux__
         *f_sz += 2048;
-#ifdef __linux__
  //     printf( "loadpipe: realloc( %p, %ld ): %ld %ld\n", data, *f_sz, sz, rc );
         char *newdata = memAllocZero( *f_sz );
         memcpy( newdata, data, (*f_sz-2048) );
@@ -49,8 +49,10 @@ char *loadpipe( const char *cmd, off_t *f_sz ) {
 //      data = realloc ( data, *f_sz );
         if ( !data ) { printf( "realloc(%ld) failed on %s\n", *f_sz, cmd); exit(-1); }
 #else
-        data = reallocf( data, *f_sz );
-        if ( !data ) { printf( "realloc(%lld) failed on %s\n", *f_sz, cmd); exit(-1); }
+        // if memRealloc() fails, it exits
+        data = (char *) memRealloc ( (void *) data, *f_sz, 2048 );
+        *f_sz += 2048;
+//      if ( !data ) { printf( "realloc(%lld) failed on %s\n", *f_sz, cmd); exit(-1); }
 #endif
       }
       strcat( data, buf );
