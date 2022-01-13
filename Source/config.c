@@ -50,6 +50,9 @@
 #if defined(DARWIN)
 #  define OS_NUM  6
 #endif
+#if defined(__APPLE__)
+#  define OS_NUM  6
+#endif
 #if defined(OSF1)
 #  define OS_NUM  7
 #endif
@@ -76,6 +79,7 @@
 #include <stdio.h>
 int main(int argc, char *argv[])
 {
+
   fprintf(stderr, "\
 \n\
 \"%s\" unable to to uniquely determine OS TYPE during configuration.\n\
@@ -119,7 +123,7 @@ Please read the INSTALL file for more help.\n\
 #include <stdlib.h>
 #include <signal.h>
 
-#if defined(DARWIN) || defined(FREEBSD) || defined(ULTRIX)
+#if defined(DARWIN) || defined(FREEBSD) || defined(ULTRIX) || defined(__APPLE__)
 /* Generic BSD defines major/minor in sys/types.h */
 #else
 /* Everybody else (including SunOS4!): */
@@ -163,6 +167,13 @@ int main(int argc, char *argv[])
   struct stat file;
   struct tm   date;
   unsigned int u;
+
+  printf( "Starting\n\n" );
+  printf( "OS_NAME_TO_NUM: %d\n", OS_NAME_TO_NUM( OS_NAME));
+  printf( "OS_NUM        : %d\n",                 OS_NUM );
+
+  fprintf(stdout, "OS_NAME_TO_NUM: %d\n", OS_NAME_TO_NUM( OS_NAME));
+  fprintf(stdout, "OS_NUM        : %d\n",                 OS_NUM );
 
   if (argc > 2)
     config_usage_error(argv[0]);

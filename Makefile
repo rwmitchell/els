@@ -14,6 +14,13 @@ BINDIR = /usr/local/bin
 MANEXT = 1
 MANDIR = /usr/local/man/man$(MANEXT)
 
+DIR = $(shell basename $(CURDIR))
+BLD = Build
+SRC = Source
+BAS = $(BLD)/$(DIR)
+DST = $(BAS)/bin
+OBJ = $(BAS)/obj
+
 ################################
 # EXTRACT OS NAME:
 # Delete bothersome characters such as [-/] and truncate certain OS names.
@@ -34,10 +41,33 @@ OS_NAME = `uname -s | sed  -e 's;[-/];;g' -e 's/^\(CYGWIN\).*$$/\1/' -e 's/^\(AI
 OS_VERSION = `uname -r | sed -e 's;$$; 0 0 0;' -e 's;[^0-9]; ;g' | awk '{ printf "%d%02d%02d", $$1, $$2, $$3 }'`
 
 ################################
+
+ELS_SRC = $(SRC)/els.c $(SRC)/getdate32.c $(SRC)/time32.c $(SRC)/auxil.c \
+		$(SRC)/elsFilter.c $(SRC)/elsMisc.c $(SRC)/sysInfo.c $(SRC)/sysdep.c \
+		$(SRC)/phLib.c $(SRC)/quotal.c $(SRC)/format.c $(SRC)/cksum.c $(SRC)/hg.c
+
+CHD_SRC = $(SRC)/chdate.c $(SRC)/getdate32.c $(SRC)/time32.c $(SRC)/auxil.c $(SRC)/sysInfo.c
+
+EDT_SRC = $(SRC)/edate.c $(SRC)/getdate32.c $(SRC)/time32.c $(SRC)/auxil.c $(SRC)/sysInfo.c
+
+ELS_OBJ := $(ELS_SRC:%.c=%.o)
+ELS_OBJ := $(ELS_OBJ:$(SRC)/%=$(OBJ)/%)
+
+CHD_OBJ := $(CHD_SRC:%.c=%.o)
+CHD_OBJ := $(CHD_OBJ:$(SRC)/%=$(OBJ)/%)
+
+EDT_OBJ := $(EDT_SRC:%.c=%.o)
+EDT_OBJ := $(EDT_OBJ:$(SRC)/%=$(OBJ)/%)
+
+################################
 # BUILD TARGETS:
 
 default:
 	$(MAKE) $(OS_NAME)
+
+version:
+	@ echo "OS Version: " $(OS_VERSION)
+	@ echo "OS Name   : " $(OS_NAME)
 
 # Identify phony targets:
 .PHONY: default all install install_els5 clean realclean els5 \
@@ -50,10 +80,12 @@ default:
 	IRIX sco SCO_SV ULTRIX \
 	DYNIXptx ISC SYSV_OLD
 
-all: els chdate edate
+all: $(DST)/els $(DST)/chdate $(DST)/edate
 	@ echo ""
 	@ echo "All targets SUCCESSFULLY built"
 	@ echo ""
+	@ echo "SRC: " $(ELS_SRC)
+	@ echo "OBJ: " $(ELS_OBJ)
 
 install: default
 	[ ! -d $(BINDIR) ] && mkdir -p $(BINDIR) || exit 0
@@ -83,20 +115,35 @@ clean:
 realclean: clean
 	rm -f els chdate edate els5
 
-els: els.o getdate32.o time32.o auxil.o \
-		elsFilter.o elsMisc.o sysInfo.o sysdep.o phLib.o quotal.o \
-		format.o cksum.o hg.o
-	$(LD) els.o getdate32.o time32.o auxil.o \
-		elsFilter.o elsMisc.o sysInfo.o sysdep.o phLib.o quotal.o \
-		format.o cksum.o hg.o $(LDFLAGS) -o els
+$(OBJ)/%.o	:	$(SRC)/%.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
-chdate: chdate.o getdate32.o time32.o auxil.o sysInfo.o
-	$(LD) $(LDFLAGS) chdate.o getdate32.o time32.o auxil.o sysInfo.o \
-		-o chdate
+$(DST)/els: $(DST)/% : $(ELS_OBJ)
+	@ echo
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-edate: edate.o getdate32.o time32.o auxil.o sysInfo.o
-	$(LD) $(LDFLAGS) edate.o getdate32.o time32.o auxil.o sysInfo.o \
-		-o edate
+$(DST)/chdate: $(DST)/% : $(CHD_OBJ)
+	@ echo
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+$(DST)/edate: $(DST)/% : $(EDT_OBJ)
+	@ echo
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+# els: els.o getdate32.o time32.o auxil.o \
+# 		elsFilter.o elsMisc.o sysInfo.o sysdep.o phLib.o quotal.o \
+# 		format.o cksum.o hg.o
+# 	$(LD) els.o getdate32.o time32.o auxil.o \
+# 		elsFilter.o elsMisc.o sysInfo.o sysdep.o phLib.o quotal.o \
+# 		format.o cksum.o hg.o $(LDFLAGS) -o els
+#
+# chdate: chdate.o getdate32.o time32.o auxil.o sysInfo.o
+# 	$(LD) $(LDFLAGS) chdate.o getdate32.o time32.o auxil.o sysInfo.o \
+# 		-o chdate
+
+# edate: edate.o getdate32.o time32.o auxil.o sysInfo.o
+# 	$(LD) $(LDFLAGS) edate.o getdate32.o time32.o auxil.o sysInfo.o \
+# 		-o edate
 
 # Optional els5 hardlink which uses SYS5 semantics instead of BSD semantics:
 # (NB: In cygwin-land "[ -f els ]" is true if "els.exe" exists!)
@@ -236,15 +283,22 @@ SYSV_OLD:
 ################################
 # DEPENDENCIES:
 
-config.h: config
-	./config config.h
-config: config.o
-	$(LD) $(LDFLAGS) config.o -o config
-config.o: config.c version.h sysdefs.h
+$(SRC)/config.h: $(DST)/config
+	$(DST)/config $(SRC)config.h
+
+$(DST)/config: $(OBJ)/config.o
+	$(LD) $(LDFLAGS) $(OBJ)/config.o -o $(DST)/config
+
+$(OBJ)/config.o: $(SRC)/config.c $(SRC)/version.h $(SRC)/sysdefs.h
+	@ echo "OS_NAME: " $(OS_NAME) " : " $(OS_VERSION)
+	@ echo $(CC) $(CFLAGS) $(CPPFLAGS) \
+		-DOS_NAME=\"$(OS_NAME)\" -DOS_VERSION=$(OS_VERSION) \
+		-c $(SRC)/config.c -o $(OBJ)/config.o
 	$(CC) $(CFLAGS) $(CPPFLAGS) \
 		-DOS_NAME=\"$(OS_NAME)\" -DOS_VERSION=$(OS_VERSION) \
-		-c config.c
+		-c $(SRC)/config.c -o $(OBJ)/config.o
 
+ifeq ( 0, 1)
 els.o: els.c version.h sysdefs.h defs.h config.h getdate32.h time32.h \
 	auxil.h els.h elsVars.h elsFilter.h elsMisc.h sysInfo.h sysdep.h \
 	quotal.h format.h cksum.h
@@ -281,6 +335,7 @@ format.o: format.c sysdefs.h defs.h config.h format.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c format.c
 cksum.o: cksum.c sysdefs.h defs.h config.h auxil.h cksum.h elsVars.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c cksum.c
+endif
 
 ################################
 # EOF.
