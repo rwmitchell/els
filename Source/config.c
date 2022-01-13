@@ -4,7 +4,7 @@
  strcmp(OS_NAME, "Linux"   ) == 0 ? "LINUX"    : \
  strcmp(OS_NAME, "CYGWIN"  ) == 0 ? "CYGWIN"   : \
  strcmp(OS_NAME, "FreeBSD" ) == 0 ? "FREEBSD"  : \
- strcmp(OS_NAME, "Darwin"  ) == 0 ? "DARWIN"   : \
+ strcmp(OS_NAME, "DARWIN"  ) == 0 ? "DARWIN"   : \
  strcmp(OS_NAME, "OSF1"    ) == 0 ? "OSF1"     : \
  strcmp(OS_NAME, "AIX"     ) == 0 ? "AIX"      : \
  strcmp(OS_NAME, "IRIX"    ) == 0 ? "IRIX"     : \

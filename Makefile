@@ -6,7 +6,7 @@ CPPFLAGS =
 CFLAGS_DBUG = -g3 -DDEBUG_ALL
 CFLAGS_GENERIC = -O
 CFLAGS_GNU = -Wall
-CFLAGS = $(CFLAGS_GENERIC) $(CFLAGS_GNU) # $(CFLAGS_DBUG)
+CFLAGS = -I$(SRC) $(CFLAGS_GENERIC) $(CFLAGS_GNU) -D$(OS_NAME)=$(OS_VERSION)
 # CFLAGS =                   $(CFLAGS_GNU)   $(CFLAGS_DBUG)
 LD = $(CC)
 LDFLAGS = -lm
@@ -21,10 +21,15 @@ BAS = $(BLD)/$(DIR)
 DST = $(BAS)/bin
 OBJ = $(BAS)/obj
 
+DIRS =   \
+	$(BAS) \
+	$(OBJ) \
+	$(DST) \
+
 ################################
 # EXTRACT OS NAME:
 # Delete bothersome characters such as [-/] and truncate certain OS names.
-OS_NAME = `uname -s | sed  -e 's;[-/];;g' -e 's/^\(CYGWIN\).*$$/\1/' -e 's/^\(AIX\).*$$/\1/' -e 's/^\(IRIX\).*$$/\1/'`
+OS_NAME := $(shell uname -s | sed  -e 's;[-/];;g' -e 's/^\(CYGWIN\).*$$/\1/' -e 's/^\(AIX\).*$$/\1/' -e 's/^\(IRIX\).*$$/\1/' | tr [:lower:] [:upper:] )
 
 ################################
 # EXTRACT OS VERSION:
@@ -38,7 +43,7 @@ OS_NAME = `uname -s | sed  -e 's;[-/];;g' -e 's/^\(CYGWIN\).*$$/\1/' -e 's/^\(AI
 #	if output from "uname -r" ==  5.12.34, then OS_VERSION ==  51234
 #	if output from "uname -r" == 15.12,    then OS_VERSION == 151200
 #
-OS_VERSION = `uname -r | sed -e 's;$$; 0 0 0;' -e 's;[^0-9]; ;g' | awk '{ printf "%d%02d%02d", $$1, $$2, $$3 }'`
+OS_VERSION = $(shell uname -r | sed -e 's;$$; 0 0 0;' -e 's;[^0-9]; ;g' | awk '{ printf "%d%02d%02d", $$1, $$2, $$3 }')
 
 ################################
 
@@ -63,7 +68,13 @@ EDT_OBJ := $(EDT_OBJ:$(SRC)/%=$(OBJ)/%)
 # BUILD TARGETS:
 
 default:
-	$(MAKE) $(OS_NAME)
+	@ echo "OS Version: " $(OS_VERSION)
+	@ echo "OS Name   : " $(OS_NAME)
+	@ echo $(MAKE) -d$(OS_NAME) $(OS_NAME)
+	$(MAKE) -D$(OS_NAME) $(OS_NAME)
+
+config: $(DIRS) $(SRC)/config.h
+
 
 version:
 	@ echo "OS Version: " $(OS_VERSION)
@@ -80,12 +91,16 @@ version:
 	IRIX sco SCO_SV ULTRIX \
 	DYNIXptx ISC SYSV_OLD
 
-all: $(DST)/els $(DST)/chdate $(DST)/edate
+
+all: $(DIRS) $(DST)/els $(DST)/chdate $(DST)/edate
 	@ echo ""
 	@ echo "All targets SUCCESSFULLY built"
 	@ echo ""
 	@ echo "SRC: " $(ELS_SRC)
 	@ echo "OBJ: " $(ELS_OBJ)
+
+$(DIRS):
+	mkdir -p $@
 
 install: default
 	[ ! -d $(BINDIR) ] && mkdir -p $(BINDIR) || exit 0
@@ -106,11 +121,7 @@ install_els5:
 	-@ [ -f $(BINDIR)/els.exe ] && ln $(BINDIR)/els.exe $(BINDIR)/els5.exe
 
 clean:
-	rm -f els.o chdate.o edate.o
-	rm -f getdate32.o time32.o auxil.o elsFilter.o elsMisc.o
-	rm -f sysInfo.o sysdep.o phLib.o quotal.o format.o cksum.o
-	rm -f config.o config config.h
-	rm -r hg.o
+	rm -r $(OBJ)
 
 realclean: clean
 	rm -f els chdate edate els5
@@ -284,7 +295,7 @@ SYSV_OLD:
 # DEPENDENCIES:
 
 $(SRC)/config.h: $(DST)/config
-	$(DST)/config $(SRC)config.h
+	$(DST)/config $(SRC)/config.h
 
 $(DST)/config: $(OBJ)/config.o
 	$(LD) $(LDFLAGS) $(OBJ)/config.o -o $(DST)/config
