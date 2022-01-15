@@ -33,14 +33,14 @@ These are zsh functions I use to call it.
 Note: You will need to remove the "| mc" or also install it.
 mc turns "line" output into multi-columns
 
-- l  () { els +T^NY-M-DT +G~Atp~ugsmNL $@ }
-![l]<img/l.png>
+- ```l  () { els +T^NY-M-DT +G~Atp~ugsmNL $@ }```
+![l](img/l.png)
 
-- ll () { els +T^NY-M-DT +G~At~smN $@ | mc }
-![ll]<img/ll.png>
+- ```ll () { els +T^NY-M-DT +G~At~smN $@ | mc }```
+![ll](img/ll.png)
 
-- ls () { els +G~t~N $@ | mc }
-![ls]<img/ls.png>
+- ```ls () { els +G~t~N $@ | mc }```
+![ls](img/ls.png)
 
-- lt () { els +T^NY-M-DT +G~At~smN -rt $@ | mc }
-![lt]<img/lt.png>
+- ```lt () { els +T^NY-M-DT +G~At~smN -rt $@ | mc }```
+![lt](img/lt.png)
