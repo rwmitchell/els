@@ -1,6 +1,6 @@
 #!/bin/bash
 # 2020-11-09 - Generate LS_ICONS using default colors from LS_COLORS
-# based on even-better-ls/ls_icon_generator.sh
+# based on even-better-ls/ls_colors_generator.sh
 
 # Create table of default values
 # Load icons from ICON_SRC
