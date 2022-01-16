@@ -44,3 +44,24 @@ mc turns "line" output into multi-columns
 
 - ```lt () { els +T^NY-M-DT +G~At~smN -rt $@ | mc }```
 ![lt](img/lt.png)
+
+## Glyph Support
+
+els uses the environment variable $LS_ICONS to define the colors and glyphs for file types.
+
+The file ls_colors_generator.py is used to define those file types.
+
+This is based on: https://github.com/mnurzia/even-better-ls
+where 'based on' == 'copied from'
+
+Despite ls_colors_generator.py being a python program, the contents is only read by ls_icons_generator, never executed.
+
+ls_icons_generator ingests both original ls $LS_COLORS and ls_colors_generator.py to create LS_ICONS.cfg
+
+load_lsicons() loads $LS_ICONS from LS_ICONS.cfg.
+If ls_colors_generator.py is newer than LS_ICONS.cfg, it will regenerate LS_ICONS.cfg first.
+
+These tools were written for my personal use.
+My *rc and init scripts are kept in $HOME/.rc
+
+load_lsicons() reads and writes into $HOME/.rc/etc
