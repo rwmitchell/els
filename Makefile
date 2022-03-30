@@ -71,7 +71,8 @@ default:
 	@ echo "OS Version: " $(OS_VERSION)
 	@ echo "OS Name   : " $(OS_NAME)
 	@ echo $(MAKE) -d$(OS_NAME) $(OS_NAME)
-	$(MAKE) -D$(OS_NAME) $(OS_NAME)
+	$(MAKE) $(OS_NAME)
+#	$(MAKE) -D$(OS_NAME) $(OS_NAME)
 
 config: $(DIRS) $(SRC)/config.h
 
@@ -220,7 +221,8 @@ FreeBSD:
 	@ $(MAKE) all \
 	"CPPFLAGS = $(CPPFLAGS) -DFREEBSD=$(OS_VERSION)"
 
-Darwin:
+Darwin \
+DARWIN:
 	@ $(MAKE) all \
 	"CC = cc" \
 	"CPPFLAGS = $(CPPFLAGS) -DDARWIN=$(OS_VERSION)"

@@ -138,7 +138,8 @@ const
 char *LSCOLOR = NULL,      // rwm - from LS_COLORS
      *FSCOLOR = NULL,      // rwm - ELS_FS_COLOR  - file size
      *FSWIDTH = NULL,
-     *HGSTATS = NULL;
+     *HGSTATS = NULL,
+     *EXFAT   = NULL;
 // export ELS_FT_COLORS="86400=0;32;1:6480000=0;32:7121234=0;32;2:31557600=1;33;2:-1=0;31;1:"
 char *FTCOLOR = NULL,      // rwm - ELS_FT_COLORS - file ages and colors
      *rwm_cols[32];
@@ -394,6 +395,7 @@ Boole rwm_filtering = FALSE,
       rwm_ifunk     = FALSE, // unkown
       rwm_docolor   = TRUE,  // colorize output
       rwm_doicons   = FALSE, // add icons
+      rwm_doperms   = TRUE,  // ignore file permissions
       rwm_docomma   = TRUE,
       rwm_dospace   = FALSE; // similar to find -print0
 Local int rwm_type,          // copy of file "type"
@@ -766,6 +768,7 @@ void do_getenv(void)
     FSCOLOR = getenv( "ELS_FS_COLOR"  );       // color by file size
     FTCOLOR = getenv( "ELS_FT_COLORS" );       // color by file time/age
     HGSTATS = getenv( "ELS_HG_STATUS" );
+    EXFAT   = getenv( "ELS_EXFAT"     );       // ignore file permissions
 
     if ( FTCOLOR)
       rwm_ftcnt = rwm_env2ft( FTCOLOR, ':', rwm_ages, rwm_cols );
@@ -779,6 +782,7 @@ void do_getenv(void)
   }
   if ( ! LSCOLOR ) rwm_docolor = FALSE;
   if (   LSICONS ) rwm_doicons = TRUE;
+  if (   EXFAT   ) rwm_doperms = FALSE;
 
   if ( LSICONS ) {
     char *ps =LSICONS;
@@ -2500,6 +2504,7 @@ Enhanced LS -- ENVIRONMEMT:\n\
   ELS_FT_COLORS=86400=32;1:6480000=32:15724800=33:3155760=33;2:-1=31;1:\n\
   ELS_FS_WIDTH=7        - minimize size width, increase for more width\n\
   ELS_HG_STATUS='hg status -mardui'  - add hg status\n\
+  ELS_EXFAT=1           - ignore execution bit\
 \n\
 ");
   }
@@ -4870,7 +4875,8 @@ Boole rwm_col_type( int *b, int *f, int *s, int *i ) {
       case type_SPECIAL:  pat="or=";       break;  // special - no LS_COLOR attribute?
 
       case symtype_REG :
-                          if ( rwm_mode & (S_IXUSR|S_IXGRP|S_IXOTH)) pat="EXEC=";
+                          if ( rwm_doperms
+                            && rwm_mode & (S_IXUSR|S_IXGRP|S_IXOTH)) pat="EXEC=";
                           if ( rwm_mode & S_ISUID )                  pat="SETUID=";
                           if ( !pat ) rc = FALSE;
                           break;
