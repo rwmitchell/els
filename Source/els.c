@@ -42,6 +42,7 @@
 #include <utime.h>
 #include <dirent.h>
 #include <sys/param.h>
+#include <sys/mount.h>    // statfs()
 #include <unistd.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -636,16 +637,15 @@ int main(int argc, char *argv[])
    around.  On the other hand, "els +G... f1 f2 +X f3 f4" is
    considered valid (although f1 f2 will be listed while +X will apply
    only to f3 f4). */
-      if (dlist.head == NULL)
-      {
-  if (First_listing)
-    append_dir(&dlist, ".", 0);
-  else
-  {
-    Current_Arg = Argv[Argc-1];
-    opt_error_msg("Option must precede files to have any effect",
-      Current_Arg+1);
-  }
+      if (dlist.head == NULL) {
+        if (First_listing)
+          append_dir(&dlist, ".", 0);
+        else
+        {
+          Current_Arg = Argv[Argc-1];
+          opt_error_msg("Option must precede files to have any effect",
+            Current_Arg+1);
+        }
       }
 
       /* Perform the listing: */
@@ -685,6 +685,15 @@ int main(int argc, char *argv[])
     /* Perform the listing: */
     dname = "";
     stat_dir(&dlist, dname);
+//  printf( "\n\nSTART: <%s>\n\n", dlist.head->fname );
+    struct statfs fsbuf;
+    if ( statfs( dlist.head->fname, &fsbuf ) != 0 ) {
+        printf( "statfs failed, exiting" );
+        exit(0);
+    } else {
+        // 0x001C is type smbfs
+        if ( fsbuf.f_type == 0x001C ) rwm_doperms = FALSE;
+    }
     sort_dir(&dlist, dname, -1);
     list_dir(&dlist, dname);
     free_dir(&dlist);
@@ -2504,7 +2513,7 @@ Enhanced LS -- ENVIRONMEMT:\n\
   ELS_FT_COLORS=86400=32;1:6480000=32:15724800=33:3155760=33;2:-1=31;1:\n\
   ELS_FS_WIDTH=7        - minimize size width, increase for more width\n\
   ELS_HG_STATUS='hg status -mardui'  - add hg status\n\
-  ELS_EXFAT=1           - ignore execution bit\
+  ELS_EXFAT=1           - ignore execution bit - should be auto determined\n\
 \n\
 ");
   }
