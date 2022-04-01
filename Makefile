@@ -49,7 +49,8 @@ OS_VERSION = $(shell uname -r | sed -e 's;$$; 0 0 0;' -e 's;[^0-9]; ;g' | awk '{
 
 ELS_SRC = $(SRC)/els.c $(SRC)/getdate32.c $(SRC)/time32.c $(SRC)/auxil.c \
 		$(SRC)/elsFilter.c $(SRC)/elsMisc.c $(SRC)/sysInfo.c $(SRC)/sysdep.c \
-		$(SRC)/phLib.c $(SRC)/quotal.c $(SRC)/format.c $(SRC)/cksum.c $(SRC)/hg.c
+		$(SRC)/phLib.c $(SRC)/quotal.c $(SRC)/format.c $(SRC)/cksum.c        \
+		$(SRC)/hg.c $(SRC)/git.c
 
 CHD_SRC = $(SRC)/chdate.c $(SRC)/getdate32.c $(SRC)/time32.c $(SRC)/auxil.c $(SRC)/sysInfo.c
 

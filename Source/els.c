@@ -81,6 +81,7 @@
 #include "format.h"
 #include "cksum.h"
 #include "hg.h"
+#include "git.h"
 
 char LGC = ' '; /* LGC default value used by convert_iso8601 */
 
@@ -134,12 +135,14 @@ int  Argc;
 char **Argv;
 char *Progname;
 char *LSICONS = NULL,      // rwm - from LS_ICONS
-     *HGICONS = NULL;      // rwm - from HG_ICONS
+     *HGICONS = NULL,      // rwm - from HG_ICONS
+     *GTICONS = NULL;      // rwm - from GIT_ICONS
 const
 char *LSCOLOR = NULL,      // rwm - from LS_COLORS
      *FSCOLOR = NULL,      // rwm - ELS_FS_COLOR  - file size
      *FSWIDTH = NULL,
      *HGSTATS = NULL,
+     *GTSTATS = NULL,
      *EXFAT   = NULL;
 // export ELS_FT_COLORS="86400=0;32;1:6480000=0;32:7121234=0;32;2:31557600=1;33;2:-1=0;31;1:"
 char *FTCOLOR = NULL,      // rwm - ELS_FT_COLORS - file ages and colors
@@ -181,7 +184,9 @@ Boole multiple_file_args;
 Boole using_full_names;
 Boole avoid_trimmings;
 char *hg_root = NULL,
-     *hg_stat = NULL;
+     *hg_stat = NULL,
+     *gt_root = NULL,
+     *gt_stat = NULL;
 // Boole list_topdir;      // defined in elsVars.h
 char first_mac;
 int recursion_level = 0;
@@ -773,10 +778,12 @@ void do_getenv(void)
   if ( rwm_docolor ) {
     LSCOLOR = getenv( "LS_COLORS"     );       // color by extension
     LSICONS = getenv( "LS_ICONS"      );       // file icons
-    HGICONS = getenv( "HG_ICONS"      );       // hg status icons
+    HGICONS = getenv( "HG_ICONS"      );       // hg  status icons
+    GTICONS = getenv( "GIT_ICONS"     );       // git status icons
     FSCOLOR = getenv( "ELS_FS_COLOR"  );       // color by file size
     FTCOLOR = getenv( "ELS_FT_COLORS" );       // color by file time/age
     HGSTATS = getenv( "ELS_HG_STATUS" );
+    GTSTATS = getenv( "ELS_GIT_STATUS" );
     EXFAT   = getenv( "ELS_EXFAT"     );       // ignore file permissions
 
     if ( FTCOLOR)
@@ -2513,6 +2520,7 @@ Enhanced LS -- ENVIRONMEMT:\n\
   ELS_FT_COLORS=86400=32;1:6480000=32:15724800=33:3155760=33;2:-1=31;1:\n\
   ELS_FS_WIDTH=7        - minimize size width, increase for more width\n\
   ELS_HG_STATUS='hg status -mardui'  - add hg status\n\
+  ELS_GIT_STATUS='git status -s --ignored --porcelain' - add git status\n\
   ELS_EXFAT=1           - ignore execution bit - should be auto determined\n\
 \n\
 ");
@@ -3630,8 +3638,11 @@ void list_dir(Dir_List *dlist,
   recursion_level++;
   sub_dlist.head = NULL;
 
-  hg_root = is_hg( fullpath( (char *) dname ) );
-  if ( hg_root ) hg_stat = load_hgstatus( hg_root );
+  hg_root = is_hg ( fullpath( (char *) dname ) );
+  if ( hg_root ) hg_stat = load_hgstatus ( hg_root );
+
+  gt_root = is_git( fullpath( (char *) dname ) );
+  if ( gt_root ) gt_stat = load_gitstatus( gt_root );
 
   for (ptr = dlist->head; ptr != NULL; ptr = ptr->next)
   {
@@ -3732,8 +3743,11 @@ void list_dir(Dir_List *dlist,
     // if new contains old, don't redo hg
 
     if ( first || strncmp( saveCwdPath, CwdPath, strlen( saveCwdPath ))) {
-      hg_root = is_hg( fullpath( (char *) CwdPath ) );
-      if ( hg_root ) hg_stat = load_hgstatus( hg_root );
+      hg_root = is_hg ( fullpath( (char *) CwdPath ) );
+      if ( hg_root ) hg_stat = load_hgstatus ( hg_root );
+
+      gt_root = is_git( fullpath( (char *) CwdPath ) );
+      if ( gt_root ) gt_stat = load_gitstatus( gt_root );
 
       first=FALSE;
     }
@@ -4841,6 +4855,21 @@ Boole rwm_get_hg( char pat, int *b, int *i ) {                 // background, ic
 
   return ( mat != NULL );
 }
+Boole rwm_get_git( char pat, int *b, int *i ) {                 // background, icon
+  char *mat = NULL;
+  int d = 0;                          // distance
+
+  if ( GTICONS ) {
+    mat = strchr( GTICONS, pat );
+    if ( mat ) mat = strchr( mat, '=' );
+    if ( mat ) {
+      d=sscanf( mat, "=%d;%lc:", b, i );  // f / b order reversed
+    }
+//    printf( "\nB: %3d F:     S:     : < %lc >\n", *b, *i );
+  }
+
+  return ( mat != NULL );
+}
 Boole rwm_col_type( int *b, int *f, int *s, int *i ) {
   Boole rc = TRUE;
   char *pat=NULL;
@@ -5350,15 +5379,24 @@ char *N_print(char *buff, char *fmt,
              rwm_bg [ 32],
              rwm_gl [ 16];
         int rwm_b = 49, rwm_f = 39, rwm_s=29,   // back, fore, and style
-             hg_b =  0;
+             hg_b =  0,
+             gt_b =  0;
         Boole rc = FALSE;
         wchar_t rwm_i = ' ',   // 0xf118;   // happy face
-                 hg_i = ' ';
+                 hg_i = ' ',
+                 gt_i = ' ';
 
-        char hg = '\0';
+        char hg = '\0',
+             gt = '\0';
         if ( hg_stat ) hg =  get_hgstatus( dname, fname, hg_stat);
-        if ( HGICONS && hg != ' ' ) rc =    rwm_get_hg( hg, &hg_b, &hg_i);
+        if ( HGICONS && hg != ' ' ) rc =    rwm_get_hg ( hg, &hg_b, &hg_i);
         if ( !rc ) hg_i = (wchar_t) hg;
+
+        if ( gt_stat ) gt =  get_gitstatus( dname, fname, gt_stat);
+
+
+        if ( GTICONS && gt != ' ' ) rc =    rwm_get_git( gt, &gt_b, &gt_i);
+        if ( !rc ) gt_i = (wchar_t) gt;
 
         if ( rwm_docolor ) {
 //        printf( "START: %lc:%lc:\n", 0x42, 0xf118 );
@@ -5369,12 +5407,14 @@ char *N_print(char *buff, char *fmt,
 //        printf( "rwm_I: %0x:%lc:\n", rwm_i, rwm_i );
           if ( rwm_doicons ) {
             if ( hg_stat ) sprintf ( rwm_gl, "%lc %lc  ", hg_i, rwm_i );
+            if ( gt_stat ) sprintf ( rwm_gl, "%lc %lc  ", gt_i, rwm_i );
             else           sprintf ( rwm_gl, "%lc  ",           rwm_i );
           }
           else               rwm_gl[0] = '\0';
 
           // Background color
           if ( hg_b ) rwm_b = hg_b;
+          if ( gt_b ) rwm_b = gt_b;
           if ( rwm_b >  0  ) sprintf( rwm_bg,    "[48;5;%dm", rwm_b );
 //        if ( hg == 'M'   ) sprintf( rwm_bg,    "[48;5;%dm",      8 );
           else               rwm_bg[0] = '\0';
