@@ -18,7 +18,7 @@
 #define OS_NAME_TO_NUM(name) \
 (strcmp(name, "SunOS"   ) == 0 ?  1 : \
  strcmp(name, "HPUX"    ) == 0 ?  2 : \
- strcmp(name, "Linux"   ) == 0 ?  3 : \
+ strcmp(name, "LINUX"   ) == 0 ?  3 : \
  strcmp(name, "CYGWIN"  ) == 0 ?  4 : \
  strcmp(name, "FreeBSD" ) == 0 ?  5 : \
  strcmp(name, "Darwin"  ) == 0 ?  6 : \
@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
   struct tm   date;
   unsigned int u;
 
-  printf( "Starting\n\n" );
+  printf( "Starting: %s -> %d\n\n", OS_NAME, OS_NUM );
   printf( "OS_NAME_TO_NUM: %d\n", OS_NAME_TO_NUM( OS_NAME));
   printf( "OS_NUM        : %d\n",                 OS_NUM );
 

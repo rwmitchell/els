@@ -203,7 +203,8 @@ SunOS5-cc32:
 	"CPPFLAGS = $(CPPFLAGS) -DSUNOS=$(OS_VERSION)" \
 	"CFLAGS = $(CFLAGS_GENERIC)"
 
-Linux:
+Linux \
+LINUX:
 	@ [ ! -f /usr/include/sys/acl.h ] && \
 		$(MAKE) all \
 		"CPPFLAGS = $(CPPFLAGS) -DLINUX=$(OS_VERSION)" \

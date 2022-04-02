@@ -53,6 +53,10 @@
 #include <locale.h>
 #endif
 
+#ifdef LINUX
+#include <sys/statfs.h>
+#endif
+
 #if defined(DARWIN) || defined(FREEBSD) || defined(ULTRIX)
 /* Generic BSD defines major/minor in sys/types.h */
 #else
