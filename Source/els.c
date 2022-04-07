@@ -697,8 +697,9 @@ int main(int argc, char *argv[])
 //  printf( "\n\nSTART: <%s>\n\n", dlist.head->fname );
     struct statfs fsbuf;
     if ( statfs( dlist.head->fname, &fsbuf ) != 0 ) {
-        printf( "statfs failed, exiting" );
-        exit(0);
+      // RWM - ignore the error, it isn't critical
+//    printf( "statfs failed, exiting" );
+//    exit(0);
     } else {
         // 0x001C is type smbfs
         if ( fsbuf.f_type == 0x001C ) rwm_doperms = FALSE;
