@@ -93,7 +93,7 @@ version:
 	IRIX sco SCO_SV ULTRIX \
 	DYNIXptx ISC SYSV_OLD
 
-columns = sed 's/ / 	/g' | tr ' |' '\n\n' | column
+columns = sed 's/ / 	/g' | tr ' |' '\n\n' | column -c 80
 
 all: $(DIRS) $(DST)/els $(DST)/chdate $(DST)/edate
 	@ echo ""

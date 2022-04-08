@@ -179,6 +179,7 @@ char  get_gitstatus( char *dir, char *file, char *gs ) {
           case 'D': ch = 'D'; break;   // deleted/missing      // XYZZY not verified
           case '?': ch = '?'; break;   // unknown/not tracked
           case '!': ch = 'I'; break;   // ignored
+          case '-':           break;   // moved files report as: old -> new; ignore
           default : ch = 'E'; printf( ">%c: %s<\n", *pt2, pf ); break;   // error
         }
       }
