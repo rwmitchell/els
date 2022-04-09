@@ -93,13 +93,14 @@ version:
 	IRIX sco SCO_SV ULTRIX \
 	DYNIXptx ISC SYSV_OLD
 
+columns = sed 's/ / 	/g' | tr ' |' '\n\n' | column -c 80
 
 all: $(DIRS) $(DST)/els $(DST)/chdate $(DST)/edate
 	@ echo ""
 	@ echo "All targets SUCCESSFULLY built"
 	@ echo ""
-	@ echo "SRC: " $(ELS_SRC)
-	@ echo "OBJ: " $(ELS_OBJ)
+	@ echo "SRC: "; echo  " " $(ELS_SRC) | $(columns)
+	@ echo "OBJ: "; echo  " " $(ELS_OBJ) | $(columns)
 
 $(DIRS):
 	mkdir -p $@
@@ -128,7 +129,7 @@ clean:
 realclean: clean
 	rm -f els chdate edate els5
 
-$(OBJ)/%.o	:	$(SRC)/%.c
+$(OBJ)/%.o	:	$(SRC)/%.c $(SRC)/*.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
 $(DST)/els: $(DST)/% : $(ELS_OBJ)

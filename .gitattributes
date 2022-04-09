@@ -1,0 +1,9 @@
+*.c      ident
+*.h      ident
+*.sh     ident
+Makefile ident
+
+*.c      filter=kw
+*.h      filter=kw
+*.sh     filter=kw
+Makefile filter=kw
