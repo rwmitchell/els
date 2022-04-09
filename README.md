@@ -65,3 +65,10 @@ These tools were written for my personal use.
 My *rc and init scripts are kept in $HOME/.rc
 
 load_lsicons() reads and writes into $HOME/.rc/etc
+## ZSH OMZ plugin with hide/unhide
+
+Creates several functions with els options I find useful
+
+Newest addition is a hide/unhide command to tell els to exclude files with specified extensions as demonstrated:
+
+![hide-unhide](img/hide-unhide.png)
