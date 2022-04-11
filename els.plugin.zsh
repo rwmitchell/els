@@ -1,3 +1,7 @@
+alias -g MC='| mc'
+
+[[ $+galias[MC] == 1 ]] || alias -g MC='| mc'
+
 function hide() {
   local args;
   if [[ $# == 0 ]]; then
