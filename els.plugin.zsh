@@ -3,7 +3,7 @@ alias -g MC='| mc'
 [[ $+galias[MC] == 1 ]] || alias -g MC='| mc'
 
 function hidden() {      # show hidden extensions
-  local arr=$( echo $els_Eflag | sed 's/+E//;s//\n/' )
+  local arr=$( echo $els_Eflag | sed 's/+E//g;s/ /\n/g' )
   printf "%s\n" $arr
 }
 
