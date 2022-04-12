@@ -2,6 +2,11 @@ alias -g MC='| mc'
 
 [[ $+galias[MC] == 1 ]] || alias -g MC='| mc'
 
+function hidden() {      # show hidden extentions
+  local arr=$( echo $els_Eflag | sed 's/+E//;s//\n/' )
+  printf "%s\n" $arr
+}
+
 function hide() {
   local args;
   if [[ $# == 0 ]]; then
