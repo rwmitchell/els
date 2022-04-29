@@ -701,8 +701,12 @@ int main(int argc, char *argv[])
 //    printf( "statfs failed, exiting" );
 //    exit(0);
     } else {
-        // 0x001C is type smbfs
-        if ( fsbuf.f_type == 0x001C ) rwm_doperms = FALSE;
+        // f_type can be generated using gnu stat:
+        // stat -f -c "Type:%T %t" .
+//      printf( "\nFS Type: %0X\n", fsbuf.f_type );
+        // 0x001C is type smbfs  - Big Sur  ?
+        // 0x001E is type smbfs  - Monterey ? - 2022-04-29
+        if ( fsbuf.f_type == 0x001E ) rwm_doperms = FALSE;
     }
     sort_dir(&dlist, dname, -1);
     list_dir(&dlist, dname);
