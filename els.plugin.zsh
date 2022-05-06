@@ -7,16 +7,8 @@ function hidden() {      # show hidden extensions
   printf "%s\n" $arr
 }
 
-function hide() {
-  local args;
-  if [[ $# == 0 ]]; then
-      els_Eflag=""
-  else
-      for arg in $@; do
-          els_Eflag+="+E'*$arg' "
-      done
-  fi
-  string="\
+function _els_set_hide() {
+  _els_string="\
   function ls  () { els +G~t~N    $els_Eflag \$@ MC }
   function lc  () { els +G~t~N -A $els_Eflag \$@ MC }
 
@@ -28,14 +20,40 @@ function hide() {
   function Ll  () { els +T^NY-M-DT +G~At~smNL    $els_Eflag +FT{l} \$@     }  # show only symlinks
   function Lt  () { els +T^NY-M-DT +G~At~smNL    $els_Eflag -rt $@ }
   function Lz  () { els +T^NY-M-DT +G~At~smNL    $els_Eflag \$@    | sort -n -k2  }
+  function lcrg() { els +G~t~N -AR +e".git"      $els_Eflag \$@ MC }    # recurse, exclude .git
   "
-
-# printf ">>%s<<\n" "$string"
-  eval $string
+  eval $_els_string
 }
+
+function hide_ext() {
+  local args;
+  if [[ $# == 0 ]]; then
+      els_Eflag=""
+  else
+      for arg in $@; do
+          els_Eflag+="+E'*$arg' "
+      done
+  fi
+
+# printf ">>%s<<\n" "$_els_string"
+  _els_set_hide
+}
+
 function unhide() {
   unset els_Eflag
-  hide
+  _els_set_hide
+}
+
+function hide_dir() {
+  local args;
+  if [[ $# == 0 ]]; then
+      els_Eflag=""
+  else
+      for arg in $@; do
+          els_Eflag+="+e$arg "
+      done
+  fi
+  _els_set_hide
 }
 
 unhide
