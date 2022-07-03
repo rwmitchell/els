@@ -65,7 +65,7 @@ extern Boole listingError;
 /* extern Boole multiple_file_args; */
 extern Boole using_full_names;
 /* extern Boole avoid_trimmings; */
-Boole list_topdir;
+extern Boole list_topdir;
 /* extern char first_mac; */
 extern int recursion_level;
 

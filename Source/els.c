@@ -191,7 +191,7 @@ char *hg_root = NULL,
      *hg_stat = NULL,
      *gt_root = NULL,
      *gt_stat = NULL;
-// Boole list_topdir;      // defined in elsVars.h
+Boole list_topdir;      // defined in elsVars.h
 char first_mac;
 int recursion_level = 0;
 
