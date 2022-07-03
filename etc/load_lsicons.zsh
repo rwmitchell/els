@@ -1,6 +1,4 @@
-load_lsicons is a [01;33mshell[m function [01;32mfrom[m [01;32m/Users/rwmitchell/.rc/.zshrc-aliases[m
-
-]1337;File=name=eWVsbG93;size=113;inline=1;width=100%;height=5px;preserveAspectRatio=no:iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEX//wCKxvRFAAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==
+# NOTE: Paths below will need to be updated for your installation
 load_lsicons () {
 	local src=$HOME/.rc/etc/ls_colors_generator.py 
 	local icn=$HOME/.rc/etc/LS_ICONS.cfg 
@@ -14,5 +12,3 @@ load_lsicons () {
 		export LS_ICONS=$( cat $icn )  && printf "icons loaded\n"
 	fi
 }
-
-]1337;File=name=cmVk;size=113;inline=1;width=100%;height=5px;preserveAspectRatio=no:iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEX/AAAZ4gk3AAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==
