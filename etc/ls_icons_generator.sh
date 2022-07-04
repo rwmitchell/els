@@ -13,6 +13,11 @@ declare -a table
 
 unset Update_Existing
 
+function charset {
+        hex="${1//0x}"
+        printf "\u$hex\n"
+}
+
 function show_icons {
   for i in "${!table[@]}"; do
     s=${table[$i]}
