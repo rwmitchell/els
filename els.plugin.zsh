@@ -21,10 +21,15 @@ function _els_set_hide() {
   function Lt  () { els +T^NY-M-DT +G~At~smNL    $els_Eflag -rt $@ }
   function Lz  () { els +T^NY-M-DT +G~At~smNL    $els_Eflag \$@    | sort -n -k2  }
   function lcrg() { els +G~t~N -AR +e".git"      $els_Eflag \$@ MC }    # recurse, exclude .git
-  function lli () { els +T^NY-M-DT +Gl%11i~At~smN $els_Eflag \$@ MC }
+  function lll () { els +T^NY-M-DT +Gl~At~smN     $els_Eflag \$@ MC }
+  function li  () { els +T^NY-M-DT +Gl~Atp~ugsmNL $els_Eflag \$@    }   # show link count
+  function lli () { els +T^NY-M-DT +Gl%11i~At~smN $els_Eflag \$@ MC }   # and inode number
   "
   eval $_els_string
 }
+
+# mnemonics for lll, li, and lli do not match match options, but
+# nothing else seemed better
 
 function hide_ext() {
   local args;
