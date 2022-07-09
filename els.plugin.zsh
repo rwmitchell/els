@@ -21,6 +21,7 @@ function _els_set_hide() {
   function Lt  () { els +T^NY-M-DT +G~At~smNL    $els_Eflag -rt $@ }
   function Lz  () { els +T^NY-M-DT +G~At~smNL    $els_Eflag \$@    | sort -n -k2  }
   function lcrg() { els +G~t~N -AR +e".git"      $els_Eflag \$@ MC }    # recurse, exclude .git
+  function lli () { els +T^NY-M-DT +Gl%11i~At~smN $els_Eflag \$@ MC }
   "
   eval $_els_string
 }
