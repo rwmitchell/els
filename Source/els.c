@@ -3650,7 +3650,7 @@ void list_dir(Dir_List *dlist,
   hg_root = is_hg ( fullpath( (char *) dname ) );
   if ( hg_root ) hg_stat = load_hgstatus ( hg_root );
 
-  gt_root = is_git( fullpath( (char *) dname ) );
+  gt_root = is_git( fullpath( (char *) dname ), false );
   if ( gt_root ) gt_stat = load_gitstatus( gt_root );
 
   for (ptr = dlist->head; ptr != NULL; ptr = ptr->next)
@@ -3755,7 +3755,7 @@ void list_dir(Dir_List *dlist,
       hg_root = is_hg ( fullpath( (char *) CwdPath ) );
       if ( hg_root ) hg_stat = load_hgstatus ( hg_root );
 
-      gt_root = is_git( fullpath( (char *) CwdPath ) );
+      gt_root = is_git( fullpath( (char *) CwdPath ), false );
       if ( gt_root ) gt_stat = load_gitstatus( gt_root );
 
       first=FALSE;

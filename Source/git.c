@@ -10,7 +10,9 @@
 #include "auxil.h"
 
 extern char *GTSTATS;   // Git status
-                        //
+
+#define DBUG_no
+
 #define USE_HGC
 #ifdef  USE_HGC
 
@@ -94,14 +96,19 @@ char *fullpath( char *path ) {
 
 #endif
 
-char *is_git( char *dir ) {
+char *is_git( char *dir, bool sub ) {
   static
   char  cwd[ MAX_DNAME ];
   char *pd,
        *gt="/.git",
        *po;
 
+  int   len = 0;
   bool  is_git = false;
+
+#ifdef  DBUG
+  fprintf(stdout, "IS_GIT: %s\n", dir );
+#endif
 
   if ( dir && RMisdir( dir ) ) pd = strcpy( cwd, dir );
   else return NULL;
@@ -118,8 +125,12 @@ char *is_git( char *dir ) {
       }
     } else *pd = '\0';
   }
+  if ( is_git && sub ) len = strlen( cwd ) + 1;
+#ifdef  DBUG
+  fprintf(stdout, "IS_GIT: %s %d\n", dir + len, is_git );
+#endif
 
-  return( is_git ? cwd : NULL );
+  return( is_git ? dir + len : NULL );
 }
 char *load_gitstatus( const char *dir ) {
   off_t sz;
@@ -142,6 +153,8 @@ char *load_gitstatus( const char *dir ) {
   } else return( hld );
 }
 char  get_gitstatus( char *dir, char *file, char *gs ) {
+  static char *pdir = NULL,
+              *pt3  = NULL;
   char *pt1 = NULL,
        *pt2 = NULL,
        *pf  = NULL,
@@ -149,10 +162,22 @@ char  get_gitstatus( char *dir, char *file, char *gs ) {
         ch  = ' ';
   if ( RMisdir( file ) ) return( ch );
 
+  if ( pdir != dir ) {
+    pdir = dir;
+    pt3 = is_git( fullpath( dir ), true );
+#ifdef  DBUG
+    fprintf( stdout, "Setting: %s -> %s\n", pdir, pt3  );
+    fprintf( stdout, "gs: %s\n", gs );
+#endif
+  }
+
   pt1 = pt2 = gs;
 
   if ( ! strcmp( dir, "." ) || *dir == '\0' ) {
-    pf = file;
+    if ( strlen( pt3 ) ) {
+      sprintf( buf, "%s/%s", pt3, file );
+      pf = buf;
+    } else pf = file;
   } else {
     sprintf( buf, "%s/%s", dir, file );
     pf = buf;
@@ -166,7 +191,17 @@ char  get_gitstatus( char *dir, char *file, char *gs ) {
     pt2 = strstr( pt1, pf );
     if ( pt2 ) {
       len2 = strchr( pt2, '\n' ) - pt2;
-//    printf( "%5d %5d %s\n", len1, len2, file );
+#define DBUG_no
+#ifdef  DBUG
+      fprintf( stdout, "gs: %s\n", gs );
+      fprintf( stdout, "pf: %s\n", pf  );
+      fprintf( stdout, "DIR: %s\n", dir );
+      fprintf( stdout, "%5d %5d %s -> %s\n", len1, len2, file, pf );
+      fprintf( stdout, ">%c<", *(pt2-1) );
+      // git status returns the full path relative to the git root
+      // when in a git subdir, *(pt2-1) will be the '/' on a filename match
+      // XYZZY - this needs to compare the full git relative path
+#endif
       if ( len1 == len2 && *(pt2-1) == ' ' ) {
         done = true;
         pt2 -= 3;
