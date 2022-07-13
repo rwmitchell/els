@@ -154,20 +154,85 @@ char *load_gitstatus( const char *dir ) {
 }
 char  get_gitstatus( char *dir, char *file, char *gs ) {
   static char *pdir = NULL,
-              *pt3  = NULL;
+              *pt3  = NULL,
+              ch    = ' ';
+
+  static bool B_DM = false;    // directory match
+
   char *pt1 = NULL,
        *pt2 = NULL,
-       *pf  = NULL,
-        buf[MAX_DNAME],
-        ch  = ' ';
+       *pgs = NULL, // pointer to git subdir
+        buf[MAX_DNAME];
+
   if ( RMisdir( file ) ) return( ch );
 
+  pt1 = pt2 = gs;
+
+  if ( !B_DM ) ch = ' ';
+
   if ( pdir != dir ) {
+#define DBUG_no
+#ifdef  DBUG
+    fprintf( stdout, "(%s) - (%s)\n", pdir, dir );
+#endif
+    B_DM = false;
+    ch   = ' ';
     pdir = dir;
+
     pt3 = is_git( fullpath( dir ), true );
+
+#ifdef  DBUG
+    fprintf( stdout, "Checking: %s\n", pt3 );
+    fprintf( stdout, "GS: %s\n", gs );
+#endif
+
+    while ( pt3 && *pt3 && ch == ' ' ) {
+
+#ifdef  DBUG
+      fprintf( stdout, "PT3: >>%s<<\n", pt3 );
+#endif
+      if ( strstr( pt1, pt3 ) ) {
+
+#ifdef  DBUG
+        fprintf( stdout, "LEN: %lu %lu\n", strlen( pt1 ), strlen( pt3 ) );
+#endif
+
+        if ( strlen( pt1 ) == strlen( pt3 ) + 4 ) ch = 'I';
+        else {
+
+#ifdef  DBUG
+          fprintf( stdout, "CH: /%c/ -> %s\n=> %s\n", ch, pt1, pt3 );
+          fprintf( stdout, "00->%s\n", pt2 );
+#endif
+
+          if ( pt2 && *pt2 == '/' ) *pt2 = '\0';
+//        fprintf( stdout, "AA->%s\n", pt2 );
+          pt2=strrchr( pt3, '/' );
+//        fprintf( stdout, "BB->%s => %s\n", pt2, pt3 );
+          if (  pt2 ) *(pt2+1) = '\0';
+          else pt3 = NULL;
+//        fprintf( stdout, "CC->%s => %s\n", pt2, pt3 );
+        }
+//      fprintf( stdout, "XX: /%c/ -> %s\n", ch, pt3 ); fflush( stdout  );
+      } else {
+        if ( *pt2 == '/' ) *pt2 = '\0';
+        pt2=strrchr( pt3, '/' );
+        if ( *pt2 ) *(pt2+1) = '\0';
+        else pt3 = NULL;
+      }
+//    fprintf( stdout, "YY: /%c/ -> %s\n", ch, pt3 ); fflush( stdout  );
+    }
+    if ( ch == 'I' ) B_DM = true;
+//    fprintf( stdout, "ZZ: /%c/ -> %s\n", ch, pt3 ); fflush( stdout  );
+
+    pt3 = is_git( fullpath( dir ), true );
+//  fprintf( stdout, "Reset: >>%s<<\n", pt3 );
+
 #ifdef  DBUG
     fprintf( stdout, "Setting: %s -> %s\n", pdir, pt3  );
     fprintf( stdout, "gs: %s\n", gs );
+  fprintf( stdout, "DONE CHECKING: /%c/\n", ch );
+  fprintf( stdout, "RESET: >>%s<<\n", pt3 );
 #endif
   }
 
@@ -175,28 +240,34 @@ char  get_gitstatus( char *dir, char *file, char *gs ) {
 
   if ( ! strcmp( dir, "." ) || *dir == '\0' ) {
     if ( strlen( pt3 ) ) {
+#ifdef  DBUG
+      fprintf( stdout, "SUB: %s\n", pt3 );
+      fprintf( stdout, "GS : %s\n", pt1 );
+#endif
+
       sprintf( buf, "%s/%s", pt3, file );
-      pf = buf;
-    } else pf = file;
+      pgs = buf;
+    } else pgs = file;
   } else {
     sprintf( buf, "%s/%s", dir, file );
-    pf = buf;
+    pgs = buf;
   }
+//fprintf( stdout, "PGS <%c>: %s\n", ch, pgs );
 
-  bool done = false;
+  bool done = ( B_DM && ch == 'I' );
   int len1, len2;
-  len1 = strlen( pf );
+  len1 = strlen( pgs );
   do {
     pt1 = pt2;
-    pt2 = strstr( pt1, pf );
+    pt2 = strstr( pt1, pgs );
     if ( pt2 ) {
       len2 = strchr( pt2, '\n' ) - pt2;
 #define DBUG_no
 #ifdef  DBUG
-      fprintf( stdout, "gs: %s\n", gs );
-      fprintf( stdout, "pf: %s\n", pf  );
+      fprintf( stdout, "gs : %s\n", gs );
+      fprintf( stdout, "pgs: %s\n", pgs  );
       fprintf( stdout, "DIR: %s\n", dir );
-      fprintf( stdout, "%5d %5d %s -> %s\n", len1, len2, file, pf );
+      fprintf( stdout, "%5d %5d %s -> %s\n", len1, len2, file, pgs );
       fprintf( stdout, ">%c<", *(pt2-1) );
       // git status returns the full path relative to the git root
       // when in a git subdir, *(pt2-1) will be the '/' on a filename match
@@ -215,13 +286,17 @@ char  get_gitstatus( char *dir, char *file, char *gs ) {
           case '?': ch = '?'; break;   // unknown/not tracked
           case '!': ch = 'I'; break;   // ignored
           case '-':           break;   // moved files report as: old -> new; ignore
-          default : ch = 'E'; printf( ">%c: %s<\n", *pt2, pf ); break;   // error
+          default : ch = 'E'; printf( ">%c: %s<\n", *pt2, pgs ); break;   // error
         }
       }
       else pt2++;
     } else done = true;
 
   } while ( !done );
+
+#ifdef  DBUG
+  fprintf( stdout, "RETURN: '%c' %s\n", ch ,file );
+#endif
 
   return( ch );
 }
