@@ -35,6 +35,7 @@ char *loadpipe( const char *cmd, off_t *f_sz ) {
   *f_sz = of_sz;
   if ( (pipe=popen( cmd, "r" )) > 0 ) {
 //  printf("cmd: %s : %ld\n", cmd, *f_sz );
+    memset( buf, '\0', 1024 );
     while (  (rc = fread( buf, 1, 1023, pipe )) > 0 ) {
 //    printf( "%8ld bytes read\n", rc );
 //    printf( "====\n%s\n===\n", buf );
