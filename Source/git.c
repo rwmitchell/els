@@ -11,8 +11,6 @@
 
 extern char *GTSTATS;   // Git status
 
-#define DBUG_no
-
 #define USE_HGC
 #ifdef  USE_HGC
 
@@ -106,10 +104,6 @@ char *is_git( char *dir, bool sub ) {
   int   len = 0;
   bool  is_git = false;
 
-#ifdef  DBUG
-  fprintf(stdout, "IS_GIT: %s\n", dir );
-#endif
-
   if ( dir && RMisdir( dir ) ) pd = strcpy( cwd, dir );
   else return NULL;
 
@@ -126,9 +120,6 @@ char *is_git( char *dir, bool sub ) {
     } else *pd = '\0';
   }
   if ( is_git && sub ) len = strlen( cwd ) + 1;
-#ifdef  DBUG
-  fprintf(stdout, "IS_GIT: %s %d\n", dir + len, is_git );
-#endif
 
   return( is_git ? dir + len : NULL );
 }
@@ -171,79 +162,41 @@ char  get_gitstatus( char *dir, char *file, char *gs ) {
   if ( !B_DM ) ch = ' ';
 
   if ( pdir != dir ) {
-#define DBUG_no
-#ifdef  DBUG
-    fprintf( stdout, "(%s) - (%s)\n", pdir, dir );
-#endif
     B_DM = false;
     ch   = ' ';
     pdir = dir;
 
     pt3 = is_git( fullpath( dir ), true );
 
-#ifdef  DBUG
-    fprintf( stdout, "Checking: %s\n", pt3 );
-    fprintf( stdout, "GS: %s\n", gs );
-#endif
-
     while ( pt3 && *pt3 && ch == ' ' ) {
 
-#ifdef  DBUG
-      fprintf( stdout, "PT3: >>%s<<\n", pt3 );
-#endif
       if ( strstr( pt1, pt3 ) ) {
-
-#ifdef  DBUG
-        fprintf( stdout, "LEN: %lu %lu\n", strlen( pt1 ), strlen( pt3 ) );
-#endif
 
         if ( strlen( pt1 ) == strlen( pt3 ) + 4 ) ch = 'I';
         else {
 
-#ifdef  DBUG
-          fprintf( stdout, "CH: /%c/ -> %s\n=> %s\n", ch, pt1, pt3 );
-          fprintf( stdout, "00->%s\n", pt2 );
-#endif
-
           if ( pt2 && *pt2 == '/' ) *pt2 = '\0';
-//        fprintf( stdout, "AA->%s\n", pt2 );
           pt2=strrchr( pt3, '/' );
-//        fprintf( stdout, "BB->%s => %s\n", pt2, pt3 );
           if (  pt2 ) *(pt2+1) = '\0';
           else pt3 = NULL;
-//        fprintf( stdout, "CC->%s => %s\n", pt2, pt3 );
         }
-//      fprintf( stdout, "XX: /%c/ -> %s\n", ch, pt3 ); fflush( stdout  );
       } else {
         if ( *pt2 == '/' ) *pt2 = '\0';
         pt2=strrchr( pt3, '/' );
         if ( *pt2 ) *(pt2+1) = '\0';
         else pt3 = NULL;
       }
-//    fprintf( stdout, "YY: /%c/ -> %s\n", ch, pt3 ); fflush( stdout  );
     }
     if ( ch == 'I' ) B_DM = true;
-//    fprintf( stdout, "ZZ: /%c/ -> %s\n", ch, pt3 ); fflush( stdout  );
 
     pt3 = is_git( fullpath( dir ), true );
-//  fprintf( stdout, "Reset: >>%s<<\n", pt3 );
 
-#ifdef  DBUG
-    fprintf( stdout, "Setting: %s -> %s\n", pdir, pt3  );
-    fprintf( stdout, "gs: %s\n", gs );
-  fprintf( stdout, "DONE CHECKING: /%c/\n", ch );
-  fprintf( stdout, "RESET: >>%s<<\n", pt3 );
-#endif
   }
 
   pt1 = pt2 = gs;
 
   if ( ! strcmp( dir, "." ) || *dir == '\0' ) {
     if ( strlen( pt3 ) ) {
-#ifdef  DBUG
-      fprintf( stdout, "SUB: %s\n", pt3 );
-      fprintf( stdout, "GS : %s\n", pt1 );
-#endif
 
       sprintf( buf, "%s/%s", pt3, file );
       pgs = buf;
@@ -252,7 +205,6 @@ char  get_gitstatus( char *dir, char *file, char *gs ) {
     sprintf( buf, "%s/%s", dir, file );
     pgs = buf;
   }
-//fprintf( stdout, "PGS <%c>: %s\n", ch, pgs );
 
   bool done = ( B_DM && ch == 'I' );
   int len1, len2;
@@ -262,17 +214,11 @@ char  get_gitstatus( char *dir, char *file, char *gs ) {
     pt2 = strstr( pt1, pgs );
     if ( pt2 ) {
       len2 = strchr( pt2, '\n' ) - pt2;
-#define DBUG_no
-#ifdef  DBUG
-      fprintf( stdout, "gs : %s\n", gs );
-      fprintf( stdout, "pgs: %s\n", pgs  );
-      fprintf( stdout, "DIR: %s\n", dir );
-      fprintf( stdout, "%5d %5d %s -> %s\n", len1, len2, file, pgs );
-      fprintf( stdout, ">%c<", *(pt2-1) );
+
       // git status returns the full path relative to the git root
       // when in a git subdir, *(pt2-1) will be the '/' on a filename match
       // XYZZY - this needs to compare the full git relative path
-#endif
+
       if ( len1 == len2 && *(pt2-1) == ' ' ) {
         done = true;
         pt2 -= 3;
@@ -293,10 +239,6 @@ char  get_gitstatus( char *dir, char *file, char *gs ) {
     } else done = true;
 
   } while ( !done );
-
-#ifdef  DBUG
-  fprintf( stdout, "RETURN: '%c' %s\n", ch ,file );
-#endif
 
   return( ch );
 }
