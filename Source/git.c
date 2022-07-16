@@ -157,8 +157,6 @@ char  get_gitstatus( char *dir, char *file, char *gs ) {
 
   if ( RMisdir( file ) ) return( ch );
 
-  pt1 = pt2 = gs;
-
   if ( !B_DM ) ch = ' ';
 
   if ( pdir != dir ) {
@@ -166,8 +164,16 @@ char  get_gitstatus( char *dir, char *file, char *gs ) {
     ch   = ' ';
     pdir = dir;
 
-    pt3 = is_git( fullpath( dir ), true );
+#ifdef  MatchSubDir
+    // An easier fix it change ELS_GIT_STATUS to be:
+    // git status -s --ignored --porcelain --untracked-files
+    //
+    // First check if the subdir we are in is ignored
+    // ( subdir could also be untracked )
+    // If it is, set ch to 'I' and don't check again
 
+    pt1 = pt2 = gs;
+    pt3 = is_git( fullpath( dir ), true );
     while ( pt3 && *pt3 && ch == ' ' ) {
 
       if ( strstr( pt1, pt3 ) ) {
@@ -188,6 +194,7 @@ char  get_gitstatus( char *dir, char *file, char *gs ) {
       }
     }
     if ( ch == 'I' ) B_DM = true;
+#endif
 
     pt3 = is_git( fullpath( dir ), true );
 
