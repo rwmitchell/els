@@ -155,7 +155,7 @@ char  get_gitstatus( char *dir, char *file, char *gs ) {
        *pgs = NULL, // pointer to git subdir
         buf[MAX_DNAME];
 
-  if ( RMisdir( file ) ) return( ch );
+//if ( RMisdir( file ) ) return( ch );
 
   if ( !B_DM ) ch = ' ';
 
