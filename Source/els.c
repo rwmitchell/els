@@ -2529,7 +2529,7 @@ Enhanced LS -- ENVIRONMEMT:\n\
   ELS_FT_COLORS=86400=32;1:6480000=32:15724800=33:3155760=33;2:-1=31;1:\n\
   ELS_FS_WIDTH=7        - minimize size width, increase for more width\n\
   ELS_HG_STATUS='hg status -mardui'  - add hg status\n\
-  ELS_GIT_STATUS='git status -s --ignored --porcelain' - add git status\n\
+  ELS_GIT_STATUS='git status -s --ignored --porcelain --untracked-files' - add git status\n\
   ELS_EXFAT=1           - ignore execution bit - should be auto determined\n\
 \n\
 ");
