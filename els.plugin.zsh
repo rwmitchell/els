@@ -2,6 +2,19 @@ alias -g MC='| mc'
 
 [[ $+galias[MC] == 1 ]] || alias -g MC='| mc'
 
+# setopt extendedglob - breaks els
+# use _icwc to expand, then els to list
+function _icwc() {                  # = ignore case wild card
+  setopt extendedglob
+  print $( print (#i)$~@ )   # ~ causes wildcard expansion
+  setopt noextendedglob
+}
+
+# ignore case,  doesn't work with els_Eflag code
+function lsi () { els +G~t~N                    $( _icwc $@ ) MC }
+function lli () { els +T^NY-M-DT +G~At~smN      $( _icwc $@ ) MC }
+function lti () { els +T^NY-M-DT +G~At~smN -rt  $( _icwc $@ ) MC }
+
 function hidden() {      # show hidden extensions
   local arr=$( echo $els_Eflag | sed 's/+E//g;s/ /\n/g' )
   printf "%s\n" $arr
@@ -23,12 +36,12 @@ function _els_set_hide() {
   function lcrg() { els +G~t~N -AR +e".git"      $els_Eflag \$@ MC }    # recurse, exclude .git
   function lll () { els +T^NY-M-DT +Gl~At~smN     $els_Eflag \$@ MC }
   function li  () { els +T^NY-M-DT +Gl~Atp~ugsmNL $els_Eflag \$@    }   # show link count
-  function lli () { els +T^NY-M-DT +Gl%11i~At~smN $els_Eflag \$@ MC }   # and inode number
+  function llI () { els +T^NY-M-DT +Gl%11i~At~smN $els_Eflag \$@ MC }   # and inode number
   "
   eval $_els_string
 }
 
-# mnemonics for lll, li, and lli do not match match options, but
+# mnemonics for lll, li, and llI do not match match options, but
 # nothing else seemed better
 
 function hide_ext() {
