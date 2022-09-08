@@ -37,9 +37,11 @@ function _els_set_hide() {
   function lll () { els +T^NY-M-DT +Gl~At~smN     $els_Eflag \$@ MC }
   function li  () { els +T^NY-M-DT +Gl~Atp~ugsmNL $els_Eflag \$@    }   # show link count
   function llI () { els +T^NY-M-DT +Gl%11i~At~smN $els_Eflag \$@ MC }   # and inode number
+  function llx () { els +T^NY-M-DT +G~At~smN -fr +FP{+x}    $els_Eflag \$@ MC }
   "
   eval $_els_string
 }
+# llx shows only executable files
 
 # mnemonics for lll, li, and llI do not match match options, but
 # nothing else seemed better
