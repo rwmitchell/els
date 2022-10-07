@@ -706,7 +706,9 @@ int main(int argc, char *argv[])
 //      printf( "\nFS Type: %0X\n", fsbuf.f_type );
         // 0x001C is type smbfs  - Big Sur  ?
         // 0x001E is type smbfs  - Monterey ? - 2022-04-29
-        if ( fsbuf.f_type == 0x001E ) rwm_doperms = FALSE;
+        if ( fsbuf.f_type == 0x001E       // exfat
+          || fsbuf.f_type == 0x001F )     // msdos
+          rwm_doperms = FALSE;
     }
     sort_dir(&dlist, dname, -1);
     list_dir(&dlist, dname);
