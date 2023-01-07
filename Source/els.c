@@ -4245,7 +4245,7 @@ char *G_print(char *buff,
                 rwm_type   = type;
                 rwm_mode   = fmode;
               }
-              if ( ! rwm_doicons ) sprintf(bp, "%*c",width, type); // XYZZY - disable type display
+              sprintf(bp, "%*c",width, type);
             }
     break;
 
