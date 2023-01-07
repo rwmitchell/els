@@ -288,6 +288,7 @@ Local Boole T_option = FALSE;
 
 Local char *G_format;
 #define Gf_INODE    'i'
+#define Gf_TYPE_IN_QUIET  'q'
 #define Gf_TYPE_IN_ALPHA  't'
 #define Gf_TYPE_IN_SYMBOLIC 'T'
 #define Gf_PERM_IN_ALPHA  'p'
@@ -4201,6 +4202,7 @@ char *G_print(char *buff,
   /* Process a directive: */
   switch (icase)
   {
+  case Gf_TYPE_IN_QUIET:
   case Gf_TYPE_IN_ALPHA:
     {
       char type;
@@ -4245,7 +4247,9 @@ char *G_print(char *buff,
                 rwm_type   = type;
                 rwm_mode   = fmode;
               }
-              sprintf(bp, "%*c",width, type);
+              // Gf_TYPE_IN_QUIET allows type processing without actual output
+              if ( icase == Gf_TYPE_IN_ALPHA )
+                sprintf(bp, "%*c",width, type);
             }
     break;
 
