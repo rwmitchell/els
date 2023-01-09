@@ -154,6 +154,7 @@ char *FTCOLOR = NULL,      // rwm - ELS_FT_COLORS - file ages and colors
 const
 char *inv = "[7;0m",     // invert foreground/background colors
      *rinv= "[27;0m",    // reset invert
+     *bold= "[1m",       // bold
      *cs  = "[0m";       // clear ansii codes
 Ulong rwm_ages[32];        // rwm - 32 date colors should be enough for anyone
 int   rwm_ftcnt=0,
@@ -4241,16 +4242,16 @@ char *G_print(char *buff,
       else
         type = '?';
 
-              if (!width_specified) width = 1;
+      if (!width_specified) width = 1;
 
-              if ( rwm_docolor ) {
-                rwm_type   = type;
-                rwm_mode   = fmode;
-              }
-              // Gf_TYPE_IN_QUIET allows type processing without actual output
-              if ( icase == Gf_TYPE_IN_ALPHA )
-                sprintf(bp, "%*c",width, type);
-            }
+      if ( rwm_docolor ) {
+        rwm_type   = type;
+        rwm_mode   = fmode;
+      }
+      // Gf_TYPE_IN_QUIET allows type processing without actual output
+      if ( icase == Gf_TYPE_IN_ALPHA )
+        sprintf(bp, "%s%*c",type == type_DIR ? bold : "", width, type);
+    }
     break;
 
     /* Add various flavorings: */
