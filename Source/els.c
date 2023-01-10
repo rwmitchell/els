@@ -154,8 +154,10 @@ char *FTCOLOR = NULL,      // rwm - ELS_FT_COLORS - file ages and colors
 const
 char *inv = "[7;0m",     // invert foreground/background colors
      *rinv= "[27;0m",    // reset invert
+     *rfg = "[39;0m",    // reset foreground
      *bold= "[1m",       // bold
-     *cs  = "[0m";       // clear ansii codes
+     *cs  = "[0m",       // current style, default to clear ansi codes
+     *cse = "[0m";       // clear ansi codes at end of string
 Ulong rwm_ages[32];        // rwm - 32 date colors should be enough for anyone
 int   rwm_ftcnt=0,
       rwm_szwdth=0,
@@ -3835,7 +3837,7 @@ Boole list_item(Dir_Item *file,
       char *bp = G_print(output_buff, G_format, dname, file);
       if ( !rwm_dospace ) {
         if ( rwm_docolor ) {
-          strcat( bp, cs );    // "[;0m" );  // Reset all color settings at EOL
+          strcat( bp, cse );    // "[;0m" );  // Reset all color settings at EOL
           rwm_type = 0;
           rwm_mode = 0;
         }
@@ -4031,7 +4033,7 @@ char *rwm_col_age( char *buff, time_t ftime, Boole flag ) {
 
     if ( i<rwm_ftcnt ) sprintf(buff, "[%sm%s", rwm_cols[i], tmp );
   } else                        // end   of date string
-      sprintf(buff, "%s[39;0m", tmp);   // reset foreground color
+      sprintf(buff, "%s%s", tmp, rfg );   // reset foreground color
 
   buff += strlen(buff);
   return ( buff );
@@ -4249,6 +4251,7 @@ char *G_print(char *buff,
         rwm_mode   = fmode;
       }
       // Gf_TYPE_IN_QUIET allows type processing without actual output
+      cs = (type == type_DIR) ? bold : cse;
       if ( icase == Gf_TYPE_IN_ALPHA )
         sprintf(bp, "%s%*c",type == type_DIR ? bold : "", width, type);
     }
@@ -4556,7 +4559,7 @@ char *G_print(char *buff,
         if ( width < (int) strlen( str ) )
           rwm_fxwdth = MAX( rwm_fxwdth, (int) strlen( str ) );
         if ( !FSCOLOR ) Void sprintf(bp, "%*s", width, str);
-        else            Void sprintf(bp, "[%sm%*s[39m", FSCOLOR, width, str);
+        else            Void sprintf(bp, "[%sm%*s[39m%s", FSCOLOR, width, str, cs);
 
       }
     }
@@ -4608,7 +4611,7 @@ char *G_print(char *buff,
       info->st_nlink - ( file->isdir ? 2 : 0 )));
 
     if ( !FSCOLOR ) Void sprintf(bp, "%*s", width, str);
-    else            Void sprintf(bp, "[%sm%*s[39m", FSCOLOR, width, str);
+    else            Void sprintf(bp, "[%sm%*s[39m%s", FSCOLOR, width, str, cs);
     // End new code
 
     break;
