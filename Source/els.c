@@ -5438,9 +5438,8 @@ char *N_print(char *buff, char *fmt,
 //        if ( hg == 'M'   ) sprintf( rwm_bg,    "[48;5;%dm",      8 );
           else               rwm_bg[0] = '\0';
 
-          // Foreground color
-          if ( rwm_s <= 0 ) sprintf( rwm_col, "%s[38;5;%dm",    cs, rwm_f );
-          else              sprintf( rwm_col, "%s[38;5;%d;%dm", cs, rwm_f, rwm_s );
+          if ( rwm_s <= 0 ) sprintf( rwm_col, "[38;5;%dm",    rwm_f );
+          else              sprintf( rwm_col, "[38;5;%d;%dm", rwm_f, rwm_s );
           strcat( rwm_col, rwm_bg );
         } else rwm_col[0] = '\0';
 
@@ -5479,13 +5478,17 @@ char *N_print(char *buff, char *fmt,
         d = ""; s = "";
       }
 
+      // 2023-01-10: some glyphs break when in 'bold'
+      // so bold is disabled prior to the glyph (cse)
+      // then turned back on (cs)
+      // 0EA84 -> git
       if (!width_specified) {
-        sprintf(bp, "%s%s%s%s%s%s%s", rwm_col, rwm_gl, cs, d, s, rwm_col, fname);
+        sprintf(bp, "%s%s%s%s%s%s%s%s", cse, rwm_col, rwm_gl, cs, d, s, rwm_col, fname);
         if ((d = quote_fname(bp, dash_b, dash_Q, use_quotes)) != NULL)
           sprintf(bp, "%s", d);
       } else {
         char tmp[MAX_FULL_NAME];
-        sprintf(tmp, "%s%s%s%s%s%s%s", rwm_col, rwm_gl, cs, d, s, rwm_col, fname);
+        sprintf(tmp, "%s%s%s%s%s%s%s%s", cse, rwm_col, rwm_gl, cs, d, s, rwm_col, fname);
         if ((d = quote_fname(tmp, dash_b, dash_Q, use_quotes)) != NULL)
           sprintf(bp, "%*s",width, d);
         else
