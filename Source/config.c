@@ -168,12 +168,15 @@ int main(int argc, char *argv[])
   struct tm   date;
   unsigned int u;
 
+#ifdef DEBUG
   printf( "Starting: %s -> %d\n\n", OS_NAME, OS_NUM );
   printf( "OS_NAME_TO_NUM: %d\n", OS_NAME_TO_NUM( OS_NAME));
   printf( "OS_NUM        : %d\n",                 OS_NUM );
 
   fprintf(stdout, "OS_NAME_TO_NUM: %d\n", OS_NAME_TO_NUM( OS_NAME));
   fprintf(stdout, "OS_NUM        : %d\n",                 OS_NUM );
+#endif
+
 
   if (argc > 2)
     config_usage_error(argv[0]);
