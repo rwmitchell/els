@@ -85,8 +85,8 @@ int main(int argc, char *argv[])
 \"%s\" unable to to uniquely determine OS TYPE during configuration.\n\
 The most likely solution is to re-run \"make\" as follows:\n\
 \n\
-	make clean	# Remove any residue from previous build\n\
-	make		# Execute \"make\" without any arguments\n\
+  make clean  # Remove any residue from previous build\n\
+  make    # Execute \"make\" without any arguments\n\
 \n\
 Please read the INSTALL file for more help.\n\
 \n", argv[0]);
@@ -188,8 +188,8 @@ int main(int argc, char *argv[])
 \"%s\" unable to to uniquely determine OS TYPE during configuration.\n\
 The most likely solution is to re-run \"make\" as follows:\n\
 \n\
-	make clean	# Remove any residue from previous build\n\
-	make		# Execute \"make\" without any arguments\n\
+  make clean  # Remove any residue from previous build\n\
+  make    # Execute \"make\" without any arguments\n\
 \n\
 Please read the INSTALL file for more help.\n\
 \n", argv[0]);
@@ -216,7 +216,7 @@ Please read the INSTALL file for more help.\n\
   /* Validate config.h (keep #warnings insolated from older CPPs): */
   fprintf(out, "#ifdef %s\n", OS_NAME_TO_TYPE(OS_NAME));
   fprintf(out, "#  if %s != %d\n",
-	  OS_NAME_TO_TYPE(OS_NAME), OS_VERSION);
+    OS_NAME_TO_TYPE(OS_NAME), OS_VERSION);
   fprintf(out, "#  warning: config.h generated for different OS version\n");
   fprintf(out, "#  warning: \"make clean\" is advisable\n");
   fprintf(out, "#  endif\n");
@@ -228,7 +228,7 @@ Please read the INSTALL file for more help.\n\
 
   /* Translate from "uname -sr" to INTERNAL_NAME = XYYZZ: */
   fprintf(out, "#define %-10s  %d\n",
-	  OS_NAME_TO_TYPE(OS_NAME), OS_VERSION);
+    OS_NAME_TO_TYPE(OS_NAME), OS_VERSION);
   fprintf(out, "#define OS_NAME     \"%s\"\n", OS_NAME);
   fprintf(out, "#define OS_VERSION  %d\n", OS_VERSION);
   fprintf(out, "\n");
@@ -243,33 +243,33 @@ Please read the INSTALL file for more help.\n\
   fp = NULL;
 #endif
   fprintf(out, "#%-6s HAVE_LOCALE\n",
-	  fp != NULL ? "define" : "undef");
+    fp != NULL ? "define" : "undef");
   if (fp != NULL) fclose(fp);
-  
+
   /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
   /* Determine whether system supports ACLs: */
 
   fp = fopen("/usr/include/sys/acl.h", "r");
   fprintf(out, "#%-6s HAVE_SYS_ACL_H\n",
-	  fp != NULL ? "define" : "undef");
+    fp != NULL ? "define" : "undef");
   if (fp != NULL) fclose(fp);
 
   /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
   /* Determine whether time_t supports long long: */
 
   fprintf(out, "#%-6s HAVE_LONG_LONG_TIME\n",
-	  test_long_long_time() ? "define" : "undef");
+    test_long_long_time() ? "define" : "undef");
 
   /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
   /* Determine whether system supports O_NOATIME: */
 
   fprintf(out, "#%-6s HAVE_O_NOATIME\n",
 #if defined(O_NOATIME)
-	  "define"
+    "define"
 #else
-	  "undef"
+    "undef"
 #endif
-	  );
+    );
   fprintf(out, "\n");
 
   /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -412,10 +412,10 @@ Please read the INSTALL file for more help.\n\
   fprintf(out, "#define FU_st_nlink(z,w,v)  %s(z,w,v)\n", FmtU(file.st_nlink));
   fprintf(out, "#define FU_st_blocks(z,w,v) %s(z,w,v)\n", FmtU(file.st_blocks));
   fprintf(out, "\n");
-  
+
   fprintf(out, "#define FX_time_t(z,w,v)    %s(z,w,v)\n", FmtX(time_t));
   fprintf(out, "\n");
-  
+
 #else
 
   fprintf(out, "\
