@@ -89,9 +89,13 @@
 
 char LGC = ' '; /* LGC default value used by convert_iso8601 */
 
+#define UNUSED(x) (void)(x)   // silence warning
+
 /********** Global Routines Referenced **********/
 
+#ifdef NEED_PROTOS
 extern char *getenv();
+#endif
 
 /********** Global Routines Defined **********/
 
@@ -390,7 +394,7 @@ const Local char *NON_NEGATABLE = "Non-negatable option";
 const Local char *MISSING_FILTER = "Missing filter";
 const Local char *TOO_MANY_FILTERS = "Too many filters specified";
 
-Boole (*rwm_col_ext)();
+Boole (*rwm_col_ext)( char *fn, int *b, int *f, int *s, int *i );
 Boole rwm_col_ext1( char *fn, int *b, int *f, int *s, int *i );
 Boole rwm_col_ext2( char *fn, int *b, int *f, int *s, int *i );
 Boole rwm_col_ext3( char *fn, int *b, int *f, int *s, int *i );
@@ -2008,7 +2012,7 @@ void give_usage_or_help(char U_or_H)
   /* U: Print usage to stderr so as to avoid any redirection.
      H: Print help to stdout so as to make it pipe-able through PAGER.
      h: Print help to stdout but without PAGER pipe. */
-  FILE *out, *fopen(), *popen();
+  FILE *out;  // , *fopen(), *popen();
   Boole more = FALSE;
 
   if (U_or_H == 'H')
@@ -3454,6 +3458,7 @@ void name_dir(Dir_List *dlist, char *dname)
 
 int count_dir(Dir_List *dlist, char *dname)
 {
+  UNUSED( dname );
   register Dir_Item *ptr = dlist->head;
   int n = 0;
   while (ptr != NULL)
@@ -4840,6 +4845,7 @@ char *G_print(char *buff,
 Boole rwm_get_cs( char *pat, int *b, int *f, int *s, int *i ) { // background, foreground, style, icon
   char *mat = NULL;
   int d = 0;                          // distance
+  UNUSED(d);
 
   if ( !rwm_doicons ) {
     mat = strstr( LSCOLOR, pat );     // use LSCOLOR for colors
@@ -4862,6 +4868,7 @@ Boole rwm_get_cs( char *pat, int *b, int *f, int *s, int *i ) { // background, f
 Boole rwm_get_hg( char pat, int *b, int *i ) {                 // background, icon
   char *mat = NULL;
   int d = 0;                          // distance
+  UNUSED(d);
 
   if ( HGICONS ) {
     mat = strchr( HGICONS, pat );
@@ -4877,6 +4884,7 @@ Boole rwm_get_hg( char pat, int *b, int *i ) {                 // background, ic
 Boole rwm_get_git( char pat, int *b, int *i ) {                 // background, icon
   char *mat = NULL;
   int d = 0;                          // distance
+  UNUSED(d);
 
   if ( GTICONS ) {
     mat = strchr( GTICONS, pat );
@@ -5080,15 +5088,14 @@ Boole rwm_col_wild( char *fn, char y, int *b, int *f, int *s, int *i ) {
 //    sscanf( pls, "%31s=", pat );    // sscanf() does NOT stop at =
       ps = pls;
       pt = pat;
-      int l=31;
-      while ( *ps != '=' ) { *pt++ = *ps++; l--; }
+      while ( *ps != '=' ) { *pt++ = *ps++; }
       *pt = '\0';
 
       // 2021-02-14 support wildcard at end of pattern
       if ( *pat == '\0' ) {           // wildcard appears at end
         while ( *ps != ':' ) ps--;    // rewind to start of pattern
         ps++;                         // move past ':'
-        while ( *ps != y ) { *pt++ = *ps++; l--; }
+        while ( *ps != y ) { *pt++ = *ps++; }
         *pt = '\0';
       }
 
@@ -6428,6 +6435,7 @@ void dirItemShow(FILE *out)
 
 void watchSigHandler(int sig)
 {
+  UNUSED(sig);
 #if WATCH_SIGNAL == SIGINT
   Local Boole sigAskNoMore = FALSE;
 #endif
