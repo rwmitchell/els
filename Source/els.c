@@ -794,7 +794,8 @@ void do_getenv(void)
 
   FSWIDTH = getenv( "ELS_FS_WIDTH" );  // Set additional width padding
   if ( FSWIDTH ) rwm_szwdth = strtol( FSWIDTH, NULL, 10 );
-  if ( rwm_docolor ) {
+
+  if ( rwm_docolor ) {   // 2023-01-28 options not processed set, always true
     LSCOLOR = getenv( "LS_COLORS"     );       // color by extension
     LSICONS = getenv( "LS_ICONS"      );       // file icons
     HGICONS = getenv( "HG_ICONS"      );       // hg  status icons
@@ -1025,6 +1026,7 @@ void do_options_minus(char *options)
       /* Unimplemented */
       rwm_docomma = FALSE;    // use -C to disable both addons
       rwm_docolor = FALSE;
+      FSCOLOR     = NULL;
       break;
 
     case '0': /* rwm: space in filename handling */
@@ -4254,11 +4256,16 @@ char *G_print(char *buff,
       if ( rwm_docolor ) {
         rwm_type   = type;
         rwm_mode   = fmode;
-      }
+      } else cse="";
+
       // Gf_TYPE_IN_QUIET allows type processing without actual output
       cs = (type == type_DIR) ? bold : cse;
-      if ( icase == Gf_TYPE_IN_ALPHA )
-        sprintf(bp, "%s%*c",type == type_DIR ? bold : "", width, type);
+      if ( icase == Gf_TYPE_IN_ALPHA ) {
+        if ( rwm_docolor )
+          sprintf(bp, "%s%*c",type == type_DIR ? bold : "", width, type);
+        else
+          sprintf(bp, "%*c", width, type);
+      }
     }
     break;
 
@@ -5151,7 +5158,10 @@ char *rwm_dir_col( char *dnam ) {
 
 //printf( "rwm_dir_col: >%s<\n", tn);
 
-  memset( dcol, '\0', 512 );
+  memset( dcol,    '\0', 512 );
+  memset( rwm_col, '\0', 512 );
+  memset( rwm_tmp, '\0', 512 );
+  memset( rwm_bg,  '\0',  32 );
 
   while ( ! done ) {
     pe = strchr( pe, '/' );
@@ -5161,19 +5171,23 @@ char *rwm_dir_col( char *dnam ) {
     rwm_type = type_DIR;     // something resets rwm_type in this loop
 //  printf( "coloring: %d >%s<\n", rwm_type == type_DIR, ps );
 
-    rwm_get_col( ps, &rwm_b, &rwm_f, &rwm_s, &rwm_i );
-//    printf( "Coloring: >%s< %d\n", ps, rwm_f );
+    if ( rwm_docolor ) {
+        rwm_get_col( ps, &rwm_b, &rwm_f, &rwm_s, &rwm_i );
+//      printf( "Coloring: >%s< %d\n", ps, rwm_f );
 
-    if ( rwm_b >  0  ) sprintf( rwm_bg,    "[48;5;%dm",        rwm_b );
-    else               rwm_bg[0] = '\0';
+      if ( rwm_b >  0  ) sprintf( rwm_bg,    "[48;5;%dm",        rwm_b );
+      else               rwm_bg[0] = '\0';
 
-    // Foreground color
-    if ( rwm_s <= 0 ) sprintf( rwm_col, "%s[38;5;%dm",    cs, rwm_f );
-    else              sprintf( rwm_col, "%s[38;5;%d;%dm", cs, rwm_f, rwm_s );
-    strcat( rwm_col, rwm_bg );
+      // Foreground color
 
-    sprintf(rwm_tmp, "%s%s%s%c", rwm_col, ps, cs, pe ? '/' : '\0' );
-    strcat( dcol, rwm_tmp );
+      if ( rwm_s <= 0 ) sprintf( rwm_col, "%s[38;5;%dm",    cs, rwm_f );
+      else              sprintf( rwm_col, "%s[38;5;%d;%dm", cs, rwm_f, rwm_s );
+      strcat( rwm_col, rwm_bg );
+
+      sprintf(rwm_tmp, "%s%s%s%c", rwm_col, ps, cs, pe ? '/' : '\0' );
+      strcat( dcol, rwm_tmp );
+
+    }
 
     ps = ++pe;
   }
@@ -5253,7 +5267,7 @@ char *N_print(char *buff, char *fmt,
       {
       case 'Q':   /* '+N^Q' is DEPRECATED, use '+N^q' instead */
       case Nf_QUOTE_NAME:
-  use_quotes = TRUE;
+        use_quotes  = TRUE;
   break;
 
       default:
@@ -5401,9 +5415,9 @@ char *N_print(char *buff, char *fmt,
     width_specified = TRUE;
   }
 
-        char rwm_col[128],
-             rwm_bg [ 32],
-             rwm_gl [ 16];
+        char rwm_col[128] = "\0",
+             rwm_bg [ 32] = "\0",
+             rwm_gl [ 16] = "\0";
         int rwm_b = 49, rwm_f = 39, rwm_s=29,   // back, fore, and style
              hg_b =  0,
              gt_b =  0;
@@ -5489,17 +5503,36 @@ char *N_print(char *buff, char *fmt,
       // so bold is disabled prior to the glyph (cse)
       // then turned back on (cs)
       // 0EA84 -> git
-      if (!width_specified) {
-        sprintf(bp, "%s%s%s%s%s%s%s%s", cse, rwm_col, rwm_gl, cs, d, s, rwm_col, fname);
-        if ((d = quote_fname(bp, dash_b, dash_Q, use_quotes)) != NULL)
-          sprintf(bp, "%s", d);
+      if ( rwm_docolor ) {
+
+        if (!width_specified) {
+          sprintf(bp, "%s%s%s%s%s%s%s%s", cse, rwm_col, rwm_gl, cs, d, s, rwm_col, fname);
+          if ((d = quote_fname(bp, dash_b, dash_Q, use_quotes)) != NULL)
+            sprintf(bp, "%s", d);
+        } else {
+          char tmp[MAX_FULL_NAME];
+          sprintf(tmp, "%s%s%s%s%s%s%s%s", cse, rwm_col, rwm_gl, cs, d, s, rwm_col, fname);
+          if ((d = quote_fname(tmp, dash_b, dash_Q, use_quotes)) != NULL)
+            sprintf(bp, "%*s",width, d);
+          else
+            sprintf(bp, "%*s",width, tmp);
+        }
+
       } else {
-        char tmp[MAX_FULL_NAME];
-        sprintf(tmp, "%s%s%s%s%s%s%s%s", cse, rwm_col, rwm_gl, cs, d, s, rwm_col, fname);
-        if ((d = quote_fname(tmp, dash_b, dash_Q, use_quotes)) != NULL)
-          sprintf(bp, "%*s",width, d);
-        else
-          sprintf(bp, "%*s",width, tmp);
+
+        if (!width_specified) {
+          sprintf(bp, "%s%s%s", d, s, fname);
+          if ((d = quote_fname(bp, dash_b, dash_Q, use_quotes)) != NULL)
+            sprintf(bp, "%s", d);
+        } else {
+          char tmp[MAX_FULL_NAME];
+          sprintf(tmp, "%s%s%s", d, s, fname);
+          if ((d = quote_fname(tmp, dash_b, dash_Q, use_quotes)) != NULL)
+            sprintf(bp, "%*s",width, d);
+          else
+            sprintf(bp, "%*s",width, tmp);
+        }
+
       }
       markable = TRUE;
     }
@@ -5520,10 +5553,17 @@ char *N_print(char *buff, char *fmt,
   case Nf_FILE_NAME:
     {
       char *f;
-      if ((f = quote_fname(fname, dash_b, dash_Q, use_quotes)) != NULL)
-        sprintf(bp, "%s%*s",rwm_col, width, f);
-      else
-        sprintf(bp, "%s%*s",rwm_col, width, fname);
+      if ( rwm_docolor ) {
+        if ((f = quote_fname(fname, dash_b, dash_Q, use_quotes)) != NULL)
+          sprintf(bp, "%s%*s",rwm_col, width, f);
+        else
+          sprintf(bp, "%s%*s",rwm_col, width, fname);
+      } else {
+        if ((f = quote_fname(fname, dash_b, dash_Q, use_quotes)) != NULL)
+          sprintf(bp, "%*s", width, f);
+        else
+          sprintf(bp, "%*s", width, fname);
+      }
       markable = TRUE;
     }
     break;
