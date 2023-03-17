@@ -7,6 +7,6 @@
 /* Source/git.c */
 char *is_git(char *dir, bool );
 char *load_gitstatus(const char *dir, const char *git);
-char get_gitstatus(char *dir, char *file, char *gs, char *gsd );
+char get_gitstatus(char *dir, char *file, char *gs );
 
 #endif

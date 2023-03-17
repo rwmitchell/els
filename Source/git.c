@@ -133,8 +133,7 @@ char *load_gitstatus( const char *dir, char *git ) {
   if ( ! git ) return( hld );  // return quickly if not set
 
 
-  // Disabled 'if' when GTSTATSD added
-//if ( !lst || strcmp( dir, lst ) ) {
+  if ( !lst || strcmp( dir, lst ) ) {
     if( lst ) free( lst );
     lst = strdup( dir );
     cmd = memAllocZero( strlen( dir ) + strlen( git ) + 4 );
@@ -143,9 +142,9 @@ char *load_gitstatus( const char *dir, char *git ) {
     hld=loadpipe( cmd, &sz );
     free   ( cmd );
     return ( hld );
-//} else return( hld );
+  } else return( hld );
 }
-char  get_gitstatus( char *dir, char *file, char *gs, char *gsd ) {
+char  get_gitstatus( char *dir, char *file, char *gs ) {
   static char *pdir = NULL,
               *pt3  = NULL,
               ch    = ' ';
@@ -202,7 +201,7 @@ char  get_gitstatus( char *dir, char *file, char *gs, char *gsd ) {
 
   }
 
-  pt1 = pt2 = RMisdir( file  ) ? gsd : gs;
+  pt1 = pt2 = gs;
 
   if ( ! strcmp( dir, "." ) || *dir == '\0' ) {
     if ( strlen( pt3 ) ) {

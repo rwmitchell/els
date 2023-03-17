@@ -198,8 +198,7 @@ Boole avoid_trimmings;
 char *hg_root = NULL,
      *hg_stat = NULL,
      *gt_root = NULL,
-     *gt_stat = NULL,
-     *gt_statd= NULL;
+     *gt_stat = NULL;
 Boole list_topdir;      // defined in elsVars.h
 char first_mac;
 int recursion_level = 0;
@@ -2545,7 +2544,6 @@ Enhanced LS -- ENVIRONMEMT:\n\
   ELS_FS_WIDTH=7        - minimize size width, increase for more width\n\
   ELS_HG_STATUS='hg status -mardui'  # add hg status\n\
   ELS_GIT_STATUS='git status -s --ignored --porcelain --untracked-files' # add git status\n\
-  ELS_GIT_STATUSD='git status -s --ignored --porcelain --untracked-files=normal' # add git status\n\
   ELS_EXFAT=1           - ignore execution bit - should be auto determined\n\
 \n\
 ");
@@ -3668,10 +3666,7 @@ void list_dir(Dir_List *dlist,
   if ( hg_root ) hg_stat = load_hgstatus ( hg_root );
 
   gt_root = is_git( fullpath( (char *) dname ), false );
-  if ( gt_root ) {
-    gt_stat  = load_gitstatus( gt_root, GTSTATS  );
-    gt_statd = load_gitstatus( gt_root, GTSTATSD );
-  }
+  if ( gt_root ) gt_stat  = load_gitstatus( gt_root, GTSTATS  );
 
   for (ptr = dlist->head; ptr != NULL; ptr = ptr->next)
   {
@@ -3776,10 +3771,7 @@ void list_dir(Dir_List *dlist,
       if ( hg_root ) hg_stat = load_hgstatus ( hg_root );
 
       gt_root = is_git( fullpath( (char *) CwdPath ), false );
-      if ( gt_root ) {
-         gt_stat  = load_gitstatus( gt_root, GTSTATS  );
-         gt_statd = load_gitstatus( gt_root, GTSTATSD );
-      }
+      if ( gt_root ) gt_stat  = load_gitstatus( gt_root, GTSTATS  );
 
       first=FALSE;
     }
@@ -5442,7 +5434,7 @@ char *N_print(char *buff, char *fmt,
         if ( HGICONS && hg != ' ' ) rc =    rwm_get_hg ( hg, &hg_b, &hg_i);
         if ( !rc ) hg_i = (wchar_t) hg;
 
-        if ( gt_stat ) gt =  get_gitstatus( dname, fname, gt_stat, gt_statd );
+        if ( gt_stat ) gt =  get_gitstatus( dname, fname, gt_stat );
 
 
         if ( GTICONS && gt != ' ' ) rc =    rwm_get_git( gt, &gt_b, &gt_i);
