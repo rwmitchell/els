@@ -151,6 +151,7 @@ char *LSCOLOR = NULL,      // rwm - from LS_COLORS
      *FSWIDTH = NULL,
      *HGSTATS = NULL,
      *GTSTATS = NULL,
+     *GTSTATSD= NULL,      // git status for subdirs
      *EXFAT   = NULL;
 // export ELS_FT_COLORS="86400=0;32;1:6480000=0;32:7121234=0;32;2:31557600=1;33;2:-1=0;31;1:"
 char *FTCOLOR = NULL,      // rwm - ELS_FT_COLORS - file ages and colors
@@ -197,7 +198,8 @@ Boole avoid_trimmings;
 char *hg_root = NULL,
      *hg_stat = NULL,
      *gt_root = NULL,
-     *gt_stat = NULL;
+     *gt_stat = NULL,
+     *gt_statd= NULL;
 Boole list_topdir;      // defined in elsVars.h
 char first_mac;
 int recursion_level = 0;
@@ -804,6 +806,7 @@ void do_getenv(void)
     FTCOLOR = getenv( "ELS_FT_COLORS" );       // color by file time/age
     HGSTATS = getenv( "ELS_HG_STATUS" );
     GTSTATS = getenv( "ELS_GIT_STATUS" );
+    GTSTATSD= getenv( "ELS_GIT_STATUSD");
     EXFAT   = getenv( "ELS_EXFAT"     );       // ignore file permissions
 
     if ( FTCOLOR)
@@ -2540,8 +2543,9 @@ Enhanced LS -- ENVIRONMEMT:\n\
   ELS_FS_COLOR=35;1     - show size in red\n\
   ELS_FT_COLORS=86400=32;1:6480000=32:15724800=33:3155760=33;2:-1=31;1:\n\
   ELS_FS_WIDTH=7        - minimize size width, increase for more width\n\
-  ELS_HG_STATUS='hg status -mardui'  - add hg status\n\
-  ELS_GIT_STATUS='git status -s --ignored --porcelain --untracked-files' - add git status\n\
+  ELS_HG_STATUS='hg status -mardui'  # add hg status\n\
+  ELS_GIT_STATUS='git status -s --ignored --porcelain --untracked-files' # add git status\n\
+  ELS_GIT_STATUSD='git status -s --ignored --porcelain --untracked-files=normal' # add git status\n\
   ELS_EXFAT=1           - ignore execution bit - should be auto determined\n\
 \n\
 ");
@@ -3664,7 +3668,10 @@ void list_dir(Dir_List *dlist,
   if ( hg_root ) hg_stat = load_hgstatus ( hg_root );
 
   gt_root = is_git( fullpath( (char *) dname ), false );
-  if ( gt_root ) gt_stat = load_gitstatus( gt_root );
+  if ( gt_root ) {
+    gt_stat  = load_gitstatus( gt_root, GTSTATS  );
+    gt_statd = load_gitstatus( gt_root, GTSTATSD );
+  }
 
   for (ptr = dlist->head; ptr != NULL; ptr = ptr->next)
   {
@@ -3769,7 +3776,10 @@ void list_dir(Dir_List *dlist,
       if ( hg_root ) hg_stat = load_hgstatus ( hg_root );
 
       gt_root = is_git( fullpath( (char *) CwdPath ), false );
-      if ( gt_root ) gt_stat = load_gitstatus( gt_root );
+      if ( gt_root ) {
+         gt_stat  = load_gitstatus( gt_root, GTSTATS  );
+         gt_statd = load_gitstatus( gt_root, GTSTATSD );
+      }
 
       first=FALSE;
     }
@@ -5432,7 +5442,7 @@ char *N_print(char *buff, char *fmt,
         if ( HGICONS && hg != ' ' ) rc =    rwm_get_hg ( hg, &hg_b, &hg_i);
         if ( !rc ) hg_i = (wchar_t) hg;
 
-        if ( gt_stat ) gt =  get_gitstatus( dname, fname, gt_stat);
+        if ( gt_stat ) gt =  get_gitstatus( dname, fname, gt_stat, gt_statd );
 
 
         if ( GTICONS && gt != ' ' ) rc =    rwm_get_git( gt, &gt_b, &gt_i);

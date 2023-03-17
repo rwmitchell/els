@@ -123,27 +123,29 @@ char *is_git( char *dir, bool sub ) {
 
   return( is_git ? dir + len : NULL );
 }
-char *load_gitstatus( const char *dir ) {
+char *load_gitstatus( const char *dir, char *git ) {
   off_t sz;
   static
   char *lst = NULL,
        *hld = NULL;
-  char *cmd = NULL,        // 2020-12-20 issue is not cmd, fails without malloc
-       *git = GTSTATS;     // "git status -s --ignored --porcelain";
+  char *cmd = NULL;        // 2020-12-20 issue is not cmd, fails without malloc
 
   if ( ! git ) return( hld );  // return quickly if not set
 
-  if ( !lst || strcmp( dir, lst ) ) {
+
+  // Disabled 'if' when GTSTATSD added
+//if ( !lst || strcmp( dir, lst ) ) {
     if( lst ) free( lst );
     lst = strdup( dir );
     cmd = memAllocZero( strlen( dir ) + strlen( git ) + 4 );
     sprintf( cmd, "%s %s", git, dir );
+//  fprintf( stderr, "CMD: %s\n", cmd );
     hld=loadpipe( cmd, &sz );
     free   ( cmd );
     return ( hld );
-  } else return( hld );
+//} else return( hld );
 }
-char  get_gitstatus( char *dir, char *file, char *gs ) {
+char  get_gitstatus( char *dir, char *file, char *gs, char *gsd ) {
   static char *pdir = NULL,
               *pt3  = NULL,
               ch    = ' ';
@@ -200,7 +202,7 @@ char  get_gitstatus( char *dir, char *file, char *gs ) {
 
   }
 
-  pt1 = pt2 = gs;
+  pt1 = pt2 = RMisdir( file  ) ? gsd : gs;
 
   if ( ! strcmp( dir, "." ) || *dir == '\0' ) {
     if ( strlen( pt3 ) ) {
@@ -213,7 +215,8 @@ char  get_gitstatus( char *dir, char *file, char *gs ) {
     pgs = buf;
   }
 
-  bool done = ( B_DM && ch == 'I' );
+  bool done = ( B_DM && ch == 'I' ),
+       mtch = false;
   int len1, len2;
   len1 = strlen( pgs );
   do {
@@ -226,7 +229,13 @@ char  get_gitstatus( char *dir, char *file, char *gs ) {
       // when in a git subdir, *(pt2-1) will be the '/' on a filename match
       // XYZZY - this needs to compare the full git relative path
 
-      if ( len1 == len2 && *(pt2-1) == ' ' ) {
+      if ( RMisdir( file ) ) {
+        if ( len1 < len2 && *(pt2 +len1)  == '/' ) mtch = true;
+        else mtch = false;
+      }
+      else mtch = ( len1 == len2   );
+
+      if ( mtch && *(pt2-1) == ' ' ) {
         done = true;
         pt2 -= 3;
         if ( *pt2 == ' ' ) pt2++; // first char can be a space or indicator
