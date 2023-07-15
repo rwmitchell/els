@@ -44,7 +44,7 @@
    on SunOS5.6, HPUX10.20, and LINUX2.2 -- I am not certain about IRIX6.x).
    So far cases open64 appears to work with normal close: */
 
-#if defined(HAVE_STAT64) && !defined(ELS__UNDEF_STAT64)
+#if defined(HAVE_STAT64) && !defined(ELS__UNDEF_STAT64) && !defined(DARWIN)
 #  define open  open64
 #else
 #  undef  open

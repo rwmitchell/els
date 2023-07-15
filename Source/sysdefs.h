@@ -190,7 +190,7 @@
 /* NOTE:  This code shared by df.c */
 
 /* Define HAVE_STAT64 if this OS release is known to support it: */
-#if SUNOS >= 50600 || LINUX >= 20200 || HPUX >= 100000 || IRIX >= 60000
+#if SUNOS >= 50600 || LINUX >= 20200 || HPUX >= 100000 || IRIX >= 60000 || DARWIN
 #  define HAVE_STAT64
 #endif
 
