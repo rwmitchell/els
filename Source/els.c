@@ -3628,6 +3628,9 @@ Local int qsortDirTime_compare(const void *arg1, const void *arg2)
   diff = (t1 == t2 ? 0 :
     t1 <  t2 ? 1 : -1);
 
+    fprintf( stdout, "TIME: %ld : %s\n",        t1, a1->fname );
+    fprintf( stdout, " %2d : %ld : %s\n", diff, t2, a2->fname );
+
   if (diff == 0)
   {
     static int rec_level = 0;
