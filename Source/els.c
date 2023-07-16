@@ -3596,7 +3596,13 @@ Local int qsortDirTime_compare(const void *arg1, const void *arg2)
 {
   const Dir_Item *a1 = *(Dir_Item **)arg1;
   const Dir_Item *a2 = *(Dir_Item **)arg2;
+
+#ifdef OLDTIME
   ELS_time_t t1, t2;
+#else
+  double    dt1, dt2;
+#endif
+
   int diff;
 
   /* NB: if defined(HAVE_LONG_LONG_TIME), then ELS_time_t is 64-bit signed
@@ -3605,28 +3611,58 @@ Local int qsortDirTime_compare(const void *arg1, const void *arg2)
 
   if (sortTimeBy == Gf_TIME_MODIFIED)
   {
+#ifdef OLDTIME
     t1 = (ELS_time_t)a1->info.st_mtime;
     t2 = (ELS_time_t)a2->info.st_mtime;
+#else
+    dt1= a1->info.st_mtimespec.tv_sec + a1->info.st_mtimespec.tv_nsec * 1.e-9;
+    dt2= a2->info.st_mtimespec.tv_sec + a2->info.st_mtimespec.tv_nsec * 1.e-9;
+#endif
   }
   else if (sortTimeBy == Gf_TIME_ACCESSED)
   {
+#ifdef OLDTIME
     t1 = (ELS_time_t)a1->info.st_atime;
     t2 = (ELS_time_t)a2->info.st_atime;
+#else
+    dt1= a1->info.st_atimespec.tv_sec + a1->info.st_atimespec.tv_nsec * 1.e-9;
+    dt2= a2->info.st_atimespec.tv_sec + a2->info.st_atimespec.tv_nsec * 1.e-9;
+#endif
   }
   else if (sortTimeBy == Gf_TIME_MODE_CHANGED)
   {
+#ifdef OLDTIME
     t1 = (ELS_time_t)a1->info.st_ctime;
     t2 = (ELS_time_t)a2->info.st_ctime;
+#else
+    dt1= a1->info.st_ctimespec.tv_sec + a1->info.st_ctimespec.tv_nsec * 1.e-9;
+    dt2= a2->info.st_ctimespec.tv_sec + a2->info.st_ctimespec.tv_nsec * 1.e-9;
+#endif
   }
   else /* Default is time modified */
   {
+#ifdef OLDTIME
     t1 = (ELS_time_t)a1->info.st_mtime;
     t2 = (ELS_time_t)a2->info.st_mtime;
+#else
+    dt1= a1->info.st_mtimespec.tv_sec + a1->info.st_mtimespec.tv_nsec * 1.e-9;
+    dt2= a2->info.st_mtimespec.tv_sec + a2->info.st_mtimespec.tv_nsec * 1.e-9;
+#endif
   }
 
   /* Carefully calculate "diff" so as to avoid possible underflow: */
+#ifdef OLDTIME
   diff = (t1 == t2 ? 0 :
     t1 <  t2 ? 1 : -1);
+#else
+  diff = (dt1 == dt2 ? 0 :
+    dt1 <  dt2 ? 1 : -1);
+#endif
+
+#ifdef DEBUG_TIME
+    fprintf( stdout, "TIME: %ld : %16.6lf %s\n",        t1, dt1, a1->fname );
+    fprintf( stdout, " %2d : %ld : %16.6lf %s\n", diff, t2, dt2, a2->fname );
+#endif
 
   if (diff == 0)
   {
