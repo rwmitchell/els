@@ -5491,8 +5491,8 @@ char *N_print(char *buff, char *fmt,
           else               rwm_gl[0] = '\0';
 
           // Background color
-          if ( hg_b ) rwm_b = hg_b;
-          if ( gt_b ) rwm_b = gt_b;
+          if ( rwm_b <= 1 && hg_b ) rwm_b = hg_b;
+          if ( rwm_b <= 1 && gt_b ) rwm_b = gt_b;
           if ( rwm_b >  0  ) sprintf( rwm_bg,    "[48;5;%dm", rwm_b );
 //        if ( hg == 'M'   ) sprintf( rwm_bg,    "[48;5;%dm",      8 );
           else               rwm_bg[0] = '\0';
