@@ -11,9 +11,16 @@ function _icwc() {                  # = ignore case wild card
 }
 
 # ignore case,  doesn't work with els_Eflag code
+# NOTE: wildcard chars MUST be delimited!
+# ie: lsi \*foo\*
+# or: lsi "*foo*"
 function lsi () { els +G~q~N                    $( _icwc $@ ) MC }
 function lli () { els +T^NY-M-DT +G~Aq~smN      $( _icwc $@ ) MC }
 function lti () { els +T^NY-M-DT +G~Aq~smN -rt  $( _icwc $@ ) MC }
+
+# provide quick stuff to hide
+ELS_MS_HIDE=( .pptx .shs .lnk .exe )   # really boring stuff
+ELS_MS_FILE=( .mp4  .ppt .xls .doc )   # mostly boring stuff
 
 function hidden() {      # show hidden extensions
   local arr=$( echo $els_Eflag | sed 's/+E//g;s/ /\n/g' )
