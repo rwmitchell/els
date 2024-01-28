@@ -36,10 +36,10 @@ function _els_set_hide() {
   function lh  () { els +T^NY-M-DT +G~Aq~HmN     $els_Eflag \$@ MC }
   function ll  () { els +T^NY-M-DT +G~Aq~smN     $els_Eflag \$@ MC }
   function lt  () { els +T^NY-M-DT +G~Aq~smN -rt $els_Eflag \$@ MC }
-  function lz  () { els +T^NY-M-DT +G~Aq~smN     $els_Eflag \$@    | sort -n -k2  }
+  function lz  () { els +T^NY-M-DT +G~Aq~smN  -C $els_Eflag \$@    | sort -n -k1  }
   function Ll  () { els +T^NY-M-DT +G~Aq~smNL    $els_Eflag +FT{l} \$@     }  # show only symlinks
   function Lt  () { els +T^NY-M-DT +G~Aq~smNL    $els_Eflag -rt $@ }
-  function Lz  () { els +T^NY-M-DT +G~Aq~smNL    $els_Eflag \$@    | sort -n -k2  }
+  function Lz  () { els +T^NY-M-DT +G~Aq~smNL -C $els_Eflag \$@    | sort -n -k1  }
   function lcrg() { els +G~t~N -AR +e".git"      $els_Eflag \$@ MC }    # recurse, exclude .git
   function lll () { els +T^NY-M-DT +Gl~Aq~smN     $els_Eflag \$@ MC }
   function li  () { els +T^NY-M-DT +Gl~Aqp~ugsmNL $els_Eflag \$@    }   # show link count
