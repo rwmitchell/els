@@ -51,7 +51,7 @@
 
 /********** Global Routines Referenced **********/
 
-extern char *getenv();
+// extern char *getenv();   // defined in stdlib.h
 
 /********** Global Routines Defined **********/
 
@@ -469,7 +469,7 @@ void give_usage_or_help(char U_or_H)
   /* U: Print usage to stderr so as to avoid any redirection.
      H: Print help to stdout so as to make it pipe-able through PAGER.
      h: Print help to stdout but without PAGER pipe. */
-  FILE *out, *fopen(), *popen();
+  FILE *out;    // , *fopen(), *popen();
   Boole more = FALSE;
 
   if (U_or_H == 'H')

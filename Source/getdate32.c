@@ -38,7 +38,7 @@
 #include "time32.h"
 #include "auxil.h"
 
-extern char *getenv();
+// extern char *getenv();   // defined in stdlib.h
 
 Local void validate_year(char *arg, char *cp, Ulong YYYY, Boole next);
 Local void validate_month(char *arg, char *cp, Ulong MM, Boole next);

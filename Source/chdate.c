@@ -1,12 +1,12 @@
 /******************************************************************************
   chdate.c -- Change date a la ISO 8601
-  
+
   Author: Mark Baranowski
   Email:  requestXXX@els-software.org (remove XXX)
   Download: http://els-software.org
 
   Last significant change: November 8, 2012
-  
+
   This program is provided "as is" in the hopes that it might serve some
   higher purpose.  If you want this program to serve some lower purpose,
   then that too is all right.  So as to keep these hopes alive you may
@@ -14,7 +14,7 @@
   You may also freely distribute modified versions of this program so long
   as you indicate that such versions are modified and so long as you
   provide access to the unmodified original copy.
-  
+
   Note: The most recent version of this program may be obtained from
         http://els-software.org
 
@@ -48,7 +48,7 @@
 
 /********** Global Routines Referenced **********/
 
-extern char *getenv();
+// extern char *getenv();   // defined in stdlib.h
 
 /********** Global Routines Defined **********/
 
@@ -166,13 +166,13 @@ int main(int argc, char *argv[])
     /* Establish defaults for each round: */
     get_atime_arg = FALSE;
     get_mtime_arg = FALSE;
-    
+
     while (Iarg < Argc && IS_MEMBER(*(Argv[Iarg]), "+-"))
     {
       if ((Argv[Iarg][0]) == '-' && isDigit(Argv[Iarg][1])) break;
       do_options(Argv[Iarg++]);
     }
-    
+
     /* If -m, -a, or -c have not been specified, then assume -m: */
     if (Iarg < Argc-1 && !files_follow &&
 	!get_atime_arg && !get_mtime_arg && !update_ctime)
@@ -211,12 +211,12 @@ int main(int argc, char *argv[])
       else
 	usage_error();	/* Missing time argument or missing file */
     }
-      
+
   } while (Iarg < Argc && IS_MEMBER(*(Argv[Iarg]), "+-") && !files_follow);
 
   if (!change_atime && !change_mtime && !update_ctime)
     usage_error();  /* No date specified */
-    
+
   if (Iarg < Argc)
   {
     /* Change date of each file: */
@@ -331,7 +331,7 @@ void do_options_minus(char *options)
       break;
     }
   }
-  
+
   return;
 }
 
@@ -395,7 +395,7 @@ void do_options_plus(char *options)
       break;
     }
   }
-  
+
   return;
 }
 
@@ -449,7 +449,7 @@ void give_usage_or_help(char U_or_H)
   /* U: Print usage to stderr so as to avoid any redirection.
      H: Print help to stdout so as to make it pipe-able through PAGER.
      h: Print help to stdout but without PAGER pipe. */
-  FILE *out, *fopen(), *popen();
+  FILE *out; // , *fopen(), *popen();
   Boole more = FALSE;
 
   if (U_or_H == 'H')
@@ -658,7 +658,7 @@ IMPORTANT NOTE:\n\
 
   if (more)
     pclose(out);
-  
+
   return;
 }
 
