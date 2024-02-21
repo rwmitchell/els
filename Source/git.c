@@ -134,9 +134,10 @@ char *load_gitstatus( const char *dir, char *git ) {
   if ( !lst || strcmp( dir, lst ) ) {
     if( lst ) free( lst );
     lst = strdup( dir );
-    cmd = memAllocZero( strlen( dir ) + strlen( git ) + 4 );
-    sprintf( cmd, "%s %s", git, dir );
+    cmd = memAllocZero( strlen( dir ) + strlen( git ) + 8 );
+    sprintf( cmd, "%s %s &>/dev/null", git, dir );
 //  fprintf( stderr, "CMD: %s\n", cmd );
+//  fprintf( stderr, "DIR: %s\n", dir );
     hld=loadpipe( cmd, &sz );
     free   ( cmd );
     return ( hld );
