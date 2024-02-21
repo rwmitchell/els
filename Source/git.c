@@ -9,8 +9,6 @@
 #include "els.h"
 #include "auxil.h"
 
-extern char *GTSTATS;   // Git status
-
 #define USE_HGC
 #ifdef  USE_HGC
 

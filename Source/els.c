@@ -151,7 +151,6 @@ char *LSCOLOR = NULL,      // rwm - from LS_COLORS
      *FSWIDTH = NULL,
      *HGSTATS = NULL,
      *GTSTATS = NULL,
-     *GTSTATSD= NULL,      // git status for subdirs
      *EXFAT   = NULL;
 // export ELS_FT_COLORS="86400=0;32;1:6480000=0;32:7121234=0;32;2:31557600=1;33;2:-1=0;31;1:"
 char *FTCOLOR = NULL,      // rwm - ELS_FT_COLORS - file ages and colors
@@ -805,7 +804,6 @@ void do_getenv(void)
     FTCOLOR = getenv( "ELS_FT_COLORS" );       // color by file time/age
     HGSTATS = getenv( "ELS_HG_STATUS" );
     GTSTATS = getenv( "ELS_GIT_STATUS" );
-    GTSTATSD= getenv( "ELS_GIT_STATUSD");
     EXFAT   = getenv( "ELS_EXFAT"     );       // ignore file permissions
 
     if ( FTCOLOR)
