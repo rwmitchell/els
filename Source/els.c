@@ -714,8 +714,10 @@ int main(int argc, char *argv[])
 //      printf( "\nFS Type: %0X\n", fsbuf.f_type );
         // 0x001C is type smbfs  - Big Sur  ?
         // 0x001E is type smbfs  - Monterey ? - 2022-04-29
+        // 0x0020 is type msdos  - Ventura / usb stick ? 2024-03-12
         if ( fsbuf.f_type == 0x001E       // exfat
-          || fsbuf.f_type == 0x001F )     // msdos
+          || fsbuf.f_type == 0x001F       // msdos
+          || fsbuf.f_type == 0x0020 )     // msdos also
           rwm_doperms = FALSE;
     }
     sort_dir(&dlist, dname, -1);
