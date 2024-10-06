@@ -35,6 +35,8 @@ function _els_set_hide() {
   function l   () { els +T^NY-M-DT +G~Atp~ugsmNL $els_Eflag \$@    }
   function lh  () { els +T^NY-M-DT +G~Aq~HmN     $els_Eflag \$@ MC }
   function ll  () { els +T^NY-M-DT +G~Aq~smN     $els_Eflag \$@ MC }
+  function lsgb() { els +G~q~N    $els_Eflag \$@ GB MC -R 6}
+  function llgb() { els +T^NY-M-DT +G~Aq~smN     $els_Eflag \$@ GB MC -R }
   function lt  () { els +T^NY-M-DT +G~Aq~smN -rt $els_Eflag \$@ MC }
   function lz  () { els +T^NY-M-DT +G~Aq~smN  -C $els_Eflag \$@    | sort -n -k1  }
   function Ll  () { els +T^NY-M-DT +G~Aq~smNL    $els_Eflag +FT{l} \$@     }  # show only symlinks
