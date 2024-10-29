@@ -38,10 +38,20 @@ function _els_set_hide() {
   function lsgb() { els +G~q~N    $els_Eflag \$@ GB MC -R 6}
   function llgb() { els +T^NY-M-DT +G~Aq~smN     $els_Eflag \$@ GB MC -R }
   function lt  () { els +T^NY-M-DT +G~Aq~smN -rt $els_Eflag \$@ MC }
-  function lz  () { els +T^NY-M-DT +G~Aq~smN  -C $els_Eflag \$@    | sort -n -k1  }
+  function lz  () {
+    ( [[ $# -gt 0 ]] && els +T^NY-M-DT +G~Aq~SsmN   $els_Eflag \$@ \
+                     || els +T^NY-M-DT +G~Aq~SsmN   $els_Eflag *(.) \
+    ) | sort -n -k1
+  }
+  function Lz  () {
+    ( [[ $# -gt 0 ]] && els +T^NY-M-DT +G~Aq~SsmNL  $els_Eflag \$@ \
+                     || els +T^NY-M-DT +G~Aq~SsmNL  $els_Eflag *(.) \
+    ) | sort -n -k1
+  }
+#   els +T^NY-M-DT +G~Aq~SsmN   $els_Eflag \$@    | sort -n -k1  }
   function Ll  () { els +T^NY-M-DT +G~Aq~smNL    $els_Eflag +FT{l} \$@     }  # show only symlinks
   function Lt  () { els +T^NY-M-DT +G~Aq~smNL    $els_Eflag -rt $@ }
-  function Lz  () { els +T^NY-M-DT +G~Aq~smNL -C $els_Eflag \$@    | sort -n -k1  }
+# function Lz  () { els +T^NY-M-DT +G~Aq~smNL -C $els_Eflag \$@    | sort -n -k1  }
   function lcrg() { els +G~t~N -AR +e".git"      $els_Eflag \$@ MC }    # recurse, exclude .git
   function lll () { els +T^NY-M-DT +Gl~Aq~smN     $els_Eflag \$@ MC }
   function li  () { els +T^NY-M-DT +Gl~Aqp~ugsmNL $els_Eflag \$@    }   # show link count
