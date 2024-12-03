@@ -32,17 +32,17 @@ function _els_set_hide() {
   function ls  () { els +G~q~N    $els_Eflag \$@ MC }
   function lc  () { els +G~q~N -A $els_Eflag \$@ MC }
 
-  function l   () { els +T^NY-M-DT +G~Atp~ugsmNL $els_Eflag \$@    }
-  function lh  () { els +T^NY-M-DT +G~Aq~HmN     $els_Eflag \$@ MC }
-  function ll  () { els +T^NY-M-DT +G~Aq~smN     $els_Eflag \$@ MC }
+  function l   () { els +T^NY-M-DT +G~Atp~ugsmNL  $els_Eflag \$@    }
+  function lh  () { els +T^NY-M-DT +G~Aq~HmN      $els_Eflag \$@ MC }
+  function ll  () { els +T^NY-M-DT +G~Aq~smN      $els_Eflag \$@ MC }
   function lsgb() { els +G~q~N    $els_Eflag \$@ GB MC -R 6}
-  function llgb() { els +T^NY-M-DT +G~Aq~smN     $els_Eflag \$@ GB MC -R }
-  function lt  () { els +T^NY-M-DT +G~Aq~smN -rt $els_Eflag \$@ MC }
-  function Ll  () { els +T^NY-M-DT +G~Aq~smNL    $els_Eflag +FT{l} \$@     }  # show only symlinks
-  function Lt  () { els +T^NY-M-DT +G~Aq~smNL    $els_Eflag -rt $@ }
-  function lcrg() { els +G~t~N -AR +e".git"      $els_Eflag \$@ MC }    # recurse, exclude .git
-  function lll () { els +T^NY-M-DT +Gl~Aq~smN     $els_Eflag \$@ MC }
-  function li  () { els +T^NY-M-DT +Gl~Aqp~ugsmNL $els_Eflag \$@    }   # show link count
+  function llgb() { els +T^NY-M-DT +G~Aq~smN      $els_Eflag \$@ GB MC -R }
+  function lt  () { els +T^NY-M-DT +G~Aq~slmN -rt $els_Eflag \$@ MC }
+  function Ll  () { els +T^NY-M-DT +G~Aq~slmNL    $els_Eflag +FT{l} \$@     }  # show only symlinks
+  function Lt  () { els +T^NY-M-DT +G~Aq~slmNL    $els_Eflag -rt $@ }
+  function lcrg() { els +G~t~N -AR +e".git"       $els_Eflag \$@ MC }    # recurse, exclude .git
+  function lll () { els +T^NY-M-DT +G~Aq~slmN     $els_Eflag \$@ MC }
+  function li  () { els +T^NY-M-DT +G~Aqp~ugslmNL $els_Eflag \$@    }   # show link count
   function llI () { els +T^NY-M-DT +Gl%11i~Aq~smN $els_Eflag \$@ MC }   # and inode number
   function lx  () { els +T^NY-M-DT +G~Aqp~ugsmNL -fr +FP{+x}    $els_Eflag \$@    }
   function llx () { els +T^NY-M-DT +G~Aq~smN     -fr +FP{+x}    $els_Eflag \$@ MC }
