@@ -156,12 +156,12 @@ char *LSCOLOR = NULL,      // rwm - from LS_COLORS
 char *FTCOLOR = NULL,      // rwm - ELS_FT_COLORS - file ages and colors
      *rwm_cols[32];
 const
-char *inv = "[7;0m",     // invert foreground/background colors
-     *rinv= "[27;0m",    // reset invert
-     *rfg = "[39;0m",    // reset foreground
-     *bold= "[1m",       // bold
-     *cs  = "[0m",       // current style, default to clear ansi codes
-     *cse = "[0m";       // clear ansi codes at end of string
+char *inv = "\e[7;0m",     // invert foreground/background colors
+     *rinv= "\e[27;0m",    // reset invert
+     *rfg = "\e[39;0m",    // reset foreground
+     *bold= "\e[1m",       // bold
+     *cs  = "\e[0m",       // current style, default to clear ansi codes
+     *cse = "\e[0m";       // clear ansi codes at end of string
 Ulong rwm_ages[32];        // rwm - 32 date colors should be enough for anyone
 int   rwm_ftcnt=0,
       rwm_szwdth=0,
@@ -447,7 +447,7 @@ int rwm_env2ft( char *env, char sep, Ulong *age, char **col ) {
     p1=strchr( p1, '=' );
     col[cnt] = p1+1;
 
-//  printf("%2d: #[%sm%20lu[m#  %s\n", cnt, col[cnt], age[cnt], col[cnt] );
+//  printf("%2d: #\e[%sm%20lu\e[m#  %s\n", cnt, col[cnt], age[cnt], col[cnt] );
 
     cnt++;
     p1 = p2+1;
@@ -814,7 +814,7 @@ void do_getenv(void)
     printf("rwm_ftcnt: %d\n", rwm_ftcnt );
 
     for (int i=0; i<rwm_ftcnt; ++i )
-      printf("%2d: #[%sm%20lu[39m#  %-8s\n", i, rwm_cols[i], rwm_ages[i], rwm_cols[i] );
+      printf("%2d: #\e[%sm%20lu\e[39m#  %-8s\n", i, rwm_cols[i], rwm_ages[i], rwm_cols[i] );
     printf("----\n");
 #endif
   }
@@ -3882,7 +3882,7 @@ Boole list_item(Dir_Item *file,
       char *bp = G_print(output_buff, G_format, dname, file);
       if ( !rwm_dospace ) {
         if ( rwm_docolor ) {
-          strcat( bp, cse );    // "[;0m" );  // Reset all color settings at EOL
+          strcat( bp, cse );    // "\e[;0m" );  // Reset all color settings at EOL
           rwm_type = 0;
           rwm_mode = 0;
         }
@@ -4076,7 +4076,7 @@ char *rwm_col_age( char *buff, time_t ftime, Boole flag ) {
 
 //  printf("%2d: %lu %lu AGE\n", i, rwm_ages[i], f_age );
 
-    if ( i<rwm_ftcnt ) sprintf(buff, "[%sm%s", rwm_cols[i], tmp );
+    if ( i<rwm_ftcnt ) sprintf(buff, "\e[%sm%s", rwm_cols[i], tmp );
   } else                        // end   of date string
       sprintf(buff, "%s%s", tmp, rfg );   // reset foreground color
 
@@ -4609,7 +4609,7 @@ char *G_print(char *buff,
         if ( width < (int) strlen( str ) )
           rwm_fxwdth = MAX( rwm_fxwdth, (int) strlen( str ) );
         if ( !FSCOLOR ) Void sprintf(bp, "%*s", width, str);
-        else            Void sprintf(bp, "[%sm%*s[39m%s", FSCOLOR, width, str, cs);
+        else            Void sprintf(bp, "\e[%sm%*s%s%s", FSCOLOR, width, str, cse, cs);  // cse clears color before setting bold for dirs
 
       }
     }
@@ -4660,8 +4660,12 @@ char *G_print(char *buff,
     sprintf(str, F_st_nlink(zero_pad,width,
       info->st_nlink - ( file->isdir ? 2 : 0 )));
 
+#ifdef COLOR_LINKCOUNT
     if ( !FSCOLOR ) Void sprintf(bp, "%*s", width, str);
-    else            Void sprintf(bp, "[%sm%*s[39m%s", FSCOLOR, width, str, cs);
+    else            Void sprintf(bp, "\e[%sm%*s%s", FSCOLOR, width, str, cs);
+#else
+                    Void sprintf(bp, "%*s", width, str);
+#endif
     // End new code
 
     break;
@@ -5213,13 +5217,13 @@ char *rwm_dir_col( char *dnam ) {
         rwm_get_col( ps, &rwm_b, &rwm_f, &rwm_s, &rwm_i );
 //      printf( "Coloring: >%s< %d\n", ps, rwm_f );
 
-      if ( rwm_b >  0  ) sprintf( rwm_bg,    "[48;5;%dm",        rwm_b );
+      if ( rwm_b >  0  ) sprintf( rwm_bg,    "\e[48;5;%dm",        rwm_b );
       else               rwm_bg[0] = '\0';
 
       // Foreground color
 
-      if ( rwm_s <= 0 ) sprintf( rwm_col, "%s[38;5;%dm",    cs, rwm_f );
-      else              sprintf( rwm_col, "%s[38;5;%d;%dm", cs, rwm_f, rwm_s );
+      if ( rwm_s <= 0 ) sprintf( rwm_col, "%s\e[38;5;%dm",    cs, rwm_f );
+      else              sprintf( rwm_col, "%s\e[38;5;%d;%dm", cs, rwm_f, rwm_s );
       strcat( rwm_col, rwm_bg );
 
       sprintf(rwm_tmp, "%s%s%s%c", rwm_col, ps, cs, pe ? '/' : '\0' );
@@ -5493,12 +5497,12 @@ char *N_print(char *buff, char *fmt,
           // Background color
           if ( rwm_b <= 1 && hg_b ) rwm_b = hg_b;
           if ( rwm_b <= 1 && gt_b ) rwm_b = gt_b;
-          if ( rwm_b >  0  ) sprintf( rwm_bg,    "[48;5;%dm", rwm_b );
-//        if ( hg == 'M'   ) sprintf( rwm_bg,    "[48;5;%dm",      8 );
+          if ( rwm_b >  0  ) sprintf( rwm_bg,    "\e[48;5;%dm", rwm_b );
+//        if ( hg == 'M'   ) sprintf( rwm_bg,    "\e[48;5;%dm",      8 );
           else               rwm_bg[0] = '\0';
 
-          if ( rwm_s <= 0 ) sprintf( rwm_col, "[38;5;%dm",    rwm_f );
-          else              sprintf( rwm_col, "[38;5;%d;%dm", rwm_f, rwm_s );
+          if ( rwm_s <= 0 ) sprintf( rwm_col, "\e[38;5;%dm",    rwm_f );
+          else              sprintf( rwm_col, "\e[38;5;%d;%dm", rwm_f, rwm_s );
           strcat( rwm_col, rwm_bg );
         } else rwm_col[0] = '\0';
 
@@ -5636,7 +5640,7 @@ char *N_print(char *buff, char *fmt,
                   int icon=' ';
                   char tname[MAX_FULL_NAME];
                   rwm_get_col( lname, &b, &f, &s, &icon );
-                  sprintf( tname, "[%d;%d;%dm%s[39;49m", b, f, s, lname );
+                  sprintf( tname, "\e[%d;%d;%dm%s\e[39;49m", b, f, s, lname );
                   sprintf(bp, fmt,width, tname);
                 } else
                   sprintf(bp, fmt,width, lname);
