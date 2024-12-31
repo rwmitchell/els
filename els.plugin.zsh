@@ -1,6 +1,7 @@
 alias -g MC='| mc'
 
 [[ $+galias[MC] == 1 ]] || alias -g MC='| mc'
+[[ $+galias[GB] == 1 ]] || alias -g GB='|& PRISM="#90ee90#F0F0F0" prism -r -B'
 
 # setopt extendedglob - breaks els
 # use _icwc to expand, then els to list
@@ -34,10 +35,11 @@ function _els_set_hide() {
 
   function l   () { els +T^NY-M-DT +G~Atp~ugsmNL  $els_Eflag \$@    }
   function lh  () { els +T^NY-M-DT +G~Aq~HmN      $els_Eflag \$@ MC }
-  function ll  () { els +T^NY-M-DT +G~Aq~smN      $els_Eflag \$@ MC }
+  function ll  () { els +T^NY-M-DT +G~Aq~slmN     $els_Eflag \$@ MC }
+  function lt  () { els +T^NY-M-DT +G~Aq~slmN -rt $els_Eflag \$@ MC }
+  # putting GB last breaks the column alignment
   function lsgb() { els +G~q~N    $els_Eflag \$@ GB MC -R 6}
   function llgb() { els +T^NY-M-DT +G~Aq~smN      $els_Eflag \$@ GB MC -R }
-  function lt  () { els +T^NY-M-DT +G~Aq~slmN -rt $els_Eflag \$@ MC }
   function Ll  () { els +T^NY-M-DT +G~Aq~slmNL    $els_Eflag +FT{l} \$@     }  # show only symlinks
   function Lt  () { els +T^NY-M-DT +G~Aq~slmNL    $els_Eflag -rt $@ }
   function lcrg() { els +G~t~N -AR +e".git"       $els_Eflag \$@ MC }    # recurse, exclude .git
