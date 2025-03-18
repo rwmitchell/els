@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 # Alternate folder icons but are extra wide
@@ -51,7 +51,7 @@ def get_colors():
 	EXTENSION_LIST = {
 		# '^' indicates settings for directories
 		"^.attic":		cc( 15, -1, 0xF757, 1),
-		"^.hg":			cc(27,	-1,	0xF499,1), // beaker, 0xF0C3, 1), flask
+		"^.hg":			cc(27,	-1,	0xF499,1), # beaker, 0xF0C3, 1), flask
 		"^boot":		cc(27,	-1,	0xF0A0),
 		"^dev":			cc(220,	-1, 0xE5FC),
 		"^etc":			cc(63,	-1, 0xF0AD),
@@ -226,8 +226,8 @@ def get_colors():
 		".cpp":			cc(81, -1, 0xFB71),   # 0xE61D),
 		".cxx":			cc(81, -1, 0xFB71),   # 0xE61D),
 		".pro":			cc(81, -1, 0xF92C),
-		".icns:			cc(81, -1, 0xF6F2),
-		".ui:			cc(81, -1, 0xFA02),
+		".icns":		cc(81, -1, 0xF6F2),
+		".ui":			cc(81, -1, 0xFA02),
 		".cr":			cc(81, -1, 0xE739),
 		".go":			cc(81, -1, 0xE626),
 		".f":			cc(81, -1, 0xF09A),   # ord("F")),
@@ -280,7 +280,7 @@ def get_colors():
 		".bk*":			cc(242, -1, 0xF1DA),    # 0xF0E2),
 		".old":			cc(242, -1, 0xF1DA),    # 0xF0E2),
 		".out":			cc(242, -1, 0xF0AD),
-		".o":			cc(245, -1, 0xF471)  # 0xF425),
+		".o":			cc(245, -1, 0xF471),    # 0xF425),
 		".SKIP":		cc(244, -1, 0xF0AD),
 		".diff":		cc(232, 197, 0xF467, other="1"),
 		".patch":		cc(232, 197, 0xF467, other="1"),
@@ -560,7 +560,7 @@ def get_colors():
 		".vcard":		cc(7, -1, 0xF10B),
 		".vcf":			cc(7, -1, 0xF10B),
 		".xln":			cc(7, -1, 0xF10B),
-		".hgignore"		cc(1, -1, 0xF912),   # 0xE714),
+        ".hgignore":	cc(1, -1, 0xF912),   # 0xE714),
 		"*-ed25519":	cc(178, -1, 0xF83D),
 		"*-rsa":		cc(214, -1, 0xF83D),
 		".pub":			cc( 70, -1, 0xF084),
@@ -597,7 +597,7 @@ def get_unicode(ch):
 
 LEFT	= "lc"
 RIGHT	= "rc"
-END	= "ec"
+END		= "ec"
 RESET	= "rs"
 
 # LS_COLORS special file codes.
@@ -618,11 +618,14 @@ SETGID		= "sg"
 STICKY		= "st"
 OTHERWRITE	= "ow"
 STOTHERWRITE	= "tw"
+ex			= "ex"       # makes python happy even though this doesn't get run
+ow			= "ow"
 
 if __name__ == "__main__":
 	import sys
 	import os
 	lsc = ""
+
 	formcol, special, exten = get_colors()
 	try:
 		if sys.argv[1] == "test": # generate a test directory with all file extensions
