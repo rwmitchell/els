@@ -32,13 +32,15 @@ char *loadpipe( const char *cmd, off_t *f_sz ) {
 
   if ( data ) { memset( data,'\0', of_sz ); }
 
+//fprintf( stderr, "PIPE: %s\n", cmd );
+
   *f_sz = of_sz;
   if ( (pipe=popen( cmd, "r" )) > 0 ) {
-//  printf("cmd: %s : %ld\n", cmd, *f_sz );
+//  fprintf(stderr, "cmd: %s : %lld\n", cmd, *f_sz );
     memset( buf, '\0', 1024 );
     while (  (rc = fread( buf, 1, 1023, pipe )) > 0 ) {
-//    printf( "%8ld bytes read\n", rc );
-//    printf( "====\n%s\n===\n", buf );
+//    fprintf( stderr, "%8ld bytes read\n", rc );
+//    fprintf( stderr, "====\n%s\n===\n", buf );
       if ( sz + rc > *f_sz ) {
 #ifdef OLDMETHOD // __linux__
         *f_sz += 2048;
@@ -51,6 +53,7 @@ char *loadpipe( const char *cmd, off_t *f_sz ) {
         if ( !data ) { printf( "realloc(%ld) failed on %s\n", *f_sz, cmd); exit(-1); }
 #else
         // if memRealloc() fails, it exits
+//      fprintf( stderr, "memRealloc: %lld\n", *f_sz );
         data = (char *) memRealloc ( (void *) data, *f_sz, 2048 );
         *f_sz += 2048;
 //      if ( !data ) { printf( "realloc(%lld) failed on %s\n", *f_sz, cmd); exit(-1); }
@@ -60,9 +63,10 @@ char *loadpipe( const char *cmd, off_t *f_sz ) {
       memset( buf, '\0', 1024 );
       sz += rc;
     }
+//  fprintf( stderr, "%8ld bytes read LAST\n", rc );
     pclose( pipe );
   } else {
-    fprintf(stderr, "Unable to open %s\n", cmd );
+    fprintf(stderr, "loadpipe(): Unable to open %s\n", cmd );
   }
 
   of_sz = *f_sz;

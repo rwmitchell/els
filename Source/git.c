@@ -128,6 +128,8 @@ char *load_gitstatus( const char *dir, char *git ) {
        *hld = NULL;
   char *cmd = NULL;        // 2020-12-20 issue is not cmd, fails without malloc
 
+//fprintf( stderr, "Load: %s -> %s\n", dir, git );
+
   if ( ! git ) return( hld );  // return quickly if not set
 
 
@@ -135,7 +137,8 @@ char *load_gitstatus( const char *dir, char *git ) {
     if( lst ) free( lst );
     lst = strdup( dir );
     cmd = memAllocZero( strlen( dir ) + strlen( git ) + 8 );
-    sprintf( cmd, "%s %s &>/dev/null", git, dir );
+//  sprintf( cmd, "%s %s &>/dev/null", git, dir ); // 2025-03-20: everything  goes into /dev/null
+    sprintf( cmd, "%s %s 2>/dev/null", git, dir ); // 2025-03-20: only stderr goes into /dev/null
 //  fprintf( stderr, "CMD: %s\n", cmd );
 //  fprintf( stderr, "DIR: %s\n", dir );
     hld=loadpipe( cmd, &sz );
