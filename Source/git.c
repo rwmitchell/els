@@ -92,6 +92,9 @@ char *fullpath( char *path ) {
 
 #endif
 
+char gitsub[1024] = { '\0' };  // current subdir in a git path
+int  gitlen = 0;
+
 char *is_git( char *dir, bool sub ) {
   static
   char  cwd[ MAX_DNAME ];
@@ -99,7 +102,8 @@ char *is_git( char *dir, bool sub ) {
        *gt="/.git",
        *po;
 
-  int   len = 0;
+  int   cwdlen = 0,
+        dirlen = 0;
   bool  is_git = false;
 
   if ( dir && RMisdir( dir ) ) pd = strcpy( cwd, dir );
@@ -117,9 +121,27 @@ char *is_git( char *dir, bool sub ) {
       }
     } else *pd = '\0';
   }
-  if ( is_git && sub ) len = strlen( cwd ) + 1;
+  if ( is_git && sub ) cwdlen = strlen( cwd ) + 1;
 
-  return( is_git ? dir + len : NULL );
+//fprintf( stderr, "is_git: >%s< :%d: >%s<\n", dir, cwdlen, cwd );
+
+  memset( gitsub, '\0', 1024 );        // just to be sure, probably not necessary
+
+  dirlen = strlen( dir );
+  if ( dirlen - cwdlen > 0 ) {
+    strncpy( gitsub, (dir+cwdlen), dirlen-cwdlen );
+    gitlen = strlen( gitsub );
+
+    // Need the last char to be a /
+    if ( gitsub[ gitlen-1 ] != '/' ) gitsub[ gitlen ] = '/';
+  }
+
+//fprintf( stderr, "sub : %s : len: %d -> %d\n", gitsub, dirlen, dirlen-cwdlen );
+
+//fprintf( stderr, "Dir : %s : sub: %d\n",  dir, sub );
+//fprintf( stderr, "Root: %s : len: %d\n", pd,  cwdlen );
+
+  return( is_git ? pd + cwdlen : NULL );
 }
 char *load_gitstatus( const char *dir, char *git ) {
   off_t sz;
@@ -131,7 +153,6 @@ char *load_gitstatus( const char *dir, char *git ) {
 //fprintf( stderr, "Load: %s -> %s\n", dir, git );
 
   if ( ! git ) return( hld );  // return quickly if not set
-
 
   if ( !lst || strcmp( dir, lst ) ) {
     if( lst ) free( lst );
@@ -161,6 +182,8 @@ char  get_gitstatus( char *dir, char *file, char *gs ) {
 //if ( RMisdir( file ) ) return( ch );
 
   if ( !B_DM ) ch = ' ';
+
+//nprintf( stderr, "getting status: >%s<  >%s<\n", pdir, dir );
 
   if ( pdir != dir ) {
     B_DM = false;
@@ -216,6 +239,18 @@ char  get_gitstatus( char *dir, char *file, char *gs ) {
     pgs = buf;
   }
 
+//fprintf( stderr, "LEN: %lu  :  %d\n", strlen( dir ), gitlen );
+
+  // len of 1 allows for '.'
+  if ( strlen(dir) <= 1 && gitlen > 0 ) {
+    sprintf( buf, "%s%s", gitsub, file);
+    if ( buf[strlen( buf ) ] == '.' ) buf[ strlen(buf) ] = '\0';
+    pgs = buf;
+//  fprintf( stderr, "BUF: %s  <- :%s:   :%s:\n", pgs, gitsub, file );
+  }
+
+//fprintf( stderr, "STAT: >%s< -> %s ->\n%s <--\n", dir, file, gs );
+
   bool done = ( B_DM && ch == 'I' ),
        mtch = false;
   int len1, len2;
@@ -223,6 +258,9 @@ char  get_gitstatus( char *dir, char *file, char *gs ) {
   do {
     pt1 = pt2;
     pt2 = strstr( pt1, pgs );
+//  fprintf( stderr, "PT1 : >%s<\n", pt1 );
+//  fprintf( stderr, "PGS : >%s<\n", pgs );
+//  fprintf( stderr, "PT2 : >%s<\n", pt2 );
     if ( pt2 ) {
       len2 = strchr( pt2, '\n' ) - pt2;
 

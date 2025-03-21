@@ -5476,7 +5476,6 @@ char *N_print(char *buff, char *fmt,
 
         if ( gt_stat ) gt =  get_gitstatus( dname, fname, gt_stat );
 
-
         if ( GTICONS && gt != ' ' ) rc =    rwm_get_git( gt, &gt_b, &gt_i);
         if ( !rc ) gt_i = (wchar_t) gt;
 
