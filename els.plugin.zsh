@@ -37,7 +37,8 @@ function _els_set_hide() {
   function lh  () { els +T^NY-M-DT +G~Aq~HmN      $els_Eflag \$@ MC }
   function ll  () { els +T^NY-M-DT +G~Aq~smN      $els_Eflag \$@ MC }   # size date glyph filename
   function lll () { els +T^NY-M-DT +G~Aq~slmN     $els_Eflag \$@ MC }   # size link-count date glyph filename
-  function lt  () { els +T^NY-M-DT +G~Aq~slmN -rt $els_Eflag \$@ MC }   # above, sorted by time
+  function lt  () { els +T^NY-M-DT +G~Aq~smN -rt $els_Eflag \$@ MC }    # above, sorted by time
+  function lit () { els +T^NY-M-DT +G~Aq~slmN -rt $els_Eflag \$@ MC }   # above, sorted by time with inode count
   # putting GB last breaks the column alignment
   function lsgb() { els +G~q~N    $els_Eflag \$@ GB MC -R 6}
   function llgb() { els +T^NY-M-DT +G~Aq~smN      $els_Eflag \$@ GB MC -R }
