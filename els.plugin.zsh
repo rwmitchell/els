@@ -1,7 +1,11 @@
 alias -g MC='| mc'
+alias -g SLW="| /usr/bin/sed -l 's/^[ 	]*//g'"
 
-[[ $+galias[MC] == 1 ]] || alias -g MC='| mc'
-[[ $+galias[GB] == 1 ]] || alias -g GB='|& PRISM="#90ee90#F0F0F0" prism -r -B'
+
+[[ $+galias[MC]  == 1 ]] || alias -g MC='| mc'
+[[ $+galias[GB]  == 1 ]] || alias -g GB='|& PRISM="#90ee90#F0F0F0" prism -r -B'
+[[ $+galias[SLW] == 1 ]] || alias -g SLW="| /usr/bin/sed -l 's/^[ 	]*//g'"
+
 
 # setopt extendedglob - breaks els
 # use _icwc to expand, then els to list
@@ -28,8 +32,12 @@ function hidden() {      # show hidden extensions
   printf "%s\n" $arr
 }
 
+# removed from next function
+  # putting GB last breaks the column alignment
+# function lsgb() { els +G~q~N    $els_Eflag \$@ GB MC -R 6 }
+
 function _els_set_hide() {
-  _els_string="\
+  _els_string="
   function ls  () { els +G~q~N    $els_Eflag \$@ MC }
   function lc  () { els +G~q~N -A $els_Eflag \$@ MC }
 
@@ -40,8 +48,7 @@ function _els_set_hide() {
   function lll () { els +T^NY-M-DT +G~Aq~slmN     $els_Eflag \$@ MC }   # size link-count date glyph filename
   function lt  () { els +T^NY-M-DT +G~Aq~smN  -rt $els_Eflag \$@ MC }   # above, sorted by time
   function lit () { els +T^NY-M-DT +G~Aq~slmN -rt $els_Eflag \$@ MC }   # above, sorted by time with inode count
-  # putting GB last breaks the column alignment
-  function lsgb() { els +G~q~N    $els_Eflag \$@ GB MC -R 6 }
+  function lsgb() { els +G~q~N    $els_Eflag \$@ | prism -S SLW GB MC -R 6 }
   function llgb() { els +T^NY-M-DT +G~Aq~smN      $els_Eflag \$@ GB MC -R }
   function Ll  () { els +T^NY-M-DT +G~Aq~slmNL    $els_Eflag +FT{l}     \$@ | align -F\"->\" }  # show only symlinks
   function LL  () { els +T^NY-M-DT +G~Aq~slmNL -L $els_Eflag +FT{l}     \$@                  }  # show only symlinks with original file size
@@ -61,7 +68,6 @@ function _els_set_hide() {
     [[ \$# -gt 0 ]] && els +T^NY-M-DT +G~Aq~SsmNL $els_Eflag \$@   | sort -n -k1 \
                     || els +T^NY-M-DT +G~Aq~SsmNL $els_Eflag  *(.) | sort -n -k1
   }
-
   "
   eval $_els_string
 }
