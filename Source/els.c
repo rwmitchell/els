@@ -5229,7 +5229,7 @@ char *rwm_dir_col( char *dnam ) {
       sprintf(rwm_tmp, "%s%s%s%c", rwm_col, ps, cs, pe ? '/' : '\0' );
       strcat( dcol, rwm_tmp );
 
-    }
+    } else sprintf( dcol, "%s%c", ps, pe ? '/' : '\0' );
 
     ps = ++pe;
   }
