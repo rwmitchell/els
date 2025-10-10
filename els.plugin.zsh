@@ -10,9 +10,9 @@ alias -g SLW="| /usr/bin/sed -l 's/^[ 	]*//g'"
 # setopt extendedglob - breaks els
 # use _icwc to expand, then els to list
 function _icwc() {                  # = ignore case wild card
-  setopt extendedglob
+  setopt local_options extendedglob
   print $( print (#i)$~@ )   # ~ causes wildcard expansion
-  setopt noextendedglob
+# setopt noextendedglob
 }
 
 # ignore case,  doesn't work with els_Eflag code
@@ -22,6 +22,10 @@ function _icwc() {                  # = ignore case wild card
 function lsi () { els +G~q~N                    $( _icwc $@ ) MC }
 function lli () { els +T^NY-M-DT +G~Aq~smN      $( _icwc $@ ) MC }
 function lti () { els +T^NY-M-DT +G~Aq~smN -rt  $( _icwc $@ ) MC }
+
+function lsid () { els -d +G~q~N                    $( _icwc $@ ) MC }
+function llid () { els -d +T^NY-M-DT +G~Aq~smN      $( _icwc $@ ) MC }
+function ltid () { els -d +T^NY-M-DT +G~Aq~smN -rt  $( _icwc $@ ) MC }
 
 # provide quick stuff to hide
 ELS_MS_HIDE=( .pptx .shs .lnk .exe )   # really boring stuff
@@ -44,7 +48,8 @@ function _els_set_hide() {
   function l   () { els +T^NY-M-DT +G~Atp~ugsmNL  $els_Eflag \$@    }
   function lh  () { els +T^NY-M-DT +G~Aq~HmN      $els_Eflag \$@ MC }
   function ll  () { els +T^NY-M-DT +G~Aq~smN      $els_Eflag \$@ MC }   # size date glyph filename
-  function lL  () { els +T^NY-M-DT +G~Aq~smNL     $els_Eflag \$@ MC }   # size date glyph filename symlink
+  function ll1 () { els +T^NY-M-DT +G~Aq~smN      $els_Eflag \$@    }   # size date glyph filename - single column
+  function lL  () { els +T^NY-M-DT +G~Aq~smNL     $els_Eflag \$@  | align -F\"->\" MC }         # size date glyph filename symlink
   function lll () { els +T^NY-M-DT +G~Aq~slmN     $els_Eflag \$@ MC }   # size link-count date glyph filename
   function lt  () { els +T^NY-M-DT +G~Aq~smN  -rt $els_Eflag \$@ MC }   # above, sorted by time
   function lit () { els +T^NY-M-DT +G~Aq~slmN -rt $els_Eflag \$@ MC }   # above, sorted by time with inode count
