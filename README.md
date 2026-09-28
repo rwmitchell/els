@@ -1,4 +1,4 @@
-# els - Extended LS
+# els - Enhanced-LS
 ## History
 This is a fork of the work found at:
 
